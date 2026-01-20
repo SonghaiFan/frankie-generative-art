@@ -753,7 +753,7 @@ export const popStyles: ArtStyle[] = [
   },
   {
     id: "memphis",
-    name: "Memphis Design (孟菲斯设计)",
+    name: "Memphis (孟菲斯)",
     era: "1980s Postmodernism",
     driver: "p5",
     description:
