@@ -27,6 +27,16 @@ const P5Renderer: React.FC<P5RendererProps> = ({ code }) => {
         </head>
         <body>
           <script>
+            // Suppress ml5 logo if possible
+            if (window.ml5) ml5.config = { noLogo: true };
+
+            // Ensure p5.js sound works with user gesture inside iframe
+            window.addEventListener('mousedown', function() {
+              if (window.getAudioContext) {
+                window.getAudioContext().resume();
+              }
+            });
+
             try {
               ${code}
             } catch (e) {
@@ -47,7 +57,7 @@ const P5Renderer: React.FC<P5RendererProps> = ({ code }) => {
         ref={iframeRef}
         title="Generative Art Canvas"
         className="w-full h-full border-none pointer-events-auto"
-        sandbox="allow-scripts allow-same-origin"
+        sandbox="allow-scripts"
         allow="camera; microphone"
       />
     </div>

@@ -67,16 +67,16 @@ export const traditionalStyles: ArtStyle[] = [
         p.vertex(mx - 25, my + 45);
         p.endShape(p.CLOSE);
 
-        // 4. Texture/Grain (Washi Paper)
-        p.loadPixels();
-        for (let i = 0; i < p.width * p.height * 4; i += 4) {
-          if (Math.random() > 0.8) {
-            p.pixels[i] = Math.max(0, p.pixels[i] - 10); // darken slightly
-            p.pixels[i + 1] = Math.max(0, p.pixels[i + 1] - 10);
-            p.pixels[i + 2] = Math.max(0, p.pixels[i + 2] - 10);
-          }
+        // 4. Texture/Grain (Washi Paper) - Optimized
+        p.push();
+        p.strokeWeight(1);
+        for (let i = 0; i < 5000; i++) {
+          p.stroke(0, 0, 0, 5);
+          p.point(p.random(p.width), p.random(p.height));
+          p.stroke(0, 0, 100, 3);
+          p.point(p.random(p.width), p.random(p.height));
         }
-        p.updatePixels();
+        p.pop();
       };
       (p as any).customResize = (w: number, h: number) => {
         p.resizeCanvas(w, h);

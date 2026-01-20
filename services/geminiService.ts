@@ -97,7 +97,8 @@ export const generateCreativeArt = async (
          - Do NOT use external images or fonts, only p5 drawing primitives.
          - Make it animated or interactive or both.
          - TECHNICAL SUGGESTION: Consider using advanced generative techniques like Flow Fields (Perlin noise networks), Recursive Fractals, Reaction-Diffusion simulations, or Harmonograph oscillators.
-         - MODERN CAPABILITIES: You may also use 'Audio-Reactive' elements (using p5.FFT for real-time sound analysis) or 'Neural Stylization' (using ml5.js for real-time webcam object tracking or style transfer). 
+         - MODERN CAPABILITIES: You may also use 'Audio-Reactive' elements (using p5.FFT for real-time sound analysis) or 'Neural Stylization' (using ml5.js for real-time webcam tracking/object detection). 
+         - IMPORTANT: If using audio or camera, remind the user to 'Click the screen to activate sensor' in the 'explanation' text, as browsers require a user gesture. Initialize AudioIn or Capture inside setup().
          - It should be visually impressive and immersive. Dark background preferred.
       
       Return JSON.

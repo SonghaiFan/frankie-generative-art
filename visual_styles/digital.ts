@@ -432,55 +432,73 @@ export const digitalStyles: ArtStyle[] = [
 
       p.draw = () => {
         p.background(0); // Deep black
-        const time = p.frameCount * 0.015;
+        const time = p.frameCount * 0.02;
 
-        // 1. Animated Distorted Grid Background
-        p.stroke(280, 80, 80, 40); // Subtle Neon Purple
-        p.strokeWeight(1);
+        // 1. Iridescent Grid - Neon Fluorescent texture
         p.noFill();
+        for (let j = 0; j < 10; j++) {
+          const offset = j * 50;
+          const hue = (280 + j * 5 + p.sin(time * 0.5) * 20) % 360;
+          p.stroke(hue, 90, 80, 20); // Fluorescent Purple/Magenta
+          p.strokeWeight(0.5);
 
-        for (let y = -40; y < p.height + 40; y += 40) {
           p.beginShape();
-          for (let x = 0; x <= p.width; x += 20) {
-            // Sine wave distortion + Time
-            const yOff = Math.sin(x * 0.01 + y * 0.02 + time) * 30;
-            p.vertex(x, y + yOff);
+          for (let i = 0; i <= p.width; i += 40) {
+            const distortion = p.noise(i * 0.005, j * 0.1, time * 0.2) * 200;
+            p.vertex(i, p.height * 0.1 + offset + distortion);
           }
           p.endShape();
         }
 
-        // 2. Liquid Metal Blob (Chrome effect) - Evolving
+        // 2. High-Gloss Liquid Metal (Chrome/Liquid Mercury)
         p.push();
         p.translate(p.width / 2, p.height / 2);
 
-        // Reactive to mouse
-        const mx = (p.mouseX - p.width / 2) * 0.03;
-        const my = (p.mouseY - p.height / 2) * 0.03;
+        // Mouse reaction for depth
+        const mx = (p.mouseX - p.width / 2) * 0.05;
+        const my = (p.mouseY - p.height / 2) * 0.05;
         p.translate(mx, my);
 
         p.noStroke();
 
-        const layers = 22;
+        const layers = 30; // Increased density for smoother chrome
         for (let i = layers; i > 0; i--) {
           const t = i / layers;
-          // Chrome gradient shift
-          let bri = 50;
-          const tone = (t + time * 0.1) % 1;
-          if (tone > 0.8) bri = 100;
-          else if (tone > 0.5) bri = 10;
-          else if (tone > 0.2) bri = 90;
 
-          p.fill(0, 0, bri, 95);
+          // Logic for Metallic Sheen: High contrast, sharp transitions
+          const wave = p.sin(time * 0.8 + t * 5);
+          let bri = 40;
+          let sat = 0; // Greyscale for metal
+
+          if (wave > 0.8) {
+            bri = 100;
+            sat = 0;
+          } // Specular Highlight
+          else if (wave > 0.4) {
+            bri = 20;
+            sat = 10;
+          } // Deep Shadow
+          else if (wave > -0.2) {
+            bri = 85;
+            sat = 5;
+          } // Mid-tone
+          else {
+            bri = 50;
+            sat = 0;
+          }
+
+          // Add a hint of fluorescent tint to the reflection
+          const tintHue = (180 + p.sin(time) * 100) % 360;
+          p.fill(tintHue, sat, bri, 95);
 
           p.beginShape();
-          for (let a = 0; a < p.TWO_PI; a += 0.1) {
-            // Liquid blob physics simulation using noise
-            const noiseFactor = p.noise(
-              Math.cos(a) * 0.6 + 1,
-              Math.sin(a) * 0.6 + 1,
-              time + i * 0.02,
+          for (let a = 0; a < p.TWO_PI; a += 0.08) {
+            const noiseVal = p.noise(
+              Math.cos(a) * 0.8 + seed.length * 0.1,
+              Math.sin(a) * 0.8,
+              time * 0.4 + i * 0.03,
             );
-            const r = 130 + noiseFactor * 160;
+            const r = 140 + noiseVal * 220;
             const x = Math.cos(a) * r * t;
             const y = Math.sin(a) * r * t;
             p.vertex(x, y);
@@ -488,27 +506,38 @@ export const digitalStyles: ArtStyle[] = [
           p.endShape(p.CLOSE);
         }
 
-        // 3. Acid Symbols - Rotating
-        p.rotate(time * 0.5);
-        p.stroke(120, 100, 100, 70); // Neon Green
+        // 3. Fluorescent Accents (Toxic Green/Cyan overlays)
+        p.rotate(time * 0.3);
+        const accentHue = (120 + p.sin(time) * 30) % 360; // Shifting between Green and Cyan
+        p.stroke(accentHue, 100, 100, 80);
+        p.strokeWeight(2);
         p.noFill();
-        p.strokeWeight(1.5);
-        p.circle(0, 0, 320 + Math.sin(time * 2) * 15);
 
-        p.line(-180, 0, 180, 0);
-        p.line(0, -180, 0, 180);
-
-        // Dynamic glyphs
-        for (let j = 0; j < 4; j++) {
-          p.rotate(p.HALF_PI);
-          p.rect(140, 140, 12, 12);
-          if (p.frameCount % 60 < 30) {
-            p.fill(120, 100, 100, 50);
-            p.rect(140, 140, 6, 6);
-            p.noFill();
-          }
+        // Distorted outer rings
+        for (let r = 0; r < 3; r++) {
+          const radius = 350 + r * 20 + p.sin(time * 2) * 10;
+          p.ellipse(0, 0, radius, radius * 0.8);
         }
+
+        // Crosshairs/Decals
+        p.line(-220, 0, 220, 0);
+        p.line(0, -220, 0, 220);
+
+        // Glowing points
+        p.fill(accentHue, 100, 100);
+        p.circle(220, 0, 6);
+        p.circle(-220, 0, 6);
         p.pop();
+
+        // Scanline interference
+        p.stroke(0, 0, 100, 5);
+        p.strokeWeight(1);
+        p.line(
+          0,
+          (p.frameCount * 5) % p.height,
+          p.width,
+          (p.frameCount * 5) % p.height,
+        );
       };
       (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
     },
