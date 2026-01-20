@@ -1,19 +1,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-
-const POETIC_LOGS = [
-    "Searching for aesthetic archetypes...",
-    "正在检索审美原型...",
-    "Synchronizing fragmented memories...",
-    "Tracing golden ratios in the void...",
-    "正在提取潜意识模式...",
-    "Refining geometric logic...",
-    "正在重构艺术史碎片...",
-    "Awaiting the oracle's verdict...",
-];
+import { useTranslation } from 'react-i18next';
 
 const LoadingTerminal: React.FC = () => {
+    const { t } = useTranslation();
+    const POETIC_LOGS = t('loading.logs', { returnObjects: true }) as string[];
     const [logIndex, setLogIndex] = useState(0);
 
     useEffect(() => {
@@ -21,7 +13,7 @@ const LoadingTerminal: React.FC = () => {
             setLogIndex((prev) => (prev + 1) % POETIC_LOGS.length);
         }, 2500);
         return () => clearInterval(interval);
-    }, []);
+    }, [POETIC_LOGS.length]);
 
     return (
         <div className="fixed inset-0 z-50 bg-black flex flex-col justify-center px-6 md:px-24">
@@ -35,7 +27,7 @@ const LoadingTerminal: React.FC = () => {
                     <div className="space-y-4">
                         <div className="h-[1px] w-12 bg-white/50 animate-pulse" />
                         <h2 className="text-4xl font-serif text-white/30 animate-pulse">
-                            Synthesizing Final Form...
+                            {t('loading.synthesizing')}
                         </h2>
                     </div>
 

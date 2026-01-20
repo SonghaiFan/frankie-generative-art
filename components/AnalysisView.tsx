@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { AnalysisResult } from '../types';
 import { ArrowRight } from 'lucide-react';
 
@@ -11,6 +12,7 @@ interface AnalysisViewProps {
 }
 
 const AnalysisView: React.FC<AnalysisViewProps> = ({ analysis, onRespond, isLoading }) => {
+  const { t } = useTranslation();
   const [inputText, setInputText] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -32,7 +34,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ analysis, onRespond, isLoad
         {isLoading ? (
           <div className="flex flex-col items-start space-y-4">
              <div className="h-[1px] w-12 bg-white/50 animate-pulse" />
-             <h2 className="text-4xl font-serif text-white/30 animate-pulse">Constructing Profile...</h2>
+             <h2 className="text-4xl font-serif text-white/30 animate-pulse">{t('analysis.constructingProfile')}</h2>
           </div>
         ) : analysis ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-32 items-end">
@@ -40,7 +42,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ analysis, onRespond, isLoad
              {/* Left Column: Analysis */}
              <div className="space-y-12">
                 <div className="space-y-4">
-                    <span className="font-ui text-[10px] tracking-[0.3em] uppercase text-white/50 block">Archetype Identified</span>
+                    <span className="font-ui text-[10px] tracking-[0.3em] uppercase text-white/50 block">{t('analysis.archetypeIdentified')}</span>
                     <h1 className="text-6xl md:text-8xl font-serif text-white leading-none tracking-tight">
                         {analysis.archetype}
                     </h1>
@@ -69,7 +71,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ analysis, onRespond, isLoad
                         type="text" 
                         value={inputText}
                         onChange={(e) => setInputText(e.target.value)}
-                        placeholder="Type your response..."
+                        placeholder={t('analysis.placeholder')}
                         className="w-full bg-transparent border-b border-white/30 py-4 text-xl font-ui text-white placeholder-white/20 focus:outline-none focus:border-white transition-colors"
                         autoFocus
                      />

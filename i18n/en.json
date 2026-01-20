@@ -1,0 +1,55 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "retry": "Retry",
+    "close": "Close"
+  },
+  "hero": {
+    "systemReady": "SYSTEM READY",
+    "title": "P5 Generative Digital Art Archive",
+    "manifestLabel": "ARCHIVE_MANIFESTO",
+    "manifestText": "Explore the diversity of art styles through your choices. Let us transform your aesthetic preferences into a unique visual language.",
+    "systemState": "SYSTEM_STATE",
+    "waitingForInput": "Waiting for Input",
+    "phase": "PHASE: 01",
+    "coreLabel": "CORE"
+  },
+  "cabinet": {
+    "selection": "Selection",
+    "selected": "Selected",
+    "max": "Max",
+    "exploreArchive": "Explore Archive",
+    "synthesizeOracle": "Generate Art"
+  },
+  "analysis": {
+    "constructingProfile": "Constructing Profile...",
+    "archetypeIdentified": "Archetype Identified",
+    "placeholder": "Type your response...",
+    "fallbackArchetype": "Void Walker",
+    "fallbackPhilosophy": "In the ocean of data, you are searching for those forgotten anchors of meaning.",
+    "fallbackQuestion": "In this eternal search, do you anticipate the destination or the journey?"
+  },
+  "loading": {
+    "synthesizing": "Synthesizing Final Form...",
+    "logs": [
+      "Searching for aesthetic archetypes...",
+      "Retrieving aesthetic prototypes...",
+      "Synchronizing fragmented memories...",
+      "Tracing golden ratios in the void...",
+      "Extracting subconscious patterns...",
+      "Refining geometric logic...",
+      "Reconstructing art history fragments...",
+      "Awaiting the oracle's verdict..."
+    ]
+  },
+  "result": {
+    "aestheticSignature": "Aesthetic Signature",
+    "exportArchive": "Export Archive",
+    "initializeNew": "Initialize New"
+  },
+  "languageSwitcher": {
+    "chinese": "中文",
+    "english": "English"
+  }
+}

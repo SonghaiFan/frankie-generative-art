@@ -1,18 +1,21 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Download, RotateCcw } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import CabinetGrid from './components/CabinetGrid';
 import AnalysisView from './components/AnalysisView';
 import P5Renderer from './components/P5Renderer';
 import Spotlight from './components/Spotlight';
 import LoadingTerminal from './components/LoadingTerminal';
+import LanguageSwitcher from './components/LanguageSwitcher';
 
 import { GameState, UserInteraction, AnalysisResult, CreativeArtResult } from './types';
 import { analyzeUserStyle, generateCreativeArt } from './services/geminiService';
 import { PREDEFINED_CARDS } from './constants';
 
 const App: React.FC = () => {
+  const { t } = useTranslation();
   const [gameState, setGameState] = useState<GameState>(GameState.IDLE);
 
   // In the Cabinet grid flow, we select from predefined cards directly
@@ -50,9 +53,9 @@ const App: React.FC = () => {
       setAnalysis(result);
     } catch (e) {
       setAnalysis({
-        archetype: "虚空行者",
-        philosophy: "在数据的海洋中，你正在寻找那些被遗忘的意义锚点。",
-        followUpQuestion: "在这种永恒的寻找中，你更期待终点还是过程？"
+        archetype: t('analysis.fallbackArchetype'),
+        philosophy: t('analysis.fallbackPhilosophy'),
+        followUpQuestion: t('analysis.fallbackQuestion')
       });
     }
   };
@@ -109,7 +112,7 @@ const App: React.FC = () => {
 </head>
 <body>
   <div id="overlay">
-    <div class="meta">Aesthetic Signature</div>
+    <div class="meta">${t('result.aestheticSignature')}</div>
     <h1>${creativeResult.styleName}</h1>
     <p>${creativeResult.explanation}</p>
   </div>
@@ -130,6 +133,9 @@ const App: React.FC = () => {
 
   return (
     <main className="fixed inset-0 w-full h-full bg-black overflow-hidden text-[#d4d4d4] font-serif">
+
+      {/* Language Switcher */}
+      <LanguageSwitcher />
 
       {/* 
          Global Spotlight:
@@ -192,7 +198,7 @@ const App: React.FC = () => {
                       whileTap={{ scale: 0.9 }}
                       onClick={handleDownload}
                       className="flex items-center justify-center w-10 h-10 bg-white text-black shadow-lg transition-transform"
-                      title="Export Archive"
+                      title={t('result.exportArchive')}
                     >
                       <Download size={18} />
                     </motion.button>
@@ -204,7 +210,7 @@ const App: React.FC = () => {
                       whileTap={{ scale: 0.9 }}
                       onClick={resetGame}
                       className="flex items-center justify-center w-10 h-10 text-white border border-white/20 transition-all"
-                      title="Initialize New"
+                      title={t('result.initializeNew')}
                     >
                       <RotateCcw size={18} />
                     </motion.button>

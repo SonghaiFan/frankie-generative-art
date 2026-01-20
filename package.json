@@ -1,20 +1,25 @@
 {
-  "name": "art-archive-oracle",
+  "name": "p5-generative-art-archive",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "description": "P5.js generative digital art archive - explore and create unique visual expressions",
+  "keywords": ["p5js", "generative-art", "digital-art", "creative-coding", "react", "typescript"],
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
-    "lucide-react": "^0.562.0",
-    "react-dom": "^19.2.3",
-    "react": "^19.2.3",
     "@google/genai": "^1.37.0",
     "framer-motion": "^12.27.1",
-    "p5": "1.9.0"
+    "i18next": "^25.8.0",
+    "i18next-browser-languagedetector": "^8.2.0",
+    "lucide-react": "^0.562.0",
+    "p5": "1.9.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "react-i18next": "^16.5.3"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

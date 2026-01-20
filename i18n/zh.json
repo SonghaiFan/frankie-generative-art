@@ -1,0 +1,55 @@
+{
+  "common": {
+    "loading": "加载中...",
+    "error": "错误",
+    "retry": "重试",
+    "close": "关闭"
+  },
+  "hero": {
+    "systemReady": "系统就绪",
+    "title": "P5 生成艺术档案",
+    "manifestLabel": "档案宣言",
+    "manifestText": "通过你的选择，探索艺术风格的多样性。让我们将你的审美偏好转化为独特的视觉语言。",
+    "systemState": "系统状态",
+    "waitingForInput": "等待输入",
+    "phase": "阶段：01",
+    "coreLabel": "核心"
+  },
+  "cabinet": {
+    "selection": "选择",
+    "selected": "已选",
+    "max": "最多",
+    "exploreArchive": "探索档案",
+    "synthesizeOracle": "生成艺术"
+  },
+  "analysis": {
+    "constructingProfile": "正在构建档案...",
+    "archetypeIdentified": "原型已识别",
+    "placeholder": "输入你的回应...",
+    "fallbackArchetype": "虚空行者",
+    "fallbackPhilosophy": "在数据的海洋中，你正在寻找那些被遗忘的意义锚点。",
+    "fallbackQuestion": "在这种永恒的寻找中，你更期待终点还是过程？"
+  },
+  "loading": {
+    "synthesizing": "正在合成最终形态...",
+    "logs": [
+      "正在搜索审美原型...",
+      "正在检索审美原型...",
+      "正在同步碎片记忆...",
+      "正在追踪虚空中的黄金比例...",
+      "正在提取潜意识模式...",
+      "正在精炼几何逻辑...",
+      "正在重构艺术史碎片...",
+      "等待神谕的裁决..."
+    ]
+  },
+  "result": {
+    "aestheticSignature": "美学签名",
+    "exportArchive": "导出档案",
+    "initializeNew": "初始化新档案"
+  },
+  "languageSwitcher": {
+    "chinese": "中文",
+    "english": "English"
+  }
+}

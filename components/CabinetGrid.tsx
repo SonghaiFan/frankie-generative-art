@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { ArtCardData } from '../types';
 import GenerativeArt from './GenerativeArt';
 import { ArrowRight, Sparkles } from 'lucide-react';
@@ -11,6 +12,7 @@ interface CabinetGridProps {
 }
 
 const CabinetGrid: React.FC<CabinetGridProps> = ({ cards, onSelectionComplete }) => {
+  const { t } = useTranslation();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [isAtTop, setIsAtTop] = useState(true);
@@ -45,25 +47,25 @@ const CabinetGrid: React.FC<CabinetGridProps> = ({ cards, onSelectionComplete })
             style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
 
           {/* Technical Corner Markers */}
-          <div className="absolute top-0 left-0 border-r border-b border-white/10 px-3 py-1.5 font-ui text-[8px] tracking-[0.2em] uppercase text-white/20">A-101 // CORE</div>
-          <div className="absolute top-0 right-0 border-l border-b border-white/10 px-3 py-1.5 font-ui text-[8px] tracking-[0.2em] uppercase text-white/20">PHASE: 01</div>
+          <div className="absolute top-0 left-0 border-r border-b border-white/10 px-3 py-1.5 font-ui text-[8px] tracking-[0.2em] uppercase text-white/20">A-101 // {t('hero.coreLabel')}</div>
+          <div className="absolute top-0 right-0 border-l border-b border-white/10 px-3 py-1.5 font-ui text-[8px] tracking-[0.2em] uppercase text-white/20">{t('hero.phase')}</div>
           <div className="absolute bottom-0 left-0 border-r border-t border-white/10 px-3 py-1.5 font-ui text-[8px] tracking-[0.2em] uppercase text-white/20">LAT: 40.7128 N</div>
           <div className="absolute bottom-0 right-0 border-l border-t border-white/10 px-3 py-1.5 font-ui text-[8px] tracking-[0.2em] uppercase text-white/20">LNG: 74.0060 W</div>
 
           {/* Main Title Block */}
           <div className="relative z-10">
             <div className="flex flex-col border-l-2 border-white pl-8 md:pl-12">
-              <span className="font-ui text-[10px] tracking-[0.8em] uppercase text-white/30 mb-4">SYSTEM READY</span>
-              <h1 className="text-[12vw] md:text-[7.5vw] font-serif leading-[0.85] text-white tracking-widest uppercase mb-12">
-                Art Archive<br />Oracle
+              <span className="font-ui text-[10px] tracking-[0.8em] uppercase text-white/30 mb-4">{t('hero.systemReady')}</span>
+              <h1 className="text-[12vw] md:text-[7.5vw] font-serif leading-[0.85] text-white tracking-widest uppercase mb-12" style={{ whiteSpace: 'pre-line' }}>
+                {t('hero.title')}
               </h1>
 
               <div className="max-w-[320px] font-serif italic text-white/30 text-[11px] tracking-widest leading-loose border-t border-white/10 pt-8">
                 <div className="font-ui text-[7px] tracking-[0.4em] mb-4 text-white/20 uppercase flex items-center gap-2">
                   <span className="w-1 h-1 bg-white/20" />
-                  ARCHIVE_MANIFESTO
+                  {t('hero.manifestLabel')}
                 </div>
-                "The void is not an absence, but a selective frequency. This machine translates your subconscious resonance into aesthetic geometry."
+                "{t('hero.manifestText')}"
               </div>
             </div>
           </div>
@@ -74,10 +76,10 @@ const CabinetGrid: React.FC<CabinetGridProps> = ({ cards, onSelectionComplete })
               <div
                 className="w-full h-40 border border-white/10 flex flex-col items-center justify-center pointer-events-none opacity-40"
               >
-                <div className="font-ui text-[7px] tracking-[0.4em] mb-4 text-white/20 uppercase">SYSTEM_STATE</div>
+                <div className="font-ui text-[7px] tracking-[0.4em] mb-4 text-white/20 uppercase">{t('hero.systemState')}</div>
                 <div className="flex items-center gap-3">
                   <div className="w-1.5 h-1.5 bg-white/20 animate-pulse" />
-                  <span className="font-ui text-[9px] tracking-[0.4em] uppercase text-white/40">Waiting for Input</span>
+                  <span className="font-ui text-[9px] tracking-[0.4em] uppercase text-white/40">{t('hero.waitingForInput')}</span>
                 </div>
               </div>
             </div>
@@ -207,7 +209,7 @@ const CabinetGrid: React.FC<CabinetGridProps> = ({ cards, onSelectionComplete })
                 </div>
                 <div className="h-4 w-px bg-white/10" />
                 <span className="font-ui text-[9px] tracking-[0.4em] uppercase text-white/20">
-                  {selectedIds.length}/03
+                  {selectedIds.length}/3
                 </span>
               </div>
 
@@ -221,7 +223,7 @@ const CabinetGrid: React.FC<CabinetGridProps> = ({ cards, onSelectionComplete })
                   }
                 }}
                 className={`group relative flex items-center justify-center w-20 h-14 transition-all duration-500 ${isComplete ? 'bg-white text-black' : 'bg-transparent text-white/40'}`}
-                title={isComplete ? "Synthesize Oracle" : "Explore Archive"}
+                title={isComplete ? t('cabinet.synthesizeOracle') : t('cabinet.exploreArchive')}
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-black/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                 <motion.div
@@ -232,6 +234,7 @@ const CabinetGrid: React.FC<CabinetGridProps> = ({ cards, onSelectionComplete })
                 >
                   {isComplete ? <Sparkles size={18} /> : <ArrowRight size={18} />}
                 </motion.div>
+                <span className="sr-only">{isComplete ? t('cabinet.synthesizeOracle') : t('cabinet.exploreArchive')}</span>
               </button>
             </div>
           </motion.div>
