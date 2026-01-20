@@ -409,7 +409,8 @@ export const popStyles: ArtStyle[] = [
       // Improved Conceptual Art: System-driven logic, Blueprint aesthetic.
       const getSeedNum = (s: string) => {
         let h = 0;
-        for (let i = 0; i < s.length; i++) h = Math.imul(31, h) + s.charCodeAt(i) | 0;
+        for (let i = 0; i < s.length; i++)
+          h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
         return Math.abs(h);
       };
 
@@ -429,7 +430,7 @@ export const popStyles: ArtStyle[] = [
           points.push({
             x: p.random(p.width * 0.15, p.width * 0.85),
             y: p.random(p.height * 0.15, p.height * 0.85),
-            label: `P-${i}`
+            label: `P-${i}`,
           });
         }
       };
@@ -446,7 +447,7 @@ export const popStyles: ArtStyle[] = [
 
         // 2. Logical Framework
         p.noFill();
-        
+
         // Primary Axis
         p.stroke(200, 70, 60, 30); // Technical Blue
         p.line(p.width * 0.1, p.height * 0.1, p.width * 0.9, p.height * 0.1);
@@ -467,7 +468,7 @@ export const popStyles: ArtStyle[] = [
             p.stroke(0, 0, 20, 60);
             p.strokeWeight(1.5);
             p.line(pt.x, pt.y, next.x, next.y);
-            
+
             // Midpoint marker
             let midX = (pt.x + next.x) / 2;
             let midY = (pt.y + next.y) / 2;
@@ -481,11 +482,15 @@ export const popStyles: ArtStyle[] = [
           p.noStroke();
           p.rectMode(p.CENTER);
           p.rect(pt.x, pt.y, 6, 6);
-          
+
           // Geometric Radius (Invisible influence)
           p.noFill();
           p.stroke(200, 50, 80, 15);
-          p.circle(pt.x, pt.y, p.dist(pt.x, pt.y, p.width/2, p.height/2) * 0.5);
+          p.circle(
+            pt.x,
+            pt.y,
+            p.dist(pt.x, pt.y, p.width / 2, p.height / 2) * 0.5,
+          );
         });
 
         // 4. Abstract "Dimensions" (No text, just indicators)
@@ -493,9 +498,9 @@ export const popStyles: ArtStyle[] = [
         p.strokeWeight(1);
         const margin = 50;
         p.line(margin, p.height - margin, p.width - margin, p.height - margin); // Bottom scale
-        for(let i=0; i<10; i++) {
-          let x = p.map(i, 0, 9, margin, p.width-margin);
-          p.line(x, p.height-margin-5, x, p.height-margin+5);
+        for (let i = 0; i < 10; i++) {
+          let x = p.map(i, 0, 9, margin, p.width - margin);
+          p.line(x, p.height - margin - 5, x, p.height - margin + 5);
         }
 
         // 5. Focal "Logic Block"
@@ -503,7 +508,12 @@ export const popStyles: ArtStyle[] = [
         p.fill(0, 0, 20, 10);
         p.rect(p.width * 0.8, p.height * 0.2, 100, 100);
         p.stroke(0, 0, 0, 50);
-        p.line(p.width * 0.8 - 40, p.height * 0.2, p.width * 0.8 + 40, p.height * 0.2);
+        p.line(
+          p.width * 0.8 - 40,
+          p.height * 0.2,
+          p.width * 0.8 + 40,
+          p.height * 0.2,
+        );
       };
 
       (p as any).customResize = (w: number, h: number) => {
