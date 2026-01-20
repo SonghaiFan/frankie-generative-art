@@ -179,7 +179,7 @@ const App: React.FC = () => {
 
                 {/* Final Overlay UI */}
                 <div className="relative z-10 w-full h-full pointer-events-none flex flex-col justify-end p-8 md:p-16 bg-gradient-to-t from-black via-black/50 to-transparent">
-                  <div className="max-w-xl pointer-events-auto">
+                  <div className="max-w-xl pointer-events-none">
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -195,7 +195,7 @@ const App: React.FC = () => {
                         {creativeResult.explanation}
                       </p>
 
-                      <div className="flex items-center gap-6">
+                      <div className="flex items-center gap-6 pointer-events-auto">
                         <button
                           onClick={handleDownload}
                           className="flex items-center gap-2 px-6 py-3 border border-white/30 rounded-full hover:bg-white hover:text-black transition-colors group"
