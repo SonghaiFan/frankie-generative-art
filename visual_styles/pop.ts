@@ -70,24 +70,37 @@ export const popStyles: ArtStyle[] = [
         const w = p.width / 2;
         const h = p.height / 2;
         const colors = [
-          [320, 90, 90],
-          [190, 90, 90],
-          [50, 90, 100],
-          [100, 80, 80],
+          [320, 90, 90], // Hot Pink
+          [190, 90, 90], // Cyan
+          [50, 90, 100], // Yellow
+          [100, 80, 80], // Green
         ];
 
         // 绘制四个面板
         [0, 1, 2, 3].forEach((i) => {
           const cx = (i % 2) * w;
           const cy = Math.floor(i / 2) * h;
-          p.fill(colors[i][0], colors[i][1], colors[i][2]);
+          const bg = colors[i];
+          const fg = colors[(i + 1) % 4]; // 错位颜色
+
+          p.fill(bg[0], bg[1], bg[2]);
           p.rect(cx, cy, w, h);
 
-          // Draw "Marilyn" lips or object
-          p.fill(0, 0, 100);
-          p.ellipse(cx + w / 2, cy + h / 2, 100, 50);
-          p.fill(0, 100, 100);
-          p.ellipse(cx + w / 2, cy + h / 2, 100, 20); // Lips
+          // 绘制“被挪用”的图标（一个简单的罐头形状）
+          p.push();
+          p.translate(cx + w / 2, cy + h / 2);
+
+          // 简单的丝网印刷错位效果
+          const shiftX = Math.sin(p.frameCount * 0.05 + i) * 5;
+          const shiftY = Math.cos(p.frameCount * 0.05 + i) * 5;
+
+          p.fill(0, 0, 10); // 黑色轮廓底层
+          p.rect(shiftX, shiftY, 60, 90, 10);
+
+          p.fill(fg[0], fg[1], fg[2]); // 亮色顶层
+          p.rect(0, 0, 60, 90, 10);
+
+          p.pop();
         });
       };
       (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);

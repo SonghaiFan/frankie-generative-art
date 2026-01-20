@@ -137,41 +137,50 @@ export const painterlyStyles: ArtStyle[] = [
     prompt: "你渴望精确的控制，还是渴望彻底的释放？",
     styleTags: ["Chaos", "Energy", "Texture"],
     sketch: (p: p5, seed: string) => {
+      let splatters: any[] = [];
       p.setup = () => {
         p.createCanvas(p.windowWidth, p.windowHeight);
         p.colorMode(p.HSB, 360, 100, 100, 100);
-        p.background(40, 10, 95);
+        p.background(40, 10, 90);
       };
       p.draw = () => {
-        // 快速且混乱的笔触
-        const moves = 5;
-        for (let i = 0; i < moves; i++) {
-          const x1 = p.random(p.width);
-          const y1 = p.random(p.height);
-          const x2 = x1 + p.random(-200, 200);
-          const y2 = y1 + p.random(-200, 200);
-
-          p.strokeWeight(p.random(1, 10));
-          p.stroke(0, 0, 10, p.random(50, 100)); // Black ink
-          if (p.random() > 0.8) {
-            p.stroke(0, 80, 80, 80); // Occasional Color
-          }
-
-          // Dripping effect
-          p.line(x1, y1, x2, y2);
-
-          // Splatter
-          if (p.random() > 0.5) {
-            p.noStroke();
-            p.fill(0, 0, 10, 80);
-            const r = p.random(2, 10);
-            p.circle(x2, y2, r);
-          }
+        if (p.random() > 0.9) {
+          splatters.push({
+            x: p.random(p.width),
+            y: p.random(p.height),
+            vx: p.random(-10, 10),
+            vy: p.random(-10, 10),
+            size: p.random(10, 30),
+            hue: p.random(360),
+            life: 20,
+          });
         }
+
+        splatters.forEach((s, i) => {
+          if (s.life > 0) {
+            p.noStroke();
+            p.fill(s.hue, 80, 80);
+            p.circle(s.x, s.y, s.size);
+
+            s.x += s.vx;
+            s.y += s.vy;
+            s.size *= 0.9;
+            s.life--;
+
+            // Stringy paint look
+            if (s.life < 18) {
+              p.stroke(s.hue, 80, 80);
+              p.strokeWeight(s.size);
+              p.line(s.x, s.y, s.x - s.vx, s.y - s.vy);
+            }
+          } else {
+            splatters.splice(i, 1);
+          }
+        });
       };
       (p as any).customResize = (w: number, h: number) => {
         p.resizeCanvas(w, h);
-        p.background(40, 10, 95);
+        p.background(40, 10, 90);
       };
     },
   },

@@ -28,9 +28,14 @@ export const geometryStyles: ArtStyle[] = [
 
         for (let i = 0; i < cols; i++) {
           for (let j = 0; j < rows; j++) {
-            p.rect(i * w + 10, j * h + 10, w - 20, h - 20);
-            // 像瓶架一样冷漠的重复
-            p.line(i * w + 10, j * h + 10, i * w + w - 10, j * h + h - 10);
+            p.push();
+            p.translate(i * w + w / 2, j * h + h / 2);
+            // 每一个都在旋转，像流水线
+            p.rotate(p.frameCount * 0.02 + (i + j) * 0.5);
+            p.rectMode(p.CENTER);
+            p.rect(0, 0, w * 0.5, w * 0.5); // 简单的方框
+            p.line(0, -w * 0.25, 0, w * 0.25);
+            p.pop();
           }
         }
       };
