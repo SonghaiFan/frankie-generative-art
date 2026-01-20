@@ -942,4 +942,126 @@ export const geometryStyles: ArtStyle[] = [
       (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
     },
   },
+  {
+    id: "waveform_structuralism",
+    name: "Waveform Structuralism (波形结构主义)",
+    era: "Digital Contemporary",
+    driver: "p5",
+    description: "通过正弦波与方波的几何重叠，探索离散信号中的秩序与节律。",
+    prompt: "在数学波形的律动中，你是否听到了数字生命的呼吸？",
+    styleTags: ["Waves", "Mathematical", "Rhythmic"],
+    sketch: (p: p5, seed: string) => {
+      let colors = ["#3ec1d3", "#f6f7d7", "#f6f7d7", "#ff165d"];
+      let mySeed: number;
+
+      const generateColor = () => {
+        let myColor = p.color(p.random(colors));
+        myColor.setAlpha(p.random(50, 100));
+        return myColor;
+      };
+
+      const drawWave = (
+        xpos: number,
+        ypos: number,
+        freq: number,
+        amp: number,
+        ang: number,
+        step: number,
+        len: number,
+        thick: number,
+      ) => {
+        p.push();
+        p.translate(xpos, ypos);
+        p.rotate(ang);
+        const strokeCol = generateColor();
+        const fillCol = generateColor();
+        p.strokeWeight(thick);
+        p.stroke(strokeCol);
+        p.fill(fillCol);
+        p.noFill();
+        const phase = 0.025 * p.frameCount;
+
+        p.beginShape();
+        let currentAmp = amp;
+        for (let xx = -len / 2; xx <= len / 2; xx += step) {
+          currentAmp -= 1;
+          const yy = currentAmp * Math.cos(xx * freq + phase);
+          p.curveVertex(xx, yy);
+        }
+        p.endShape();
+        p.pop();
+      };
+
+      const drawSquareWave = (
+        xpos: number,
+        ypos: number,
+        freq: number,
+        amp: number,
+        ang: number,
+        step: number,
+        len: number,
+        thick: number,
+      ) => {
+        p.push();
+        p.translate(xpos, ypos);
+        p.rotate(ang);
+        const strokeCol = generateColor();
+        p.strokeWeight(thick);
+        p.stroke(strokeCol);
+        p.noFill();
+        const phase = 0.025 * p.frameCount;
+
+        p.beginShape();
+        let prevY: number | null = null;
+        for (let xx = -len / 2; xx <= len / 2; xx += step) {
+          const s = Math.cos(xx * freq + phase);
+          const yy = s >= 0 ? amp : -amp;
+          if (prevY === null) {
+            p.vertex(xx, yy);
+          } else {
+            if (yy !== prevY) {
+              p.vertex(xx, prevY);
+              p.vertex(xx, yy);
+            } else {
+              p.vertex(xx, yy);
+            }
+          }
+          prevY = yy;
+        }
+        p.endShape();
+        p.pop();
+      };
+
+      p.setup = () => {
+        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.rectMode(p.CENTER);
+        p.ellipseMode(p.CENTER);
+        p.strokeCap(p.SQUARE);
+        p.colorMode(p.HSB, 360, 100, 100, 100);
+        mySeed = p.floor(p.random(1, 100000));
+        if (seed) p.randomSeed(parseInt(seed) || 0);
+      };
+
+      p.draw = () => {
+        if (mySeed) p.randomSeed(mySeed);
+        p.fill(0);
+        p.square(p.width / 2, p.height / 2, Math.max(p.width, p.height) * 2);
+
+        let mySize = 100;
+        for (let xx = mySize; xx <= p.width - mySize; xx += mySize) {
+          for (let yy = mySize; yy <= p.height - mySize; yy += mySize) {
+            let amp = mySize / 4;
+            let ang = p.random([0, p.PI / 2, p.PI, (3 * p.PI) / 2]);
+            let step = p.random(1, 6);
+            let len = mySize * 0.75;
+            let thick = 2;
+            let freq = p.random(1, 3);
+            drawSquareWave(xx, yy, freq, amp, ang, step, len, thick);
+            drawWave(xx, yy, freq, amp, ang, step, len, thick);
+          }
+        }
+      };
+      (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
+    },
+  },
 ];

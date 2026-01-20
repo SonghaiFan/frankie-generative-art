@@ -1,10 +1,13 @@
-# P5 Generative Digital Art Archive | P5 生成艺术档案
+# P5 Generative Digital Art Archive | P5 生成式艺术档案
+
 [English](#english) | [中文](#chinese)
 
 ## 🌟 Overview
+
 **Art Archive Oracle** is an immersive, generative digital art experience built with P5.js and powered by Gemini AI. It explores the intersection of art history, personal aesthetics, and algorithmic creativity. Users navigate through an architectural archive of art styles, select their preferred "anchors of meaning," and witness the synthesis of a unique generative artwork tailored to their subconscious patterns.
 
 ### ✨ Key Features
+
 - **Immersive Hero Section**: Featuring dynamic, interactive P5.js backgrounds randomly selected from a curated archive.
 - **Architectural Grid Archive**: A meticulously designed interface to explore diverse art styles from Minimalism to Pop Art.
 - **AI-Powered Analysis**: Uses Gemini AI to analyze user selections and identify their aesthetic "archetype."
@@ -13,6 +16,7 @@
 - **Bilingual Interface**: Seamless support for Chinese (Default) and English.
 
 ### 🛠 Tech Stack
+
 - **Framework**: React 19 + Vite
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS + Framer Motion
@@ -44,9 +48,11 @@
 <a name="chinese"></a>
 
 ## 🌟 概述
-**P5 生成艺术档案** 是一个沉浸式的生成式数字艺术体验项目。它结合了 P5.js 的视觉表现力与 Gemini AI 的智能分析，探索艺术史、个人审美与算法创作的交汇点。用户在建筑感的艺术风格档案中穿行，选择心中所属的“意义锚点”，最终见证一段与其潜意识模式契合的独特生成艺术代码的诞生。
+
+**P5 生成式艺术档案** 是一个沉浸式的生成式数字艺术体验项目。它结合了 P5.js 的视觉表现力与 Gemini AI 的智能分析，探索艺术史、个人审美与算法创作的交汇点。用户在建筑感的艺术风格档案中穿行，选择心中所属的“意义锚点”，最终见证一段与其潜意识模式契合的独特生成艺术代码的诞生。
 
 ### ✨ 核心特性
+
 - **沉浸式首屏**: 动态且可交互的 P5.js 背景，从精心挑选的档案库中随机抽取。
 - **建筑感档案网格**: 精心设计的界面，涵盖从极简主义到波普艺术的多种艺术风格。
 - **AI 审美分析**: 利用 Gemini AI 分析用户的选择，识别其美学“原型”。
@@ -55,6 +61,7 @@
 - **双语界面**: 完美支持中文（默认）与英文切换。
 
 ### 🛠 技术栈
+
 - **框架**: React 19 + Vite
 - **语言**: TypeScript
 - **样式**: Tailwind CSS + Framer Motion

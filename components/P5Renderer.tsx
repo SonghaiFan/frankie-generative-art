@@ -39,9 +39,20 @@ const P5Renderer: React.FC<P5RendererProps> = ({ code, styleName, explanation })
             .meta { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.3em; margin-bottom: 0.5rem; opacity: 0.7; }
             h1 { font-size: 3.5rem; margin: 0 0 1rem 0; font-weight: 200; letter-spacing: -0.02em; line-height: 1.1; }
             p { font-size: 1rem; line-height: 1.6; opacity: 0.9; margin: 0; padding-left: 1rem; border-left: 1px solid rgba(255,255,255,0.5); }
+            .gradient-drop {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 60%;
+                background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.5) 40%, rgba(0, 0, 0, 0) 100%);
+                pointer-events: none;
+                z-index: 90;
+            }
           </style>
         </head>
         <body>
+          <div class="gradient-drop"></div>
           ${styleName ? `
           <div id="overlay">
             <div class="meta">Aesthetic Signature</div>
