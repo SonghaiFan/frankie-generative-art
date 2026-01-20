@@ -12,10 +12,10 @@ interface ArtArchiveProps {
 }
 
 // Available art oracle HTML files
-const artOracleModules = import.meta.glob('../public/art_oracle_*.html', { 
-  eager: true, 
-  query: '?url', 
-  import: 'default' 
+const artOracleModules = import.meta.glob('../public/art_oracle_*.html', {
+  eager: true,
+  query: '?url',
+  import: 'default'
 });
 const artOracleFiles = Object.values(artOracleModules)
   .map((url) => (typeof url === 'string' ? url.split('/').pop() : ''))
