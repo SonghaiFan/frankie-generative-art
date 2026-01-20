@@ -53,16 +53,21 @@ export const popStyles: ArtStyle[] = [
     },
   },
   {
-    id: "appropriation",
-    name: "Appropriation (挪用)",
-    era: "Postmodernism",
+    id: "pop_art",
+    name: "Pop Art (波普艺术)",
+    era: "1950s-1960s",
     driver: "p5",
-    description: "借用已有的图像或物品，通过新的语境赋予其新的含义。",
-    prompt: "原创是一种执念吗？如果在旧物上能开出新花，为何不可？",
-    styleTags: ["Collage", "Layered", "Geometric"],
+    description: "通过符号的极端简化与高饱和对比，消解视觉层次并重构大众美学。",
+    prompt: "当符号被削减到极致，它是否依然拥有足以被辨认的力量？",
+    styleTags: ["Minimalist", "Abstract Symbol", "Repetition"],
     sketch: (p: p5, seed: string) => {
-      // Andy Warhol Silk Screen Effect
-      // Draw the same "icon" multiple times with offset colors
+      // Pop Art: 2x2 Screenprint Grid with Misaligned Symbols
+      const getSeedNum = (s: string) => {
+        let h = 0;
+        for (let i = 0; i < s.length; i++)
+          h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+        return Math.abs(h);
+      };
 
       p.setup = () => {
         p.createCanvas(p.windowWidth, p.windowHeight);
@@ -70,65 +75,165 @@ export const popStyles: ArtStyle[] = [
         p.noStroke();
       };
 
-      const drawIcon = (
-        x: number,
-        y: number,
-        w: number,
-        h: number,
-        colors: number[][],
-      ) => {
-        // Background
-        p.fill(colors[0][0], colors[0][1], colors[0][2]);
-        p.rect(x, y, w, h);
+      p.draw = () => {
+        p.randomSeed(getSeedNum(seed));
+        const w = p.width / 2;
+        const h = p.height / 2;
+        const colors = [
+          [320, 90, 90], // Hot Pink
+          [190, 90, 90], // Cyan
+          [50, 90, 100], // Yellow
+          [100, 80, 80]  // Green
+        ];
 
+        // Draw four panels
+        [0, 1, 2, 3].forEach(i => {
+          const cx = (i % 2) * w;
+          const cy = Math.floor(i / 2) * h;
+          const bg = colors[i];
+          const fg = colors[(i + 1) % 4]; // Offset color
+
+          p.fill(bg[0], bg[1], bg[2]);
+          p.rect(cx, cy, w, h);
+
+          // Draw "Appropriated" icon (a simple can shape)
+          p.push();
+          p.translate(cx + w / 2, cy + h / 2);
+
+          // Simple screenprint offset effect
+          const shiftX = Math.sin(p.frameCount * 0.05 + i) * 5;
+          const shiftY = Math.cos(p.frameCount * 0.05 + i) * 5;
+
+          p.fill(0, 0, 10); // Black outline base layer
+          p.rectMode(p.CENTER);
+          p.rect(shiftX, shiftY, 60, 90, 10);
+
+          p.fill(fg[0], fg[1], fg[2]); // Bright top layer
+          p.rect(0, 0, 60, 90, 10);
+
+          p.pop();
+        });
+      };
+
+      (p as any).customResize = (w: number, h: number) => {
+        p.resizeCanvas(w, h);
+      };
+    },
+  },
+  {
+    id: "appropriation",
+    name: "Appropriation (挪用艺术)",
+    era: "1970s-Present",
+    driver: "p5",
+    description: "利用剪贴报纸、手稿和历史图像，在重叠的语境中剥离原创的权威性。",
+    prompt: "当文字被剪碎，意义是否也在拼贴中获得了新生？",
+    styleTags: ["Collage", "Typography", "Historical"],
+    sketch: (p: p5, seed: string) => {
+      // Appropriation: Synthetic Collage inspired by Analytical Cubism
+      const getSeedNum = (s: string) => {
+        let h = 0;
+        for (let i = 0; i < s.length; i++)
+          h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+        return Math.abs(h);
+      };
+
+      const tornPaper = (x: number, y: number, w: number, h: number, col: any) => {
         p.push();
-        p.translate(x + w / 2, y + h / 2);
-
-        // "Face" or "Object" silhouette
-        // Hair/Back
-        p.fill(colors[1][0], colors[1][1], colors[1][2]);
-        p.arc(0, -h * 0.1, w * 0.7, h * 0.7, p.PI, 0);
-        p.rect(-w * 0.35, -h * 0.1, w * 0.7, h * 0.5);
-
-        // Face Skin
-        p.fill(colors[2][0], colors[2][1], colors[2][2]); // Skin tone usually pinkish
-        p.ellipse(0, h * 0.1, w * 0.5, h * 0.6);
-
-        // Eyes/Lips Overlay (High contrast)
-        p.fill(colors[3][0], colors[3][1], colors[3][2]);
-        p.ellipse(-w * 0.1, h * 0.05, w * 0.12, h * 0.05); // Eye L
-        p.ellipse(w * 0.1, h * 0.05, w * 0.12, h * 0.05); // Eye R
-        p.ellipse(0, h * 0.25, w * 0.2, h * 0.05); // Mouth
+        p.fill(col);
+        p.noStroke();
+        p.beginShape();
+        const steps = 15;
+        for (let i = 0; i <= steps; i++) p.vertex(x + (w / steps) * i, y + p.random(-3, 3));
+        for (let i = 0; i <= steps; i++) p.vertex(x + w + p.random(-3, 3), y + (h / steps) * i);
+        for (let i = steps; i >= 0; i--) p.vertex(x + (w / steps) * i, y + h + p.random(-3, 3));
+        for (let i = steps; i >= 0; i--) p.vertex(x + p.random(-3, 3), y + (h / steps) * i);
+        p.endShape(p.CLOSE);
         p.pop();
       };
 
-      p.draw = () => {
-        const cols = 2;
-        const rows = 2;
-        const cellW = p.width / cols;
-        const cellH = p.height / rows;
-
-        // Random palettes for each cell, changing slowly
-        if (p.frameCount % 60 === 0 || p.frameCount === 1) {
-          // p.background(0);
-        }
-
-        let seedVal = Math.floor(p.frameCount / 120);
-        p.randomSeed(seedVal);
-
-        for (let j = 0; j < rows; j++) {
-          for (let i = 0; i < cols; i++) {
-            // Generate wild pop palette
-            const c1 = [p.random(360), p.random(60, 100), p.random(80, 100)]; // BG
-            const c2 = [p.random(360), p.random(60, 100), p.random(30, 80)]; // Hair
-            const c3 = [p.random(330, 30), p.random(20, 60), 95]; // Skin (Pinkish range)
-            const c4 = [p.random(360), 100, 60]; // Features
-
-            drawIcon(i * cellW, j * cellH, cellW, cellH, [c1, c2, c3, c4]);
-          }
+      const drawTextLines = (x: number, y: number, w: number, lines: number) => {
+        p.stroke(0, 0, 10, 50);
+        p.strokeWeight(1.2);
+        for (let i = 0; i < lines; i++) {
+          const ly = y + i * 7;
+          p.line(x, ly, x + w * p.random(0.7, 1), ly);
         }
       };
-      (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
+
+      p.setup = () => {
+        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.colorMode(p.HSB, 360, 100, 100, 100);
+        p.noLoop();
+      };
+
+      p.draw = () => {
+        p.randomSeed(getSeedNum(seed));
+        p.background(40, 5, 90); // Muted paper background
+
+        const cx = p.width / 2;
+        const cy = p.height / 2;
+
+        // 1. Charcoal sketch lines
+        p.stroke(0, 0, 20, 40);
+        p.strokeWeight(1);
+        for (let i = 0; i < 10; i++) {
+          p.line(p.random(p.width), 0, p.random(p.width), p.height);
+          p.line(0, p.random(p.height), p.width, p.random(p.height));
+        }
+
+        // 2. Layered fragments
+        for (let i = 0; i < 14; i++) {
+          p.push();
+          p.translate(cx + p.random(-250, 250), cy + p.random(-250, 250));
+          p.rotate(p.random(-0.3, 0.3));
+
+          const type = p.floor(p.random(4));
+          if (type === 0) {
+            // Newspaper clipping
+            tornPaper(0, 0, p.random(120, 200), p.random(150, 300), p.color(45, 10, 85));
+            drawTextLines(15, 20, 100, 22);
+          } else if (type === 1) {
+            // Wood/Charcoal block
+            tornPaper(0, 0, p.random(60, 100), p.random(200, 450), p.color(30, 30, 30));
+          } else if (type === 2) {
+            // Sheet music / Grid
+            tornPaper(0, 0, p.random(150, 250), p.random(100, 180), p.color(0, 0, 95));
+            for (let j = 0; j < 6; j++) {
+              p.stroke(0, 0, 0, 30);
+              p.line(10, 15 + j * 12, 130, 15 + j * 12);
+            }
+          } else {
+            // Muted Color accent
+            const hue = p.random() > 0.5 ? 100 : 20;
+            tornPaper(0, 0, p.random(80, 120), p.random(100, 250), p.color(hue, 40, 45));
+          }
+          p.pop();
+        }
+
+        // 3. Central focus Typography
+        p.push();
+        p.translate(cx + p.random(-50, 50), cy + p.random(-50, 50));
+        p.fill(0, 0, 10);
+        p.textAlign(p.CENTER, p.CENTER);
+        p.textSize(p.random(60, 100));
+        p.textFont("serif");
+        p.textStyle(p.BOLD);
+        const headers = ["FIGARO", "JOURNAL", "LA PRESSE", "VIREUX"];
+        p.text(p.random(headers), 0, 0);
+        p.pop();
+
+        // 4. Subtle center structures
+        p.noFill();
+        p.stroke(0, 0, 0, 80);
+        p.strokeWeight(2.5);
+        p.arc(cx, cy, 350, 250, p.QUARTER_PI, p.PI);
+        p.line(cx - 100, cy + 50, cx + 180, cy - 30);
+      };
+
+      (p as any).customResize = (w: number, h: number) => {
+        p.resizeCanvas(w, h);
+        p.redraw();
+      };
     },
   },
   {
@@ -457,10 +562,10 @@ export const popStyles: ArtStyle[] = [
         points.forEach((pt, i) => {
           // Extension lines to axes
           p.stroke(0, 0, 80);
-          p.setLineDash([5, 5]);
+          (p as any).drawingContext.setLineDash([5, 5]);
           p.line(pt.x, pt.y, pt.x, p.height * 0.1);
           p.line(pt.x, pt.y, p.width * 0.1, pt.y);
-          p.setLineDash([]);
+          (p as any).drawingContext.setLineDash([]);
 
           // Connection to next point (The Path)
           if (i < points.length - 1) {

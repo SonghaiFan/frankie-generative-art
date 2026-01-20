@@ -11,52 +11,59 @@ export const painterlyStyles: ArtStyle[] = [
     prompt: "如果完全放弃思考，你的手会画出什么？",
     styleTags: ["Chaos", "Fluid", "Scribble"],
     sketch: (p: p5, seed: string) => {
-      // Automatism / Surrealist Drawing
-      // Fluid, continuous lines guided by noise, simulating "automatic writing"
-      let agents: any[] = [];
+      // Automatism: Subconscious Scribble (Improved Version)
+      let x = 0, y = 0;
+      let tx = 0, ty = 1000;
+
+      const getSeedNum = (s: string) => {
+        let h = 0;
+        for (let i = 0; i < s.length; i++)
+          h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+        return Math.abs(h);
+      };
+
       p.setup = () => {
         p.createCanvas(p.windowWidth, p.windowHeight);
         p.colorMode(p.HSB, 360, 100, 100, 100);
-        p.background(40, 5, 95);
+        p.background(40, 10, 95);
+        p.randomSeed(getSeedNum(seed));
+        p.noiseSeed(getSeedNum(seed));
+        x = p.width / 2;
+        y = p.height / 2;
+      };
 
-        for (let i = 0; i < 5; i++) {
-          agents.push({
-            x: p.random(p.width),
-            y: p.random(p.height),
-            tx: p.random(100),
-            ty: p.random(100),
-            col: p.color(0, 0, 10, 80), // Ink black
-          });
+      p.draw = () => {
+        p.stroke(0, 0, 10, 80);
+        p.strokeWeight(1.5);
+        p.noFill();
+
+        // Accelerated drawing
+        for (let i = 0; i < 50; i++) {
+          const nX = (p.noise(tx) - 0.5) * 4;
+          const nY = (p.noise(ty) - 0.5) * 4;
+          
+          if (x + nX > 0 && x + nX < p.width && y + nY > 0 && y + nY < p.height) {
+            p.line(x, y, x + nX, y + nY);
+            x += nX;
+            y += nY;
+          } else {
+            x += nX;
+            y += nY;
+            if (x > p.width) x = 0;
+            if (x < 0) x = p.width;
+            if (y > p.height) y = 0;
+            if (y < 0) y = p.height;
+          }
+          tx += 0.01;
+          ty += 0.01;
         }
       };
-      p.draw = () => {
-        agents.forEach((a) => {
-          p.stroke(a.col);
-          p.strokeWeight(1.5);
-          p.noFill();
 
-          p.beginShape();
-          for (let i = 0; i < 5; i++) {
-            p.vertex(a.x, a.y);
-            const angle = p.noise(a.tx, a.ty) * p.TWO_PI * 4;
-            const speed = 2;
-            a.x += Math.cos(angle) * speed;
-            a.y += Math.sin(angle) * speed;
-            a.tx += 0.01;
-            a.ty += 0.01;
-
-            // Wrap
-            if (a.x < 0) a.x = p.width;
-            if (a.x > p.width) a.x = 0;
-            if (a.y < 0) a.y = p.height;
-            if (a.y > p.height) a.y = 0;
-          }
-          p.endShape();
-        });
-      };
       (p as any).customResize = (w: number, h: number) => {
         p.resizeCanvas(w, h);
-        p.background(40, 5, 95);
+        p.background(40, 10, 95);
+        x = w / 2;
+        y = h / 2;
       };
     },
   },
@@ -65,65 +72,98 @@ export const painterlyStyles: ArtStyle[] = [
     era: "Impressionism",
     name: "Impressionism (印象派)",
     driver: "p5",
-    description: "短促而破碎的笔触，不是再现细节，而是捕捉转瞬即逝的光和空气。",
-    prompt: "你更在意事物本身，还是它在你心中留下的那一瞬间感受？",
-    styleTags: ["Light", "Vibrant", "Brushstroke"],
+    description: "通过破碎的碎点笔触和互补色的微妙并置，捕捉光线随时间流逝而产生的颤动感。",
+    prompt: "你是在看风景，还是在看光本身？",
+    styleTags: ["Light", "Vibrant", "Broken Strokes", "Atmosphere"],
     sketch: (p: p5, seed: string) => {
-      // Impressionism: Water Lilies style
+      // Impressionism: Light Atmosphere & Broken Strokes
+      const getSeedNum = (s: string) => {
+        let h = 0;
+        for (let i = 0; i < s.length; i++)
+          h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+        return Math.abs(h);
+      };
+
       p.setup = () => {
         p.createCanvas(p.windowWidth, p.windowHeight);
         p.colorMode(p.HSB, 360, 100, 100, 100);
-        p.background(210, 30, 90);
+        p.background(200, 5, 95); // Canvas primer beige/grey
         p.noStroke();
       };
 
       p.draw = () => {
-        // Continue painting forever
-        for (let i = 0; i < 30; i++) {
-          let x = p.random(p.width);
-          let y = p.random(p.height);
+        p.randomSeed(getSeedNum(seed));
+        const time = p.frameCount * 0.005;
+        
+        // Dynamic layered building
+        for (let i = 0; i < 200; i++) {
+          const x = p.random(p.width);
+          const y = p.random(p.height);
+          
+          // Use noise to determine "Light zones" vs "Shadow zones"
+          const lightNoise = p.noise(x * 0.003, y * 0.003, time);
+          const colorNoise = p.noise(x * 0.005, y * 0.005, time * 0.5);
+          
+          let h, s, b, alpha;
 
-          // Base color based on position (Water / Sky reflection)
-          let baseHue = 210;
-          if (y < p.height * 0.3)
-            baseHue = 200; // Sky reflection
-          else baseHue = 220; // Deep water
-
-          // Add variation
-          let h = baseHue + p.random(-20, 20);
-          let s = p.random(20, 60);
-          let b = p.random(60, 90);
-          let alpha = 60;
-
-          // Lily pads (Green clusters) simulation
-          let n = p.noise(x * 0.005, y * 0.005);
-          if (n > 0.6) {
-            h = p.random(90, 140); // Green
-            s = p.random(40, 70);
-            b = p.random(40, 70);
-            alpha = 80;
+          if (lightNoise > 0.6) {
+             // Sunlit area (Gold/Warm White/Lilac)
+             h = p.map(colorNoise, 0, 1, 35, 65); // Warm yellows to golds
+             if (colorNoise > 0.8) h = 280; // Occasional lilac glints in sun
+             s = p.random(30, 60);
+             b = p.random(85, 100);
+             alpha = p.random(2, 8); // Very thin layers
+          } else if (lightNoise < 0.4) {
+             // Shadow area (Deep Blue/Turquoise/Violet)
+             h = p.map(colorNoise, 0, 1, 200, 260); 
+             s = p.random(40, 70);
+             b = p.random(30, 60);
+             alpha = p.random(5, 15);
+          } else {
+             // Mid-tones (Greenery/Earth/Transition)
+             h = p.map(colorNoise, 0, 1, 80, 160); // Greens and cyans
+             s = p.random(20, 50);
+             b = p.random(60, 85);
+             alpha = p.random(3, 10);
           }
-          // Flowers
-          if (n > 0.75 && p.random() > 0.95) {
-            h = 320 + p.random(-20, 20); // Pink/Purple
-            s = 60;
-            b = 90;
-            alpha = 90;
+
+          // Optical mixing: Place complementaries occasionally
+          if (p.random() > 0.98) {
+            h = (h + 180) % 360; // Complementary spark
+            s = 80;
+            b = 100;
           }
 
           p.fill(h, s, b, alpha);
 
-          // Brush strokes
+          // Classic Impressionist "Tachisme" (dab/dash)
           p.push();
           p.translate(x, y);
-          p.rotate(p.random(p.TWO_PI));
-          p.ellipse(0, 0, p.random(10, 25), p.random(4, 8));
+          // Brush angle follows the atmospheric flow (noise)
+          const angle = p.noise(x * 0.01, y * 0.01) * p.TWO_PI;
+          p.rotate(angle);
+          
+          // Vary brush shape: sometimes thin dash, sometimes small dot
+          const brushW = p.random(12, 35);
+          const brushH = p.random(3, 6);
+          p.ellipse(0, 0, brushW, brushH);
+          
+          // Subtle highlight on top of brushstroke
+          p.fill(h, s * 0.5, p.min(b + 20, 100), alpha * 1.5);
+          p.ellipse(brushW * 0.2, -brushH * 0.2, brushW * 0.3, brushH * 0.3);
           p.pop();
         }
+
+        // Texture overlay (simulate canvas grain)
+        if (p.frameCount % 120 === 0) {
+           p.fill(0, 0, 100, 1);
+           p.rect(0,0, p.width, p.height);
+        }
       };
+
       (p as any).customResize = (w: number, h: number) => {
         p.resizeCanvas(w, h);
-        p.background(210, 30, 90);
+        p.background(200, 5, 95);
       };
     },
   },

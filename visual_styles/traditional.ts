@@ -422,7 +422,8 @@ export const traditionalStyles: ArtStyle[] = [
       // Improved Dot Painting: Dreaming Tracks + Earth Palette
       const getSeedNum = (s: string) => {
         let h = 0;
-        for (let i = 0; i < s.length; i++) h = Math.imul(31, h) + s.charCodeAt(i) | 0;
+        for (let i = 0; i < s.length; i++)
+          h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
         return Math.abs(h);
       };
 
@@ -432,7 +433,13 @@ export const traditionalStyles: ArtStyle[] = [
         p.noLoop();
       };
 
-      const drawTrack = (x1: number, y1: number, x2: number, y2: number, col: number[]) => {
+      const drawTrack = (
+        x1: number,
+        y1: number,
+        x2: number,
+        y2: number,
+        col: number[],
+      ) => {
         const d = p.dist(x1, y1, x2, y2);
         const steps = d / 8;
         for (let i = 0; i <= steps; i++) {
@@ -440,11 +447,11 @@ export const traditionalStyles: ArtStyle[] = [
           const x = p.lerp(x1, x2, t) + p.random(-5, 5);
           const y = p.lerp(y1, y2, t) + p.random(-5, 5);
           const dotSize = p.random(6, 12);
-          
+
           // Outer glow for the dot
           p.fill(col[0], col[1], col[2], 30);
           p.circle(x, y, dotSize * 1.5);
-          
+
           // Core dot
           p.fill(col[0], col[1], col[2]);
           p.circle(x, y, dotSize);
@@ -467,10 +474,10 @@ export const traditionalStyles: ArtStyle[] = [
         p.background(20, 40, 15); // Deep charcoal/earth background
 
         const palette = [
-          [25, 80, 80],  // Ochre Red
-          [40, 70, 90],  // Desert Yellow
-          [30, 20, 95],  // White Clay
-          [10, 80, 40],  // Deep Brown
+          [25, 80, 80], // Ochre Red
+          [40, 70, 90], // Desert Yellow
+          [30, 20, 95], // White Clay
+          [10, 80, 40], // Deep Brown
         ];
 
         // 1. Dreaming Tracks (Wandering lines)

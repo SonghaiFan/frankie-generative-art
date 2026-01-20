@@ -7,83 +7,113 @@ export const abstractStyles: ArtStyle[] = [
     name: "Rhizome (块茎)",
     era: "Post-Structuralism",
     driver: "p5",
-    description: "去中心化网络，节点动态连接，无主根。",
-    prompt: "你的思维是像树一样扎根向上，还是像草一样蔓延连接？",
-    styleTags: ["Chaos", "Network", "Organic"],
+    description: "无限生长的去中心化网络，没有起点，也没有终点，只有中介和连接。",
+    prompt: "如果生命不是一棵树，而是一片草坪，你会如何延伸？",
+    styleTags: ["Decentralized", "Organic", "Flow"],
     sketch: (p: p5, seed: string) => {
-      // 3D-ish nodes with depth
-      let nodes: {
-        x: number;
-        y: number;
-        z: number;
-        vx: number;
-        vy: number;
-        baseSize: number;
-      }[] = [];
-      const depth = 200; // Fake z-depth
+      // Rhizome: Organic branching that re-connects (unlike a tree)
+      const getSeedNum = (s: string) => {
+        let h = 0;
+        for (let i = 0; i < s.length; i++)
+          h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+        return Math.abs(h);
+      };
+
+      let roots: { x: number; y: number; angle: number; weight: number }[] = [];
 
       p.setup = () => {
         p.createCanvas(p.windowWidth, p.windowHeight);
         p.colorMode(p.HSB, 360, 100, 100, 100);
-
-        // Initialize nodes with depth
-        for (let i = 0; i < 90; i++) {
-          nodes.push({
+        p.background(20, 10, 5); // Earthy dark background
+        p.randomSeed(getSeedNum(seed));
+        
+        // Initial sprouts
+        for(let i=0; i<3; i++) {
+          roots.push({
             x: p.random(p.width),
             y: p.random(p.height),
-            z: p.random(10, depth),
-            vx: p.random(-0.8, 0.8),
-            vy: p.random(-0.8, 0.8),
-            baseSize: p.random(2, 6),
+            angle: p.random(p.TWO_PI),
+            weight: 5
           });
         }
       };
 
       p.draw = () => {
-        p.background(220, 15, 10, 20); // Darker, deep blue/black background for contrast
+        // Subtle fade for growth trail
+        p.noStroke();
+        p.fill(20, 10, 5, 1);
+        p.rect(0,0, p.width, p.height);
 
-        nodes.forEach((n, i) => {
-          n.x += n.vx;
-          n.y += n.vy;
-
-          if (n.x < -50) n.x = p.width + 50;
-          if (n.x > p.width + 50) n.x = -50;
-          if (n.y < -50) n.y = p.height + 50;
-          if (n.y > p.height + 50) n.y = -50;
-
-          // Perspective scaling
-          let scale = p.map(n.z, 0, depth, 0.5, 1.5);
-          let alpha = p.map(n.z, 0, depth, 30, 90);
-
-          p.noStroke();
-          // Organic pulsing color
-          let hue = (200 + p.frameCount * 0.2 + i * 2) % 360;
-          p.fill(hue, 60, 80, alpha);
-          p.circle(
-            n.x,
-            n.y,
-            n.baseSize * scale * (1 + 0.3 * Math.sin(p.frameCount * 0.1)),
-          );
-
-          // Connections
-          nodes.forEach((other, j) => {
-            if (i !== j) {
-              const d = p.dist(n.x, n.y, other.x, other.y);
-              const zDist = Math.abs(n.z - other.z);
-
-              // Only connect if close in 3D space
-              if (d < 150 && zDist < 50) {
-                let lineAlpha =
-                  p.map(d, 0, 150, 60, 0) * p.map(zDist, 0, 50, 1, 0);
-                p.stroke(hue, 40, 90, lineAlpha);
-                p.strokeWeight(0.5 * scale);
-                p.line(n.x, n.y, other.x, other.y);
-              }
+        const nextRoots: typeof roots = [];
+        
+        roots.forEach(r => {
+          p.stroke(25, 40, 80, 40);
+          p.strokeWeight(r.weight);
+          
+          let nx = r.x + p.cos(r.angle) * 3;
+          let ny = r.y + p.sin(r.angle) * 3;
+          
+          p.line(r.x, r.y, nx, ny);
+          
+          // Wander
+          let nAngle = r.angle + p.random(-0.2, 0.2);
+          
+          // Chance to split
+          if (p.random() < 0.02 && roots.length < 150) {
+            nextRoots.push({
+              x: nx,
+              y: ny,
+              angle: nAngle + p.PI/4,
+              weight: r.weight * 0.8
+            });
+            nextRoots.push({
+              x: nx,
+              y: ny,
+              angle: nAngle - p.PI/4,
+              weight: r.weight * 0.8
+            });
+          } else {
+            // Chance to die or continue
+            if (p.random() > 0.005) {
+              nextRoots.push({
+                x: nx,
+                y: ny,
+                angle: nAngle,
+                weight: r.weight
+              });
             }
-          });
+          }
+
+          // Boundary check
+          if (nx < 0 || nx > p.width || ny < 0 || ny > p.height) {
+             // Re-sprout elsewhere
+             if (p.random() < 0.1) {
+                nextRoots.push({
+                  x: p.random(p.width),
+                  y: p.random(p.height),
+                  angle: p.random(p.TWO_PI),
+                  weight: 2
+                });
+             }
+          }
         });
+
+        roots = nextRoots;
+
+        // Periodic random connections (Rhizome characteristic)
+        if (p.frameCount % 30 === 0 && roots.length > 2) {
+           const a = p.random(roots);
+           const b = p.random(roots);
+           p.stroke(40, 60, 90, 20);
+           p.strokeWeight(1);
+           p.line(a.x, a.y, b.x, b.y);
+        }
       };
-      (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
+
+      (p as any).customResize = (w: number, h: number) => {
+        p.resizeCanvas(w, h);
+        p.background(20, 10, 5);
+      };
     },
   },
   {

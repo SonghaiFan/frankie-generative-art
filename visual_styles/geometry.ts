@@ -323,52 +323,172 @@ export const geometryStyles: ArtStyle[] = [
     id: "cubism",
     name: "Cubism (立体主义)",
     driver: "p5",
-    description: "打碎单一视角，将物体分解为碎片，在平面上同时展示多个侧面。",
-    prompt: "你能在同一时刻理解事物的不同面向吗？",
-    styleTags: ["Geometric", "Fragmented", "Layered"],
+    description: "通过几何平面的错位与堆叠，将物体的多重维度同时展开在二维平面上。",
+    prompt: "当时间与空间被压扁并重组，你还能看清那张脸吗？",
+    styleTags: ["Geometric", "Analytical", "Fragmented", "Dynamic Perspective"],
     sketch: (p: p5, seed: string) => {
+      // Analytical Cubist Portrait Generator
+      const getSeedNum = (s: string) => {
+        let h = 0;
+        for (let i = 0; i < s.length; i++)
+          h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+        return Math.abs(h);
+      };
+
       p.setup = () => {
         p.createCanvas(p.windowWidth, p.windowHeight);
         p.colorMode(p.HSB, 360, 100, 100, 100);
-        p.rectMode(p.CENTER);
-        p.background(30, 10, 85); // 初始画布底色
+        p.noLoop();
       };
-      p.draw = () => {
-        // 每一帧并不清空，而是缓慢叠加，形成复杂的肌理
-        if (p.frameCount % 200 === 0) p.background(30, 10, 85);
 
-        p.noStroke();
-        const x = p.random(p.width);
-        const y = p.random(p.height);
-        const size = p.random(50, 250);
-
-        // 毕加索/布拉克时期的配色：赭石、灰、黑、浊蓝、深红
-        const colors = [
-          [35, 40, 70],
-          [210, 20, 50],
-          [0, 0, 20],
-          [0, 0, 95],
-          [10, 40, 50],
-        ];
-        const col = p.random(colors);
-        p.fill(col[0], col[1], col[2], 70); // 半透明
-
+      const drawDeconstructedEye = (x: number, y: number, w: number, isProfile: boolean) => {
         p.push();
         p.translate(x, y);
-        p.rotate(p.random(p.TWO_PI)); // 旋转视角
-
-        p.rect(0, 0, size, size * p.random(0.5, 1.5));
-
-        // 结构线
-        p.stroke(0, 0, 10, 60);
-        p.strokeWeight(1.5);
-        if (p.random() > 0.5) p.line(-size, 0, size, 0);
-
+        p.rotate(p.random(-0.2, 0.2));
+        
+        // Sclera/Socket
+        p.fill(0, 0, 95);
+        p.stroke(0);
+        p.strokeWeight(3);
+        if (isProfile) {
+          p.triangle(0, -w/3, 0, w/3, w, 0);
+        } else {
+          p.beginShape();
+          p.vertex(-w, 0);
+          p.bezierVertex(-w/2, -w/2, w/2, -w/2, w, 0);
+          p.bezierVertex(w/2, w/2, -w/2, w/2, -w, 0);
+          p.endShape(p.CLOSE);
+        }
+        
+        // Pupil
+        p.fill(0);
+        const px = isProfile ? w*0.3 : 0;
+        p.circle(px, 0, w * 0.4);
+        p.fill(0, 0, 100);
+        p.circle(px - w*0.05, -w*0.05, w * 0.1);
         p.pop();
       };
+
+      const texturedPlane = (points: {x: number, y: number}[], col: any) => {
+        p.push();
+        p.fill(col);
+        p.stroke(0, 0, 10, 80);
+        p.strokeWeight(2);
+        p.beginShape();
+        points.forEach(pt => p.vertex(pt.x, pt.y));
+        p.endShape(p.CLOSE);
+        
+        // Add "Stippled" texture
+        p.noStroke();
+        p.fill(0, 0, 0, 15);
+        for(let i=0; i<30; i++) {
+          p.circle(p.random(points[0].x, points[1].x), p.random(points[0].y, points[2].y), 1.5);
+        }
+        p.pop();
+      };
+
+      p.draw = () => {
+        p.randomSeed(getSeedNum(seed));
+        p.background(40, 10, 75); // Aged canvas grey/beige
+
+        const cx = p.width / 2;
+        const cy = p.height / 2;
+        const scale = p.min(p.width, p.height) * 0.8;
+
+        // 1. Fragmented Background Plains
+        for(let i=0; i<8; i++) {
+          p.fill(p.random([200, 40, 20]), 10, p.random(40, 80), 30);
+          p.push();
+          p.translate(p.random(p.width), p.random(p.height));
+          p.rotate(p.random(p.TWO_PI));
+          p.rect(0, 0, p.random(200, 400), p.random(200, 400));
+          p.pop();
+        }
+
+        // 2. Head Structure (Deconstructed into Planes)
+        p.push();
+        p.translate(cx, cy);
+        
+        // Face fragments
+        const faceColors = [
+           p.color(25, 60, 85),  // Ochre
+           p.color(15, 80, 70),  // Deep Red/Orange
+           p.color(0, 0, 15),    // Black
+           p.color(0, 0, 85),    // Grey-White
+           p.color(200, 30, 40)  // Slate Blue
+        ];
+
+        // Left Face (Frontal feel)
+        texturedPlane([
+          {x: -scale*0.2, y: -scale*0.4},
+          {x: 0, y: -scale*0.5},
+          {x: 0, y: scale*0.3},
+          {x: -scale*0.25, y: scale*0.2}
+        ], p.random(faceColors));
+
+        // Right Face (Profile/Angular feel)
+        texturedPlane([
+          {x: 0, y: -scale*0.5},
+          {x: scale*0.3, y: -scale*0.3},
+          {x: scale*0.25, y: scale*0.4},
+          {x: 0, y: scale*0.3}
+        ], p.random(faceColors));
+
+        // Distinct Nose Plan
+        p.fill(0, 0, 10);
+        p.beginShape();
+        p.vertex(-scale*0.05, -scale*0.1);
+        p.vertex(scale*0.05, -scale*0.1);
+        p.vertex(scale*0.1, scale*0.15);
+        p.vertex(-scale*0.02, scale*0.18);
+        p.endShape(p.CLOSE);
+
+        // 3. Iconic Features
+        // Frontal Eye
+        drawDeconstructedEye(-scale*0.12, -scale*0.15, scale*0.08, false);
+        // Profile Eye (Lower and different angle)
+        drawDeconstructedEye(scale*0.15, -scale*0.05, scale*0.06, true);
+
+        // Lips (Fragmented)
+        p.push();
+        p.translate(0, scale*0.2);
+        p.fill(0, 100, 60);
+        p.stroke(0);
+        p.strokeWeight(3);
+        p.beginShape();
+        p.vertex(-scale*0.1, 0);
+        p.vertex(scale*0.05, -scale*0.02);
+        p.vertex(scale*0.1, scale*0.02);
+        p.vertex(-scale*0.05, scale*0.04);
+        p.endShape(p.CLOSE);
+        p.line(-scale*0.1, 0, scale*0.1, scale*0.02);
+        p.pop();
+
+        // Ear (Picasso-esque swirl)
+        p.push();
+        p.translate(scale*0.3, 0);
+        p.fill(15, 80, 80);
+        p.stroke(0);
+        p.strokeWeight(4);
+        p.ellipse(0, 0, scale*0.1, scale*0.15);
+        p.noFill();
+        p.arc(0, 0, scale*0.05, scale*0.08, 0, p.PI);
+        p.pop();
+
+        p.pop();
+
+        // 4. Overlaid Grid/Line Structure
+        p.stroke(0, 0, 0, 50);
+        p.strokeWeight(1);
+        for(let i=0; i<10; i++) {
+          let lx = p.random(p.width);
+          p.line(lx, 0, lx + p.random(-100, 100), p.height);
+        }
+      };
+
       (p as any).customResize = (w: number, h: number) => {
         p.resizeCanvas(w, h);
-        p.background(30, 10, 85);
+        p.redraw();
       };
     },
   },
