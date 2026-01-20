@@ -1,7 +1,8 @@
 
 import React, { useEffect, useRef } from 'react';
 import p5 from 'p5';
-import { VISUAL_STYLES, PREDEFINED_CARDS } from '../constants';
+import { PREDEFINED_CARDS } from '../constants';
+import { VISUAL_STYLES } from "@/VISUAL_STYLES";
 
 interface GenerativeArtProps {
   seed: string;
@@ -26,18 +27,18 @@ const GenerativeArt: React.FC<GenerativeArtProps> = ({ seed, visualElements }) =
 
     // 3. Initialize p5
     const sketch = (p: p5) => {
-        sketchLogic(p, seed);
+      sketchLogic(p, seed);
     };
 
     const myP5 = new p5(sketch, containerRef.current);
 
     const resizeObserver = new ResizeObserver((entries) => {
-        for (const entry of entries) {
-            if (myP5 && (myP5 as any).customResize) {
-                const { width, height } = entry.contentRect;
-                (myP5 as any).customResize(width, height);
-            }
+      for (const entry of entries) {
+        if (myP5 && (myP5 as any).customResize) {
+          const { width, height } = entry.contentRect;
+          (myP5 as any).customResize(width, height);
         }
+      }
     });
     resizeObserver.observe(containerRef.current);
 

@@ -178,7 +178,7 @@ const App: React.FC = () => {
                 </div>
 
                 {/* Final Overlay UI */}
-                <div className="relative z-10 w-full h-full pointer-events-none flex flex-col justify-end p-8 md:p-16">
+                <div className="relative z-10 w-full h-full pointer-events-none flex flex-col justify-end p-8 md:p-16 bg-gradient-to-t from-black via-black/50 to-transparent">
                   <div className="max-w-xl pointer-events-auto">
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
