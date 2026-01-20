@@ -2,7 +2,10 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { UserInteraction, AnalysisResult, CreativeArtResult } from "../types";
 import { FALLBACK_CREATIVE_RESULT } from "../constants";
 
-const apiKey = (process.env.API_KEY && process.env.API_KEY !== "undefined") ? process.env.API_KEY : "";
+const apiKey =
+  process.env.API_KEY && process.env.API_KEY !== "undefined"
+    ? process.env.API_KEY
+    : "";
 const ai = new GoogleGenAI({ apiKey });
 
 // Analyze user preferences
@@ -10,7 +13,7 @@ export const analyzeUserStyle = async (
   history: UserInteraction[],
 ): Promise<AnalysisResult> => {
   console.log("Analyzing style with architecture history...");
-  
+
   // If no API key, return a poetic fallback
   if (!apiKey || apiKey === "undefined") {
     console.warn("API Key is missing or undefined string. Using fallback.");
@@ -20,7 +23,6 @@ export const analyzeUserStyle = async (
       followUpQuestion: "当混乱降临时，你会试图整理它，还是加入它？",
     };
   }
-
   const interactionsText = history
     .map((h) => `User ${h.action} the concept "${h.term}".`)
     .join("\n");
@@ -41,7 +43,7 @@ export const analyzeUserStyle = async (
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-1.5-flash",
+      model: "gemini-2.5-flash-lite",
       contents: prompt,
       config: {
         responseMimeType: "application/json",
@@ -72,24 +74,6 @@ export const generateCreativeArt = async (
   analysisText: string,
   finalChoice: string,
 ): Promise<CreativeArtResult> => {
-  if (!apiKey || apiKey === "undefined") {
-    console.warn("API Key is missing or undefined string in creative generation. Using fallback.");
-    return {
-      styleName: "Simulated Dream",
-      explanation: "API Key missing. Visualizing fallback dream state.",
-      p5Code: `
-        function setup() { 
-          createCanvas(windowWidth, windowHeight); 
-          background(0); 
-        } 
-        function draw() { 
-          noStroke(); 
-          fill(255, 10); 
-          circle(mouseX, mouseY, 50); 
-        }
-      `,
-    };
-
   const prompt = `
       Based on the user's interaction history: ${history.map((h) => h.term).join(", ")}
       Their psychological profile: "${analysisText}"
@@ -115,7 +99,7 @@ export const generateCreativeArt = async (
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-1.5-flash",
+      model: "gemini-3-flash-preview",
       contents: prompt,
       config: {
         responseMimeType: "application/json",
