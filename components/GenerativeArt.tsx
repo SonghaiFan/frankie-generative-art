@@ -2,7 +2,7 @@
 import React, { useEffect, useRef } from 'react';
 import p5 from 'p5';
 import { PREDEFINED_CARDS } from '../constants';
-import { VISUAL_STYLES } from "@/VISUAL_STYLES";
+import { STYLE_GENERATORS } from "../visual_styles";
 
 interface GenerativeArtProps {
   seed: string;
@@ -19,11 +19,11 @@ const GenerativeArt: React.FC<GenerativeArtProps> = ({ seed, visualElements }) =
     // Since we generated a unique runtime ID for the card instance, we need to map 
     // the card's content (term) back to its original definition to find the correct visual style.
     const originalCard = PREDEFINED_CARDS.find(c => c.term === seed);
-    const styleId = originalCard ? originalCard.id : 'static_1';
+    const styleId = originalCard ? originalCard.id : 'rhizome';
 
     // 2. Get Sketch Logic
-    // Fallback to static_1 if not found
-    const sketchLogic = VISUAL_STYLES[styleId] || VISUAL_STYLES['static_1'];
+    // Fallback to rhizome if not found
+    const sketchLogic = STYLE_GENERATORS[styleId] || STYLE_GENERATORS['rhizome'];
 
     // 3. Initialize p5
     const sketch = (p: p5) => {
