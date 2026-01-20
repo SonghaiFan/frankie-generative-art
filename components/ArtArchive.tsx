@@ -12,12 +12,13 @@ interface ArtArchiveProps {
 }
 
 // Available art oracle HTML files
-const artOracleModules = import.meta.glob('../public/art_*.html', {
+// Available art HTML files
+const artModules = import.meta.glob('../public/art_*.html', {
   eager: true,
   query: '?url',
   import: 'default'
 });
-const artOracleFiles = Object.values(artOracleModules)
+const artFiles = Object.values(artModules)
   .filter((url): url is string => typeof url === 'string');
 
 const ArtArchive: React.FC<ArtArchiveProps> = ({ cards, onSelectionComplete }) => {
@@ -29,9 +30,9 @@ const ArtArchive: React.FC<ArtArchiveProps> = ({ cards, onSelectionComplete }) =
 
   useEffect(() => {
     // Select a random artwork on mount
-    if (artOracleFiles.length > 0) {
-      const randomIndex = Math.floor(Math.random() * artOracleFiles.length);
-      setRandomArtwork(artOracleFiles[randomIndex]);
+    if (artFiles.length > 0) {
+      const randomIndex = Math.floor(Math.random() * artFiles.length);
+      setRandomArtwork(artFiles[randomIndex]);
     }
   }, []);
 
