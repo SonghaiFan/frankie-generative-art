@@ -63,7 +63,7 @@ const ArtArchive: React.FC<ArtArchiveProps> = ({ cards, onSelectionComplete }) =
         <div className="flex-1 border-b border-white/20 relative flex flex-col p-6 md:p-20 overflow-hidden pointer-events-none">
           {/* Random Artwork Background */}
           {randomArtwork && (
-            <div className="absolute inset-0 opacity-10 pointer-events-auto">
+            <div className="absolute inset-0 opacity-50 pointer-events-auto">
               <iframe
                 src={randomArtwork}
                 className="w-full h-full"
