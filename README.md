@@ -1,21 +1,5 @@
-<div align="center">
-   <h1>🎨</h1>
-   <h1>
-      <strong>Art Archive Oracle</strong> | <strong>P5 生成艺术档案</strong>
-   </h1>
-   <h3>An Immersive Generative Digital Art Experience Built with P5.js and Gemini AI<br/>沉浸式 P5 生成艺术体验，由 P5.js 与 Gemini AI 驱动</h3>
-   <br/>
-   <h2>🌟 Table of Contents | 目录</h2>
-   <ul style="list-style-type:none;">
-      <li><a href="#english">English</a></li>
-      <li><a href="#chinese">中文</a></li>
-   </ul>
-
-</div>   
-
----
-
-<a name="english"></a>
+# P5 Generative Digital Art Archive | P5 生成艺术档案
+[English](#english) | [中文](#chinese)
 
 ## 🌟 Overview
 **Art Archive Oracle** is an immersive, generative digital art experience built with P5.js and powered by Gemini AI. It explores the intersection of art history, personal aesthetics, and algorithmic creativity. Users navigate through an architectural archive of art styles, select their preferred "anchors of meaning," and witness the synthesis of a unique generative artwork tailored to their subconscious patterns.
