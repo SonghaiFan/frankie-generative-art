@@ -43,6 +43,43 @@ export const geometryStyles: ArtStyle[] = [
     },
   },
   {
+    id: "art_deco",
+    name: "Art Deco (装饰艺术)",
+    era: "1920s-1930s",
+    driver: "p5",
+    description:
+      "几何与奢华结合成流线型的阶梯与放射纹理，金属光泽在深色背景上精确发光。",
+    prompt: "当功能已经足够，你还会为纯粹的优雅留下多少空间？",
+    styleTags: ["Geometric", "Symmetry", "Gold"],
+    sketch: (p: p5, seed: string) => {
+      p.setup = () => {
+        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.noFill();
+        p.stroke(212, 175, 55);
+        p.strokeWeight(2);
+      };
+      p.draw = () => {
+        p.background(20);
+        let cx = p.width / 2;
+        let cy = p.height;
+        for (let i = 0; i < 20; i++) {
+          let r = i * 40 + (p.frameCount % 40);
+          p.arc(cx, cy, r * 2, r * 2, p.PI, 0);
+        }
+        // Rays
+        for (let a = p.PI; a <= p.TWO_PI; a += p.PI / 12) {
+          p.line(
+            cx,
+            cy,
+            cx + Math.cos(a) * p.width,
+            cy + Math.sin(a) * p.width,
+          );
+        }
+      };
+      (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
+    },
+  },
+  {
     id: "bauhaus",
     name: "Bauhaus (包豪斯)",
     era: "Modernism",
@@ -57,41 +94,50 @@ export const geometryStyles: ArtStyle[] = [
         p.rectMode(p.CENTER);
       };
       p.draw = () => {
-        p.background(0, 0, 92);
-        // 绘制网格背景
-        p.stroke(0, 0, 80);
-        p.strokeWeight(1);
-        for (let i = 0; i < p.width; i += 50) p.line(i, 0, i, p.height);
-        for (let j = 0; j < p.height; j += 50) p.line(0, j, p.width, j);
+        p.background(40, 5, 95); // Off-white paper
 
         const t = p.frameCount * 0.01;
+        p.translate(p.width / 2, p.height / 2);
+
+        // Kandinsky-style composition: Floating, diagonal, overlapping
+
+        // 1. Diagnosis lines (The "Structure")
+        p.stroke(0, 0, 10);
+        p.strokeWeight(1.5);
+        p.line(-p.width / 2, p.height / 2, p.width / 2, -p.height / 4);
+        p.line(-p.width / 3, -p.height / 2, p.width / 4, p.height / 2);
+
         p.noStroke();
 
-        // 黑色横杠
+        // 2. The Yellow Triangle (Sharp, energetic)
+        p.push();
+        p.translate(Math.cos(t) * 100, Math.sin(t * 1.3) * 50 - 100);
+        p.rotate(t + p.PI / 6);
+        p.fill(50, 90, 100, 85); // Yellow
+        // Sharp triangle
+        p.triangle(0, -80, -50, 50, 50, 50);
+        p.pop();
+
+        // 3. The Red Square (Stable, heavy)
+        p.push();
+        p.translate(-150 + Math.sin(t * 0.5) * 30, 50);
+        p.rotate(0.2); // Slight tilt
+        p.fill(350, 80, 85, 85); // Red
+        p.rect(0, 0, 120, 120);
+        p.pop();
+
+        // 4. The Blue Circle (Deep, recedes)
+        p.push();
+        p.translate(150, 100 + Math.cos(t * 0.8) * 40);
+        p.fill(220, 80, 90, 85); // Blue
+        p.circle(0, 0, 140);
+        p.pop();
+
+        // 5. Black accents (Points and lines)
         p.fill(0, 0, 10);
-        p.rect(p.width / 2, p.height / 2, p.width * 0.8, 10);
-
-        // 红色正方形
-        p.push();
-        p.translate(p.width * 0.3, p.height * 0.5 + Math.sin(t) * 20);
-        p.fill(350, 90, 90, 90);
-        p.rect(0, 0, 100, 100);
-        p.pop();
-
-        // 蓝色圆形
-        p.push();
-        p.translate(p.width * 0.7, p.height * 0.5 + Math.cos(t) * 20);
-        p.fill(220, 90, 90, 90);
-        p.circle(0, 0, 100);
-        p.pop();
-
-        // 黄色三角形
-        p.push();
-        p.translate(p.width * 0.5, p.height * 0.5 - 100);
-        p.rotate(t * 0.5);
-        p.fill(50, 100, 100, 90);
-        p.triangle(0, -60, -60, 60, 60, 60);
-        p.pop();
+        p.circle(-50, -50, 10);
+        p.circle(60, 80, 5);
+        p.rect(0, 200, 300, 5); // Bottom heavy line
       };
       (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
     },
@@ -199,17 +245,43 @@ export const geometryStyles: ArtStyle[] = [
       p.setup = () => {
         p.createCanvas(p.windowWidth, p.windowHeight);
         p.background(0);
-        p.stroke(255);
-        p.noFill();
+        p.rectMode(p.CENTER);
       };
       p.draw = () => {
         p.background(0);
-        const t = p.frameCount * 0.05;
-        for (let i = 0; i < p.width; i += 20) {
-          const offset = Math.sin(i * 0.05 + t) * 50;
-          p.strokeWeight(2);
-          p.line(i, 0, i + offset, p.height);
+        p.noFill();
+        const t = p.frameCount * 0.02;
+
+        p.translate(p.width / 2, p.height / 2);
+
+        // Layer 1: Concentric squares rotating
+        p.stroke(255);
+        p.strokeWeight(2);
+        p.push();
+        p.rotate(t * 0.5);
+        for (let i = 0; i < 30; i++) {
+          let s = i * 20 + 20;
+          // Wavy distortion
+          let dist = Math.sin(t * 2 + i * 0.2) * 5;
+          p.rect(0, 0, s + dist, s + dist);
         }
+        p.pop();
+
+        // Layer 2: Interference lines
+        p.stroke(255, 150); // Semi-transparent for blending
+        p.push();
+        p.rotate(-t * 0.3);
+        const maxDim = Math.max(p.width, p.height) * 1.5;
+        for (let x = -maxDim / 2; x < maxDim / 2; x += 15) {
+          p.line(x, -maxDim / 2, x, maxDim / 2);
+        }
+        p.pop();
+
+        // Layer 3: Pulsing focus circle
+        p.stroke(255);
+        p.strokeWeight(3);
+        let pulse = 20 * Math.sin(t * 5);
+        p.circle(0, 0, 100 + pulse);
       };
       (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
     },
@@ -225,55 +297,25 @@ export const geometryStyles: ArtStyle[] = [
     sketch: (p: p5, seed: string) => {
       p.setup = () => {
         p.createCanvas(p.windowWidth, p.windowHeight);
-        p.colorMode(p.HSB, 360, 100, 100, 100);
-        p.noLoop();
+        p.strokeWeight(10);
+        p.stroke(0);
       };
       p.draw = () => {
-        p.background(0, 0, 100);
-        p.stroke(0, 0, 0);
-        p.strokeWeight(8);
-
-        // Simple recursive division
-        const divide = (
-          x: number,
-          y: number,
-          w: number,
-          h: number,
-          depth: number,
-        ) => {
-          if (depth > 4 || (p.random() > 0.5 && depth > 1)) {
-            // Fill
-            const r = p.random();
-            if (r < 0.15)
-              p.fill(350, 90, 90); // Red
-            else if (r < 0.25)
-              p.fill(220, 80, 90); // Blue
-            else if (r < 0.35)
-              p.fill(50, 90, 100); // Yellow
-            else if (r < 0.4)
-              p.fill(0, 0, 10); // Black? No, usually not black fill, but okay. Let's do grey/black sparingly
-            else p.fill(0, 0, 100); // White
-            p.rect(x, y, w, h);
-            return;
-          }
-
-          if (w > h) {
-            const split = p.random(0.3, 0.7) * w;
-            divide(x, y, split, h, depth + 1);
-            divide(x + split, y, w - split, h, depth + 1);
-          } else {
-            const split = p.random(0.3, 0.7) * h;
-            divide(x, y, w, split, depth + 1);
-            divide(x, y + split, w, h - split, depth + 1);
-          }
-        };
-
-        divide(20, 20, p.width - 40, p.height - 40, 0);
+        p.background(255);
+        let x = p.width * (0.5 + Math.sin(p.frameCount * 0.01) * 0.2);
+        let y = p.height * (0.5 + Math.cos(p.frameCount * 0.01) * 0.2);
+        p.fill(255, 0, 0);
+        p.rect(0, 0, x, y);
+        p.fill(0, 0, 255);
+        p.rect(x, y, p.width, p.height);
+        p.fill(255, 255, 0);
+        p.rect(x, 0, p.width, y * 0.5);
+        // Lines
+        p.line(x, 0, x, p.height);
+        p.line(0, y, p.width, y);
+        p.line(x, y * 0.5, p.width, y * 0.5);
       };
-      (p as any).customResize = (w: number, h: number) => {
-        p.resizeCanvas(w, h);
-        p.redraw();
-      };
+      (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
     },
   },
   {
@@ -331,6 +373,110 @@ export const geometryStyles: ArtStyle[] = [
     },
   },
   {
+    id: "precisionism",
+    name: "Precisionism (精确主义)",
+    era: "Early American Modernism",
+    driver: "p5",
+    description:
+      "工业建筑被削减为冷静而锋利的体块，光线像刀锋一样切割出宁静的秩序。",
+    prompt: "当城市只剩下几何和光影，你还能感到情绪吗？",
+    styleTags: ["Industrial", "Sharp", "Geometric"],
+    sketch: (p: p5, seed: string) => {
+      p.setup = () => {
+        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.colorMode(p.HSB, 360, 100, 100, 100);
+        p.noLoop();
+        p.rectMode(p.CORNER);
+      };
+      p.draw = () => {
+        // 冷淡的蓝灰天空
+        for (let y = 0; y < p.height; y++) {
+          const t = p.map(y, 0, p.height, 0, 1);
+          const hue = p.lerp(210, 200, t);
+          const bri = p.lerp(90, 70, t);
+          p.stroke(hue, 10, bri);
+          p.line(0, y, p.width, y);
+        }
+
+        const groundY = p.height * 0.7;
+        p.noStroke();
+        p.fill(210, 15, 40);
+        p.rect(0, groundY, p.width, p.height - groundY);
+
+        // 主体建筑体块
+        const blocks = [
+          { x: p.width * 0.15, w: p.width * 0.18, h: p.height * 0.45 },
+          { x: p.width * 0.38, w: p.width * 0.16, h: p.height * 0.55 },
+          { x: p.width * 0.58, w: p.width * 0.22, h: p.height * 0.4 },
+        ];
+
+        blocks.forEach((b, i) => {
+          const baseHue = 210;
+          const baseSat = 10 + i * 5;
+
+          // 正面
+          p.fill(baseHue, baseSat, 80);
+          p.rect(b.x, groundY - b.h, b.w, b.h);
+
+          // 侧面阴影
+          p.fill(baseHue, baseSat + 10, 55);
+          const sideW = b.w * 0.45;
+          p.quad(
+            b.x + b.w,
+            groundY - b.h,
+            b.x + b.w + sideW,
+            groundY - b.h - sideW * 0.35,
+            b.x + b.w + sideW,
+            groundY - sideW * 0.35,
+            b.x + b.w,
+            groundY,
+          );
+
+          // 顶部受光面
+          p.fill(baseHue, baseSat, 95);
+          p.quad(
+            b.x,
+            groundY - b.h,
+            b.x + b.w,
+            groundY - b.h,
+            b.x + b.w + sideW,
+            groundY - b.h - sideW * 0.35,
+            b.x + sideW,
+            groundY - b.h - sideW * 0.35,
+          );
+        });
+
+        // 远处简化的烟囱和筒仓
+        p.fill(210, 5, 60);
+        p.rect(
+          p.width * 0.78,
+          groundY - p.height * 0.32,
+          p.width * 0.04,
+          p.height * 0.32,
+        );
+        p.rect(
+          p.width * 0.9,
+          groundY - p.height * 0.22,
+          p.width * 0.05,
+          p.height * 0.22,
+        );
+
+        // 投射出的长阴影
+        p.fill(210, 20, 25, 90);
+        p.beginShape();
+        p.vertex(p.width * 0.2, groundY);
+        p.vertex(p.width * 0.9, groundY);
+        p.vertex(p.width * 1.1, p.height);
+        p.vertex(p.width * 0.1, p.height);
+        p.endShape(p.CLOSE);
+      };
+      (p as any).customResize = (w: number, h: number) => {
+        p.resizeCanvas(w, h);
+        p.redraw();
+      };
+    },
+  },
+  {
     era: "Modern Culture",
     id: "kinetic_art",
     name: "Kinetic Art (动态艺术)",
@@ -340,21 +486,69 @@ export const geometryStyles: ArtStyle[] = [
     prompt: "平衡是一种静态的结果，还是一种动态的过程？",
     styleTags: ["Movement", "Balance", "Physics"],
     sketch: (p: p5, seed: string) => {
+      // Alexander Calder inspired Mobile
+      let parts: any[] = [];
       p.setup = () => {
         p.createCanvas(p.windowWidth, p.windowHeight);
-        p.stroke(255);
+        // p.colorMode(p.HSB, 360, 100, 100);
       };
-      p.draw = () => {
-        p.background(0, 20);
-        p.translate(p.width / 2, p.height / 2);
 
-        for (let i = 0; i < 12; i++) {
-          p.push();
-          p.rotate(p.frameCount * 0.02 + i * (p.TWO_PI / 12));
-          p.line(0, 0, 200, 0);
-          p.circle(200, 0, 5);
-          p.pop();
+      const drawBranch = (length: number, depth: number, phase: number) => {
+        if (depth <= 0) {
+          // Draw leaf/paddle
+          p.noStroke();
+          // Primary colors + Black
+          const colors = ["#E53935", "#FDD835", "#1E88E5", "#212121"];
+          const col =
+            colors[Math.floor(Math.abs(Math.sin(phase * 123)) * colors.length)];
+          p.fill(col);
+
+          const shapeType = Math.sin(phase) > 0 ? "circle" : "leaf";
+          if (shapeType === "circle") p.circle(0, 0, length * 0.8);
+          else {
+            p.beginShape();
+            p.vertex(0, 0);
+            p.vertex(length / 2, length / 2);
+            p.vertex(length, 0);
+            p.vertex(length / 2, -length / 2);
+            p.endShape(p.CLOSE);
+          }
+          return;
         }
+
+        p.stroke(0);
+        p.strokeWeight(1.5);
+
+        let angle = Math.sin(p.frameCount * 0.01 * (5 - depth) + phase) * 0.5;
+        p.push();
+        p.rotate(angle);
+        p.line(0, 0, length, 0); // Right arm
+        p.line(0, 0, -length * 0.6, 0); // Left arm shorter
+
+        // Right recursive
+        p.push();
+        p.translate(length, 0);
+        drawBranch(length * 0.7, depth - 1, phase + 100);
+        p.pop();
+
+        // Left recursive
+        p.push();
+        p.translate(-length * 0.6, 0);
+        drawBranch(length * 0.7, depth - 1, phase + 200);
+        p.pop();
+
+        p.pop();
+      };
+
+      p.draw = () => {
+        p.background(240); // Paper white
+        p.translate(p.width / 2, p.height * 0.3);
+
+        // Main string
+        p.stroke(0);
+        p.line(0, -200, 0, 0);
+
+        drawBranch(120, 4, 0);
       };
       (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
     },

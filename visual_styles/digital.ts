@@ -11,40 +11,48 @@ export const digitalStyles: ArtStyle[] = [
     prompt: "错误是你需要修正的瑕疵，还是天赐的灵感入口？",
     styleTags: ["Chaos", "Noise", "Geometric"],
     sketch: (p: p5, seed: string) => {
+      // Improved Glitch: Data Moshing Simulation
       p.setup = () => {
         p.createCanvas(p.windowWidth, p.windowHeight);
         p.colorMode(p.HSB, 360, 100, 100, 100);
         p.background(0);
-      };
-      p.draw = () => {
-        // 偶尔重置背景，制造闪烁感
-        if (p.frameCount % 40 === 0) p.background(0, 0, 0, 20);
-
-        const x = p.random(p.width);
-        const y = p.random(p.height);
-        const w = p.random(50, 300);
-        const h = p.random(2, 20);
-
         p.noStroke();
+      };
 
-        // RGB 分离效果 (模拟色差)
-        if (p.random() > 0.5) {
-          p.fill(0, 100, 100, 80); // Red
-          p.rect(x + 5, y, w, h);
-          p.fill(180, 100, 100, 80); // Cyan
-          p.rect(x - 5, y, w, h);
+      p.draw = () => {
+        // Base content: Scrolling colorful bars
+        if (p.frameCount % 5 === 0) {
+          const h = p.random(p.height);
+          p.fill(p.random(360), 80, 90);
+          p.rect(0, h, p.width, p.random(5, 50));
         }
-        p.fill(0, 0, 100);
-        p.rect(x, y, w, h);
 
-        // 画面切片错位
-        if (p.random() > 0.8) {
-          const sliceY = p.random(p.height);
-          const sliceH = p.random(10, 50);
-          const offset = p.random(-20, 20);
-          // p5.get() is expensive, simulate visual glitch with rects instead
-          p.fill(0, 0, 0, 50);
-          p.rect(0, sliceY, p.width, sliceH);
+        // Destructive Copy / Sorting
+        const sliceH = p.random(5, 60);
+        const y = p.random(p.height - sliceH);
+
+        // Sort of slit-scan / displacement
+        // Instead of p.get() which is heavy, we use drawing over context
+        // to simulate memory corruption
+
+        // Horizontal shift strip
+        const shift = p.random(-50, 50);
+        // We can't easily capture pixels without get(), so we just draw "noise" strips
+        // that look like the background shifted
+
+        p.fill(0, 0, 0, p.random(10, 50)); // Darken
+        p.rect(0, y, p.width, sliceH);
+
+        // Add random blocks of "corrupted data"
+        for (let i = 0; i < 10; i++) {
+          p.fill(p.random(360), 100, 100);
+          p.rect(p.random(p.width), y, p.random(10, 100), p.random(2, 5));
+        }
+
+        // Vertical tear
+        if (p.frameCount % 10 === 0) {
+          p.fill(0, 0, 100, 90); // White flash
+          // p.rect(p.random(p.width), 0, 2, p.height);
         }
       };
       (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
@@ -157,42 +165,243 @@ export const digitalStyles: ArtStyle[] = [
     prompt: "在这个高分辨率的世界里，你是否怀念低保真的想象力？",
     styleTags: ["Grid", "Digital", "Text"],
     sketch: (p: p5, seed: string) => {
-      const chars = " .:-=+*#%@"; // 密度从低到高
-      const fontSize = 16;
+      // Classic Rotating Donut (Torus) in ASCII
+      // Ported simplified logic
+      const chars = ".,-~:;=!*#$@";
+
+      let A = 0;
+      let B = 0;
+
       p.setup = () => {
         p.createCanvas(p.windowWidth, p.windowHeight);
         p.textFont("Courier New");
-        p.textSize(fontSize);
+        p.textSize(12);
         p.textAlign(p.CENTER, p.CENTER);
-        p.colorMode(p.HSB, 360, 100, 100, 100);
-        p.frameRate(24);
+        p.noStroke();
+        p.fill(120, 255, 100); // Green
       };
+
       p.draw = () => {
         p.background(0);
-        p.fill(120, 100, 100); // Terminal Green
+        p.fill(120, 255, 150); // Light Green Terminal
 
-        const cols = Math.floor(p.width / fontSize);
-        const rows = Math.floor(p.height / fontSize);
-        const t = p.frameCount * 0.02;
+        A += 0.04;
+        B += 0.02;
 
-        for (let j = 0; j < rows; j++) {
-          for (let i = 0; i < cols; i++) {
-            // Moving wave pattern
-            const d = p.dist(i, j, cols / 2, rows / 2);
-            const val = (Math.sin(d * 0.2 - t) + 1) / 2;
-            const index = Math.floor(val * (chars.length - 1));
-            const char = chars[index];
-            if (char !== " ") {
-              p.text(
-                char,
-                i * fontSize + fontSize / 2,
-                j * fontSize + fontSize / 2,
-              );
+        const cols = Math.floor(p.width / 12);
+        const rows = Math.floor(p.height / 14);
+
+        // Z-buffer and output buffer not strictly needed if we just draw points,
+        // but for true ASCII we usually compute per character cell.
+        // Let's do a point-cloud projection approach for performance/simplicity in p5
+
+        // Actually, let's just stick to a sampling approach which is cheaper for JS
+
+        const R1 = 1; // inner radius
+        const R2 = 2; // outer radius
+        const K2 = 5; // distance from cam
+        const K1 = (p.width * K2 * 3) / (8 * (R1 + R2)); // scale
+
+        // We will compute points on surface and map to grid
+        // 2000 points?
+
+        for (let theta = 0; theta < 6.28; theta += 0.1) {
+          for (let phi = 0; phi < 6.28; phi += 0.05) {
+            const costheta = Math.cos(theta);
+            const sintheta = Math.sin(theta);
+            const cosphi = Math.cos(phi);
+            const sinphi = Math.sin(phi);
+
+            const circlex = R2 + R1 * costheta;
+            const circley = R1 * sintheta;
+
+            const x =
+              circlex *
+                (Math.cos(B) * cosphi + Math.sin(A) * Math.sin(B) * sinphi) -
+              circley * Math.cos(A) * Math.sin(B);
+            const y =
+              circlex *
+                (Math.sin(B) * cosphi - Math.sin(A) * Math.cos(B) * sinphi) +
+              circley * Math.cos(A) * Math.cos(B);
+            const z =
+              K2 + Math.cos(A) * circlex * sinphi + circley * Math.sin(A);
+            const ooz = 1 / z;
+
+            const xp = Math.floor(p.width / 2 + K1 * ooz * x);
+            const yp = Math.floor(p.height / 2 - K1 * ooz * y);
+
+            // Luminance
+            const L =
+              Math.cos(phi) * costheta * Math.sin(B) -
+              Math.cos(A) * costheta * sinphi -
+              Math.sin(A) * sintheta +
+              Math.cos(B) *
+                (Math.cos(A) * sintheta - costheta * Math.sin(A) * sinphi);
+
+            if (L > 0) {
+              if (xp > 0 && xp < p.width && yp > 0 && yp < p.height) {
+                const charIdx = Math.floor(L * 8);
+                const c =
+                  chars[Math.max(0, Math.min(charIdx, chars.length - 1))];
+                // Only draw if we haven't drawn here? Nah, just overdraw
+                p.text(c, xp, yp);
+              }
             }
           }
         }
       };
       (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
+    },
+  },
+  {
+    id: "cyberpunk",
+    name: "Cyberpunk (赛博朋克)",
+    era: "Late 20th Century",
+    driver: "p5",
+    description:
+      "高饱和的霓虹在雨夜中闪烁，寒冷的城市网格包裹着潮湿而脆弱的‘高科技／低生活’。",
+    prompt: "当技术无处不在，人的孤独会被放大，还是被掩盖？",
+    styleTags: ["Neon", "Rain", "City"],
+    sketch: (p: p5, seed: string) => {
+      // Improved Cyberpunk: Abstract Bio-Data Metropolis
+      // Moving away from cliché neon city skylines to a dense, data-driven atmosphere
+
+      let streams: any[] = [];
+      let gridY = 0;
+
+      p.setup = () => {
+        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.colorMode(p.HSB, 360, 100, 100, 100);
+        p.background(0);
+        initStreams();
+      };
+
+      const initStreams = () => {
+        streams = [];
+        // Create vertical "lanes" of data
+        let laneCount = Math.floor(p.width / 40);
+        for (let i = 0; i < laneCount; i++) {
+          streams.push({
+            x: i * (p.width / laneCount),
+            w: p.random(10, 30),
+            speed: p.random(5, 15),
+            color: p.random([170, 200, 280, 320]), // Cyan, Blue, Purple, Pink
+            active: p.random() > 0.5,
+            offset: p.random(1000),
+          });
+        }
+      };
+
+      const drawGlitchRect = (
+        x: number,
+        y: number,
+        w: number,
+        h: number,
+        hue: number,
+      ) => {
+        if (p.random() > 0.1) {
+          p.fill(hue, 80, 100, 80);
+          p.noStroke();
+          p.rect(x, y, w, h);
+        } else {
+          // Glitch segment
+          p.noFill();
+          p.stroke(hue, 100, 100);
+          p.strokeWeight(2);
+          p.line(x, y, x + w, y + h);
+          p.line(x + w, y, x, y + h);
+        }
+      };
+
+      p.draw = () => {
+        // Leave trails
+        p.background(230, 60, 5, 20); // Deep dark blue background
+
+        // 1. Perspective Grid (Infinite Floor)
+        p.stroke(280, 80, 60, 30);
+        p.strokeWeight(1);
+        gridY += 2;
+        if (gridY > 40) gridY = 0;
+
+        let cy = p.height * 0.4; // Horizon high up
+
+        // Floor lines
+        for (let y = cy; y < p.height; y += 40) {
+          let actualY = y + gridY;
+          if (actualY < p.height) {
+            p.line(0, actualY, p.width, actualY);
+          }
+        }
+        // Vertical perspective lines
+        for (let x = -p.width; x < p.width * 2; x += 100) {
+          p.line(x, p.height, p.width / 2, cy);
+        }
+
+        // 2. Data Rain / Vertical Structures
+        streams.forEach((s, idx) => {
+          if (!s.active) return;
+
+          // Time based vertical movement
+          let y =
+            ((p.frameCount * s.speed + s.offset) % (p.height + 200)) - 100;
+
+          // Draw head
+          drawGlitchRect(s.x, y, s.w, p.random(10, 40), s.color);
+
+          // Draw trail
+          for (let k = 0; k < 5; k++) {
+            p.fill(s.color, 90, 100, 20 - k * 4);
+            p.noStroke();
+            p.rect(s.x, y - k * 20, s.w, 10);
+          }
+
+          // Occasional "text" or code blocks
+          if (p.frameCount % 30 === 0 && p.random() > 0.8) {
+            p.fill(0, 0, 100);
+            p.rect(s.x + s.w + 5, y, 4, 4);
+            p.rect(s.x + s.w + 5, y + 6, 4, 4);
+          }
+        });
+
+        // 3. Volumetric Searchlight (Surveillance)
+        let lx = p.width / 2 + Math.sin(p.frameCount * 0.02) * (p.width * 0.4);
+        p.push();
+        p.translate(lx, 0);
+        p.fill(320, 100, 100, 5); // Pink searchlight
+        p.triangle(0, 0, -100, p.height, 100, p.height);
+
+        // Core of light
+        p.fill(320, 0, 100);
+        p.ellipse(0, 0, 20, 10);
+        p.pop();
+
+        // 4. Interface overlay (HUD)
+        if (p.frameCount % 5 === 0) {
+          // Scanline
+          p.stroke(0, 100, 100, 50);
+          let scanY = (p.frameCount * 8) % p.height;
+          p.line(0, scanY, p.width, scanY);
+        }
+
+        // Random large glitch block
+        if (p.random() > 0.98) {
+          let gx = p.random(p.width);
+          let gy = p.random(p.height);
+          let gw = p.random(100, 400);
+          let gh = p.random(50, 200);
+
+          let c = p.get(gx, gy, gw, gh);
+          p.image(c, gx + p.random(-20, 20), gy + p.random(-5, 5));
+
+          p.noFill();
+          p.stroke(0, 0, 100);
+          p.rect(gx, gy, gw, gh);
+        }
+      };
+      (p as any).customResize = (w: number, h: number) => {
+        p.resizeCanvas(w, h);
+        initStreams();
+      };
     },
   },
 ];

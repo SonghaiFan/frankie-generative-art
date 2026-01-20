@@ -61,47 +61,72 @@ export const popStyles: ArtStyle[] = [
     prompt: "原创是一种执念吗？如果在旧物上能开出新花，为何不可？",
     styleTags: ["Collage", "Layered", "Geometric"],
     sketch: (p: p5, seed: string) => {
+      // Andy Warhol Silk Screen Effect
+      // Draw the same "icon" multiple times with offset colors
+
       p.setup = () => {
         p.createCanvas(p.windowWidth, p.windowHeight);
         p.colorMode(p.HSB, 360, 100, 100, 100);
         p.noStroke();
       };
+
+      const drawIcon = (
+        x: number,
+        y: number,
+        w: number,
+        h: number,
+        colors: number[][],
+      ) => {
+        // Background
+        p.fill(colors[0][0], colors[0][1], colors[0][2]);
+        p.rect(x, y, w, h);
+
+        p.push();
+        p.translate(x + w / 2, y + h / 2);
+
+        // "Face" or "Object" silhouette
+        // Hair/Back
+        p.fill(colors[1][0], colors[1][1], colors[1][2]);
+        p.arc(0, -h * 0.1, w * 0.7, h * 0.7, p.PI, 0);
+        p.rect(-w * 0.35, -h * 0.1, w * 0.7, h * 0.5);
+
+        // Face Skin
+        p.fill(colors[2][0], colors[2][1], colors[2][2]); // Skin tone usually pinkish
+        p.ellipse(0, h * 0.1, w * 0.5, h * 0.6);
+
+        // Eyes/Lips Overlay (High contrast)
+        p.fill(colors[3][0], colors[3][1], colors[3][2]);
+        p.ellipse(-w * 0.1, h * 0.05, w * 0.12, h * 0.05); // Eye L
+        p.ellipse(w * 0.1, h * 0.05, w * 0.12, h * 0.05); // Eye R
+        p.ellipse(0, h * 0.25, w * 0.2, h * 0.05); // Mouth
+        p.pop();
+      };
+
       p.draw = () => {
-        const w = p.width / 2;
-        const h = p.height / 2;
-        const colors = [
-          [320, 90, 90], // Hot Pink
-          [190, 90, 90], // Cyan
-          [50, 90, 100], // Yellow
-          [100, 80, 80], // Green
-        ];
+        const cols = 2;
+        const rows = 2;
+        const cellW = p.width / cols;
+        const cellH = p.height / rows;
 
-        // 绘制四个面板
-        [0, 1, 2, 3].forEach((i) => {
-          const cx = (i % 2) * w;
-          const cy = Math.floor(i / 2) * h;
-          const bg = colors[i];
-          const fg = colors[(i + 1) % 4]; // 错位颜色
+        // Random palettes for each cell, changing slowly
+        if (p.frameCount % 60 === 0 || p.frameCount === 1) {
+          // p.background(0);
+        }
 
-          p.fill(bg[0], bg[1], bg[2]);
-          p.rect(cx, cy, w, h);
+        let seedVal = Math.floor(p.frameCount / 120);
+        p.randomSeed(seedVal);
 
-          // 绘制“被挪用”的图标（一个简单的罐头形状）
-          p.push();
-          p.translate(cx + w / 2, cy + h / 2);
+        for (let j = 0; j < rows; j++) {
+          for (let i = 0; i < cols; i++) {
+            // Generate wild pop palette
+            const c1 = [p.random(360), p.random(60, 100), p.random(80, 100)]; // BG
+            const c2 = [p.random(360), p.random(60, 100), p.random(30, 80)]; // Hair
+            const c3 = [p.random(330, 30), p.random(20, 60), 95]; // Skin (Pinkish range)
+            const c4 = [p.random(360), 100, 60]; // Features
 
-          // 简单的丝网印刷错位效果
-          const shiftX = Math.sin(p.frameCount * 0.05 + i) * 5;
-          const shiftY = Math.cos(p.frameCount * 0.05 + i) * 5;
-
-          p.fill(0, 0, 10); // 黑色轮廓底层
-          p.rect(shiftX, shiftY, 60, 90, 10);
-
-          p.fill(fg[0], fg[1], fg[2]); // 亮色顶层
-          p.rect(0, 0, 60, 90, 10);
-
-          p.pop();
-        });
+            drawIcon(i * cellW, j * cellH, cellW, cellH, [c1, c2, c3, c4]);
+          }
+        }
       };
       (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
     },
@@ -147,6 +172,232 @@ export const popStyles: ArtStyle[] = [
         }
       };
       (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
+    },
+  },
+  {
+    id: "graffiti",
+    name: "Graffiti (街头涂鸦)",
+    era: "Street Art",
+    driver: "p5",
+    description: "在城市的混凝土表面上，用喷漆和标签争夺一块暂时的存在空间。",
+    prompt: "如果只能在一面墙上留下一个词，你会写什么？",
+    styleTags: ["Urban", "Tag", "Spray"],
+    sketch: (p: p5, seed: string) => {
+      // Improved Graffiti: Wildstyle + Drips + Texture
+      p.setup = () => {
+        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.colorMode(p.HSB, 360, 100, 100, 100);
+        p.noLoop();
+      };
+
+      const sprayLine = (
+        x1: number,
+        y1: number,
+        x2: number,
+        y2: number,
+        color: any,
+        weight: number,
+      ) => {
+        // Simulate spray can stroke
+        const d = p.dist(x1, y1, x2, y2);
+        const steps = d;
+        for (let i = 0; i < steps; i += 2) {
+          const t = i / steps;
+          const x = p.lerp(x1, x2, t);
+          const y = p.lerp(y1, y2, t);
+
+          // Scatter
+          p.noStroke();
+          p.fill(color);
+          for (let j = 0; j < 10; j++) {
+            const r = p.random(weight);
+            const angle = p.random(p.TWO_PI);
+            const sx = x + Math.cos(angle) * r;
+            const sy = y + Math.sin(angle) * r;
+            p.circle(sx, sy, p.random(1, 3));
+          }
+        }
+      };
+
+      const drawTag = (cx: number, cy: number, str: string, color: any) => {
+        p.stroke(color);
+        p.strokeWeight(15);
+        p.strokeJoin(p.ROUND);
+        p.noFill();
+        // Abstracted wildstyle letters (just curves imitating text)
+        p.beginShape();
+        for (let i = 0; i < 6; i++) {
+          p.curveVertex(cx + p.random(-150, 150), cy + p.random(-50, 50));
+        }
+        p.endShape();
+        // Drips
+        for (let i = 0; i < 5; i++) {
+          let dripX = cx + p.random(-100, 100);
+          let dripY = cy + p.random(20, 50);
+          let len = p.random(20, 150);
+          p.strokeWeight(p.random(3, 8));
+          p.line(dripX, dripY, dripX, dripY + len + p.random(5, 5));
+          p.circle(dripX, dripY + len, 5);
+        }
+      };
+
+      p.draw = () => {
+        // 1. Concrete Wall Texture
+        p.background(40, 10, 30);
+        p.loadPixels();
+        for (let x = 0; x < p.width; x += 4) {
+          for (let y = 0; y < p.height; y += 4) {
+            if (p.random() > 0.5) {
+              p.fill(0, 0, p.random(20, 40), 50);
+              p.noStroke();
+              p.rect(x, y, 4, 4);
+            }
+          }
+        }
+
+        // 2. Old faded tags (background noise)
+        for (let i = 0; i < 10; i++) {
+          let x = p.random(p.width);
+          let y = p.random(p.height);
+          p.stroke(0, 0, 60, 30);
+          p.strokeWeight(5);
+          p.noFill();
+          p.beginShape();
+          p.vertex(x, y);
+          p.bezierVertex(x + 50, y - 50, x - 50, y + 50, x + 100, y);
+          p.endShape();
+        }
+
+        // 3. Main Piece (Gradient Fill + Outline)
+        const cx = p.width / 2;
+        const cy = p.height / 2;
+
+        // Outline / "Bubble" background
+        p.stroke(0, 0, 100); // White outline
+        p.strokeWeight(40);
+        p.strokeJoin(p.ROUND);
+        p.noFill();
+        p.beginShape();
+        p.vertex(cx - 200, cy);
+        p.bezierVertex(cx - 100, cy - 150, cx + 100, cy - 150, cx + 200, cy);
+        p.bezierVertex(cx + 250, cy + 100, cx - 250, cy + 100, cx - 200, cy);
+        p.endShape(p.CLOSE);
+
+        // Fill ("Throw up")
+        p.fill(320, 80, 90); // Pink
+        p.noStroke();
+        p.beginShape();
+        p.vertex(cx - 200, cy);
+        p.bezierVertex(cx - 100, cy - 150, cx + 100, cy - 150, cx + 200, cy);
+        p.bezierVertex(cx + 250, cy + 100, cx - 250, cy + 100, cx - 200, cy);
+        p.endShape(p.CLOSE);
+
+        // Inner Details / Highlights
+        p.fill(320, 40, 100);
+        p.circle(cx - 100, cy - 50, 40);
+        p.circle(cx + 80, cy - 40, 30);
+
+        p.stroke(0);
+        p.strokeWeight(10);
+        p.noFill();
+        // Arrow
+        p.line(cx + 180, cy + 50, cx + 250, cy);
+        p.line(cx + 250, cy, cx + 230, cy - 20);
+
+        // Drips from the piece
+        p.stroke(320, 80, 90);
+        p.strokeWeight(8);
+        p.line(cx - 50, cy + 80, cx - 50, cy + 200);
+        p.line(cx + 120, cy + 80, cx + 120, cy + 250);
+      };
+
+      (p as any).customResize = (w: number, h: number) => {
+        p.resizeCanvas(w, h);
+      };
+    },
+  },
+  {
+    id: "conceptual_art",
+    name: "Conceptual Art (观念艺术)",
+    era: "1960s-1970s",
+    driver: "p5",
+    description: "作品的物质形态退居次要，核心在于一套纯粹的逻辑或空间度量。",
+    prompt: "如果艺术不依赖形象，它能否仅凭一段关系或一个尺度而存在？",
+    styleTags: ["Logic", "Measurement", "Minimal"],
+    sketch: (p: p5, seed: string) => {
+      // Improved Conceptual Art: No text.
+      // Visualizing measurements and spatial logic (Measuring the invisible)
+      let points: { x: number; y: number }[] = [];
+
+      p.setup = () => {
+        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.colorMode(p.HSB, 360, 100, 100, 100);
+        initPoints();
+      };
+
+      const initPoints = () => {
+        points = [];
+        for (let i = 0; i < 15; i++) {
+          points.push({
+            x: p.random(p.width * 0.2, p.width * 0.8),
+            y: p.random(p.height * 0.2, p.height * 0.8),
+          });
+        }
+      };
+
+      p.draw = () => {
+        p.background(0, 0, 98); // Gallery white
+
+        // Fine grid
+        p.stroke(0, 0, 90);
+        p.strokeWeight(1);
+        for (let x = 0; x < p.width; x += 50) p.line(x, 0, x, p.height);
+        for (let y = 0; y < p.height; y += 50) p.line(0, y, p.width, y);
+
+        // Logical lines connecting points
+        p.noFill();
+        p.stroke(0, 0, 30, 40);
+
+        // Measuring lines
+        points.forEach((pt, i) => {
+          // Draw coordinate lines to edges
+          p.strokeWeight(0.5);
+          p.stroke(200, 50, 70, 20); // Blueish "blueprint" line
+          p.line(pt.x, 0, pt.x, p.height);
+          p.line(0, pt.y, p.width, pt.y);
+
+          // Marks
+          p.fill(0);
+          p.noStroke();
+          p.rect(pt.x - 2, pt.y - 2, 4, 4);
+
+          // Connect to next
+          if (i < points.length - 1) {
+            let next = points[i + 1];
+            p.stroke(0, 0, 10, 60);
+            p.strokeWeight(1);
+            p.line(pt.x, pt.y, next.x, next.y);
+
+            // Draw middle crosshair
+            let midX = (pt.x + next.x) / 2;
+            let midY = (pt.y + next.y) / 2;
+            p.stroke(0, 80, 80, 50);
+            p.line(midX - 10, midY, midX + 10, midY);
+            p.line(midX, midY - 10, midX, midY + 10);
+          }
+        });
+
+        // Corner labels (Visual only, no meaningful text)
+        p.noStroke();
+        p.fill(0, 0, 60);
+        p.rect(50, 50, 100, 1);
+        p.rect(50, 60, 60, 1);
+      };
+
+      (p as any).customResize = (w: number, h: number) => {
+        p.resizeCanvas(w, h);
+        initPoints();
+      };
     },
   },
 ];

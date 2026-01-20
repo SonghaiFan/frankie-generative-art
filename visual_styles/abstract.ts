@@ -11,40 +11,72 @@ export const abstractStyles: ArtStyle[] = [
     prompt: "你的思维是像树一样扎根向上，还是像草一样蔓延连接？",
     styleTags: ["Chaos", "Network", "Organic"],
     sketch: (p: p5, seed: string) => {
-      let nodes: { x: number; y: number; vx: number; vy: number }[] = [];
+      // 3D-ish nodes with depth
+      let nodes: {
+        x: number;
+        y: number;
+        z: number;
+        vx: number;
+        vy: number;
+        baseSize: number;
+      }[] = [];
+      const depth = 200; // Fake z-depth
+
       p.setup = () => {
         p.createCanvas(p.windowWidth, p.windowHeight);
         p.colorMode(p.HSB, 360, 100, 100, 100);
-        for (let i = 0; i < 70; i++) {
+
+        // Initialize nodes with depth
+        for (let i = 0; i < 90; i++) {
           nodes.push({
             x: p.random(p.width),
             y: p.random(p.height),
-            vx: p.random(-0.5, 0.5),
-            vy: p.random(-0.5, 0.5),
+            z: p.random(10, depth),
+            vx: p.random(-0.8, 0.8),
+            vy: p.random(-0.8, 0.8),
+            baseSize: p.random(2, 6),
           });
         }
       };
+
       p.draw = () => {
-        p.background(0, 0, 98, 15); // 稍微更明显的拖尾
+        p.background(220, 15, 10, 20); // Darker, deep blue/black background for contrast
 
         nodes.forEach((n, i) => {
           n.x += n.vx;
           n.y += n.vy;
 
-          if (n.x < 0 || n.x > p.width) n.vx *= -1;
-          if (n.y < 0 || n.y > p.height) n.vy *= -1;
+          if (n.x < -50) n.x = p.width + 50;
+          if (n.x > p.width + 50) n.x = -50;
+          if (n.y < -50) n.y = p.height + 50;
+          if (n.y > p.height + 50) n.y = -50;
+
+          // Perspective scaling
+          let scale = p.map(n.z, 0, depth, 0.5, 1.5);
+          let alpha = p.map(n.z, 0, depth, 30, 90);
 
           p.noStroke();
-          p.fill(0, 0, 20, 50);
-          p.circle(n.x, n.y, 4);
+          // Organic pulsing color
+          let hue = (200 + p.frameCount * 0.2 + i * 2) % 360;
+          p.fill(hue, 60, 80, alpha);
+          p.circle(
+            n.x,
+            n.y,
+            n.baseSize * scale * (1 + 0.3 * Math.sin(p.frameCount * 0.1)),
+          );
 
-          // Connect
+          // Connections
           nodes.forEach((other, j) => {
             if (i !== j) {
               const d = p.dist(n.x, n.y, other.x, other.y);
-              if (d < 120) {
-                p.stroke(0, 0, 20, p.map(d, 0, 120, 40, 0));
-                p.strokeWeight(0.5);
+              const zDist = Math.abs(n.z - other.z);
+
+              // Only connect if close in 3D space
+              if (d < 150 && zDist < 50) {
+                let lineAlpha =
+                  p.map(d, 0, 150, 60, 0) * p.map(zDist, 0, 50, 1, 0);
+                p.stroke(hue, 40, 90, lineAlpha);
+                p.strokeWeight(0.5 * scale);
                 p.line(n.x, n.y, other.x, other.y);
               }
             }
@@ -156,42 +188,93 @@ export const abstractStyles: ArtStyle[] = [
       p.setup = () => {
         p.createCanvas(p.windowWidth, p.windowHeight);
         p.colorMode(p.HSB, 360, 100, 100, 100);
-        // 生成一些固定的几何元件
-        for (let i = 0; i < 10; i++) {
+        // Generate Constructivist elements
+        for (let i = 0; i < 15; i++) {
           shapes.push({
             x: p.random(p.width),
             y: p.random(p.height),
-            w: p.random(50, 200),
-            h: p.random(10, 50),
-            rot: p.random(p.PI),
-            col: p.random() > 0.5 ? 0 : 255,
+            w: p.random(50, 300),
+            h: p.random(10, 80),
+            type: p.random() > 0.7 ? "circle" : "rect", // Basic shapes
+            col: p.random() > 0.6 ? 0 : p.random() > 0.5 ? 255 : 40, // 0=Red(ish), 255=Black, 40=Gray
+            speed: p.random(0.5, 2) * (p.random() > 0.5 ? 1 : -1),
           });
         }
       };
+
       p.draw = () => {
-        p.background(40, 10, 95); // 米白色纸张
+        p.background(40, 10, 92); // Cream paper background
 
-        // 对角线动态，象征“进取”
-        const t = p.frameCount * 0.01;
+        // Diagonal Grid / Composition Lines
+        p.stroke(0, 0, 80, 50);
+        p.strokeWeight(1);
+        for (let i = -p.height; i < p.width; i += 100) {
+          p.line(i, p.height, i + p.height, 0); // 45 degree lines
+        }
 
-        // 背景巨大的红色圆形 (象征革命太阳)
+        // Animated bold elements
         p.noStroke();
-        p.fill(0, 90, 90);
-        const sunSize = Math.min(p.width, p.height) * 0.6;
-        p.circle(p.width * 0.7, p.height * 0.3, sunSize);
 
-        // 叠加黑色结构
-        p.stroke(0, 0, 10);
-        p.strokeWeight(2);
-        p.line(0, p.height, p.width, 0); // 强对角线
+        // The "Red Sun" / Dynamic Circle
+        p.push();
+        p.translate(p.width * 0.7, p.height * 0.4);
+        // Slight scale oscillation
+        const scale = 1 + Math.sin(p.frameCount * 0.02) * 0.05;
+        p.scale(scale);
+        p.fill(350, 80, 90, 90); // Constructivist Red
+        p.circle(0, 0, 200);
+        p.pop();
 
+        // Strong black diagonal bar
+        p.push();
+        p.fill(0, 0, 10);
+        p.translate(p.width / 2, p.height / 2);
+        p.rotate(-p.PI / 4);
+        p.rectMode(p.CENTER);
+        // Sliding bar
+        let slide = (p.frameCount * 2) % (p.width * 1.5);
+        if (slide < 0) slide += p.width * 1.5;
+        // p.rect(slide - p.width*0.75, 0, 400, 40);
+        // Actually let's make it static but potent
+        p.rect(0, 0, p.width * 1.2, 50);
+        p.pop();
+
+        // Floating geometric shards
         shapes.forEach((s, i) => {
           p.push();
+          // Movement along diagonals
+          s.x += s.speed;
+          s.y -= s.speed; // Move up-right
+
+          // Loop functionality
+          if (s.x > p.width + 200) {
+            s.x = -200;
+            s.y = p.random(p.height + 200);
+          }
+          if (s.x < -200) {
+            s.x = p.width + 200;
+            s.y = p.random(p.height);
+          }
+          if (s.y < -200) {
+            s.y = p.height + 200;
+            s.x = p.random(-200, p.width);
+          }
+
           p.translate(s.x, s.y);
-          p.rotate(s.rot + t * (i % 2 === 0 ? 0.05 : -0.05));
-          p.fill(s.col);
-          p.noStroke();
-          p.rect(0, 0, s.w, s.h);
+          // Constructivist colors: Red, Black, Gray
+          if (s.col === 0)
+            p.fill(350, 90, 80, 80); // Red
+          else if (s.col === 255)
+            p.fill(0, 0, 10, 90); // Black
+          else p.fill(0, 0, 60, 70); // Gray
+
+          p.rotate(-p.PI / 4); // Align with diagonal theme
+
+          if (s.type === "rect") {
+            p.rect(0, 0, s.w, s.h);
+          } else {
+            p.circle(0, 0, s.w / 2);
+          }
           p.pop();
         });
       };
@@ -209,44 +292,165 @@ export const abstractStyles: ArtStyle[] = [
     prompt: "如果剥离了所有社会意义，艺术还剩下什么？",
     styleTags: ["Geometric", "Minimal", "Floating"],
     sketch: (p: p5, seed: string) => {
+      let shapes: any[] = [];
+      p.setup = () => {
+        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.rectMode(p.CENTER);
+        p.noStroke();
+        for (let i = 0; i < 10; i++) {
+          shapes.push({
+            x: p.random(p.width),
+            y: p.random(p.height),
+            w: p.random(20, 100),
+            h: p.random(20, 200),
+            c: p.random([0, 200]),
+          });
+        }
+      };
+      p.draw = () => {
+        p.background(245);
+        shapes.forEach((s) => {
+          s.y += Math.sin(p.frameCount * 0.02 + s.x) * 0.5;
+          // Fix: p.fill ambiguity between number and Color object
+          if (s.c === 200) {
+            p.fill(200, 0, 0);
+          } else {
+            p.fill(0);
+          }
+          p.push();
+          p.translate(s.x, s.y);
+          p.rotate(s.x);
+          p.rect(0, 0, s.w, s.h);
+          p.pop();
+        });
+      };
+      (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
+    },
+  },
+  {
+    id: "installation_art",
+    name: "Installation Art (装置艺术)",
+    era: "Contemporary",
+    driver: "p5",
+    description:
+      "观众不再是旁观者，而是作品的一部分。你的存在扰动了光的流向，混沌在触碰中产生秩序。",
+    prompt: "当由于你的介入，作品才变得完整，你是作者还是观众？",
+    styleTags: ["Immersive", "Interactive", "Particles", "Generative"],
+    sketch: (p: p5, seed: string) => {
+      // 粒子类定义
+      class Particle {
+        pos: p5.Vector;
+        vel: p5.Vector;
+        acc: p5.Vector;
+        maxSpeed: number;
+        colorHue: number;
+        life: number;
+
+        constructor() {
+          this.pos = p.createVector(p.random(p.width), p.random(p.height));
+          this.vel = p.createVector(0, 0);
+          this.acc = p.createVector(0, 0);
+          this.maxSpeed = p.random(2, 5);
+          this.colorHue = p.random(180, 260); // 蓝紫色调 (Blue/Purple/Cyan)
+          this.life = p.random(100, 255);
+        }
+
+        update(mouseX: number, mouseY: number, isInteracting: boolean) {
+          // 1. 基础噪声场 (Perlin Noise Field) - 让粒子自然流动
+          const noiseScale = 0.005;
+          const n = p.noise(
+            this.pos.x * noiseScale,
+            this.pos.y * noiseScale,
+            p.frameCount * 0.005,
+          );
+          const angle = n * p.TWO_PI * 4;
+
+          // 基础流动力
+          const flowForce = p
+            .createVector(Math.cos(angle), Math.sin(angle))
+            .mult(0.5);
+          this.applyForce(flowForce);
+
+          // 2. 交互力 (Interaction)
+          if (isInteracting) {
+            const mouse = p.createVector(mouseX, mouseY);
+            const dir = p5.Vector.sub(mouse, this.pos);
+            const dist = dir.mag();
+
+            if (dist < 300) {
+              dir.normalize();
+              // 吸引力
+              const attraction = dir.copy().mult(1.5);
+              // 旋转力
+              const rotation = p.createVector(-dir.y, dir.x).mult(2);
+
+              this.applyForce(attraction);
+              this.applyForce(rotation);
+
+              this.colorHue = (this.colorHue + 2) % 360;
+              this.maxSpeed = 8;
+            } else {
+              this.maxSpeed = 3;
+            }
+          }
+
+          this.vel.add(this.acc);
+          this.vel.limit(this.maxSpeed);
+          this.pos.add(this.vel);
+          this.acc.mult(0);
+
+          if (this.pos.x > p.width) this.pos.x = 0;
+          if (this.pos.x < 0) this.pos.x = p.width;
+          if (this.pos.y > p.height) this.pos.y = 0;
+          if (this.pos.y < 0) this.pos.y = p.height;
+        }
+
+        applyForce(force: p5.Vector) {
+          this.acc.add(force);
+        }
+
+        show() {
+          const speed = this.vel.mag();
+          const alpha = p.map(speed, 0, 8, 20, 100);
+          const weight = p.map(speed, 0, 8, 1, 3);
+
+          p.strokeWeight(weight);
+          p.stroke(this.colorHue, 80, 100, alpha);
+          p.point(this.pos.x, this.pos.y);
+        }
+      }
+
+      const particles: Particle[] = [];
+      const numParticles = 800;
+
       p.setup = () => {
         p.createCanvas(p.windowWidth, p.windowHeight);
         p.colorMode(p.HSB, 360, 100, 100, 100);
-        p.noLoop();
-      };
-      p.draw = () => {
-        p.background(0, 0, 96); // White-ish
-        p.noStroke();
-
-        // The composition usually has a diagonal or floating tension
-        const numShapes = Math.floor(p.random(3, 10)); // Very few shapes
-
-        for (let i = 0; i < numShapes; i++) {
-          p.push();
-          p.translate(p.random(p.width), p.random(p.height));
-          p.rotate(p.random(p.TWO_PI));
-
-          const r = p.random();
-          // Colors: Mostly Black, Red
-          if (r < 0.6)
-            p.fill(0, 0, 10); // Black
-          else if (r < 0.9)
-            p.fill(0, 90, 80); // Red
-          else p.fill(220, 80, 80); // Blue sometimes
-
-          if (p.random() > 0.3) {
-            // Rectangle
-            p.rect(0, 0, p.random(50, 300), p.random(20, 100));
-          } else {
-            // Circle
-            p.circle(0, 0, p.random(50, 200));
-          }
-          p.pop();
+        for (let i = 0; i < numParticles; i++) {
+          particles.push(new Particle());
         }
       };
+
+      p.draw = () => {
+        p.noStroke();
+        p.fill(0, 0, 0, 10);
+        p.rect(0, 0, p.width, p.height);
+
+        p.blendMode(p.ADD);
+
+        const isMouseActive = p.mouseX !== 0 && p.mouseY !== 0;
+
+        for (let pt of particles) {
+          pt.update(p.mouseX, p.mouseY, isMouseActive);
+          pt.show();
+        }
+
+        p.blendMode(p.BLEND);
+        // Hint text removed as per "Avoid text" request
+      };
+
       (p as any).customResize = (w: number, h: number) => {
         p.resizeCanvas(w, h);
-        p.redraw();
       };
     },
   },

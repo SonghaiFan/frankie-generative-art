@@ -36,6 +36,75 @@ export const minimalismStyles: ArtStyle[] = [
     },
   },
   {
+    id: "swiss_style",
+    name: "Swiss Style (瑞士风格)",
+    era: "1950s Graphic Design",
+    driver: "p5",
+    description:
+      "严格的网格与无衬线字体，将信息排布成冷静而精确的版面，留白本身也是版式的一部分。",
+    prompt: "当情绪退场，只剩下信息和结构，你会如何安排它们的位置？",
+    styleTags: ["Grid", "Typography", "Minimal"],
+    sketch: (p: p5, seed: string) => {
+      p.setup = () => {
+        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.colorMode(p.HSB, 360, 100, 100, 100);
+        p.textFont("Helvetica");
+        p.noLoop();
+      };
+      p.draw = () => {
+        p.background(0, 0, 98);
+
+        const cols = 12;
+        const rows = 12;
+        const margin = p.width * 0.08;
+        const cellW = (p.width - margin * 2) / cols;
+        const cellH = (p.height - margin * 2) / rows;
+
+        // 网格线（极淡）
+        p.stroke(0, 0, 80, 25);
+        p.strokeWeight(0.5);
+        for (let i = 0; i <= cols; i++) {
+          const x = margin + i * cellW;
+          p.line(x, margin, x, p.height - margin);
+        }
+        for (let j = 0; j <= rows; j++) {
+          const y = margin + j * cellH;
+          p.line(margin, y, p.width - margin, y);
+        }
+
+        // 大色块
+        p.noStroke();
+        p.fill(0, 80, 80); // 红
+        p.rect(margin, margin + cellH * 2, cellW * 5, cellH * 4);
+
+        p.fill(0, 0, 10);
+        p.rect(margin + cellW * 7, margin + cellH * 6, cellW * 3, cellH * 3);
+
+        // 文字
+        p.fill(0, 0, 10);
+        p.textAlign(p.LEFT, p.TOP);
+        p.textSize(cellH * 1.4);
+        p.text("ZURICH", margin + cellW * 0.2, margin + cellH * 0.1);
+
+        p.textSize(cellH * 0.9);
+        p.text("1959", margin + cellW * 0.2, margin + cellH * 1.4);
+
+        p.fill(0, 0, 100);
+        p.textAlign(p.LEFT, p.TOP);
+        p.textSize(cellH * 0.8);
+        p.text(
+          "INTERNATIONALE GRAFIK",
+          margin + cellW * 7.2,
+          margin + cellH * 6.2,
+        );
+      };
+      (p as any).customResize = (w: number, h: number) => {
+        p.resizeCanvas(w, h);
+        p.redraw();
+      };
+    },
+  },
+  {
     id: "wabi_sabi",
     name: "Wabi-Sabi (侘寂)",
     era: "Traditional Japan",
