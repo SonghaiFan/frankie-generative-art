@@ -677,7 +677,7 @@ export const popStyles: ArtStyle[] = [
     prompt: "当‘丑’变得如此理直气壮，它是否比‘美’更真实？",
     styleTags: ["Anti-Design", "Distorted", "Clashing", "Raw"],
     sketch: (p: p5, seed: string) => {
-      // New Ugly: Anti-Design and Harsh Contrast
+      // New Ugly: Abstract Minimalist Brutalism
       const getSeedNum = (s: string) => {
         let h = 0;
         for (let i = 0; i < s.length; i++)
@@ -685,74 +685,74 @@ export const popStyles: ArtStyle[] = [
         return Math.abs(h);
       };
 
+      const mainColors = [
+        [325, 95, 90], // Magenta
+        [195, 100, 85], // Cyan
+        [55, 100, 100], // Yellow
+        [145, 95, 80], // Green
+        [0, 0, 10], // Black
+      ];
+
       p.setup = () => {
         p.createCanvas(p.windowWidth, p.windowHeight);
         p.colorMode(p.HSB, 360, 100, 100, 100);
+        p.noLoop();
       };
 
       p.draw = () => {
-        p.randomSeed(getSeedNum(seed));
-        const time = p.frameCount * 0.05;
+        const seedValue = getSeedNum(seed);
+        p.randomSeed(seedValue);
+        p.background(0, 0, 95); // Off-white
 
-        // 1. Clashing Background
-        const bgHue = p.random() > 0.5 ? 120 : 300; // Harsh Lime or Harsh Pink
-        p.background(bgHue, 100, 100);
+        // 1. Large Abstract Slabs (Hard-edge)
+        for (let i = 0; i < 4; i++) {
+          const clr = p.random(mainColors);
+          p.fill(clr[0], clr[1], clr[2]);
+          p.noStroke();
 
-        // 2. Distorted Shapes (Anti-Design Layout)
-        for (let i = 0; i < 6; i++) {
-          const x = p.random(p.width);
-          const y = p.random(p.height);
-          const w = p.random(100, 400);
-          const h = p.random(50, 150);
-
+          const w = p.random(p.width * 0.3, p.width * 0.8);
+          const h = p.random(p.height * 0.1, p.height * 0.4);
           p.push();
-          p.translate(x, y);
-          // Deliberately awkward rotation
-          p.rotate(p.random(-0.5, 0.5) + p.sin(time + i) * 0.1);
-
-          // Harsh clashing colors
-          p.fill(p.random(360), 100, 100, 80);
-          p.stroke(0, 0, 0);
-          p.strokeWeight(p.random(5, 15));
-
-          const shapeType = p.floor(p.random(3));
-          if (shapeType === 0) {
-            p.rect(0, 0, w, h);
-          } else if (shapeType === 1) {
-            p.ellipse(0, 0, w, h); // Squashed ellipse
-          } else {
-            // Primitive polygon
-            p.beginShape();
-            for (let j = 0; j < 4; j++) {
-              p.vertex(p.random(w), p.random(h));
-            }
-            p.endShape(p.CLOSE);
-          }
+          p.translate(p.random(p.width), p.random(p.height));
+          p.rotate(p.random(-0.1, 0.1));
+          p.rect(0, 0, w, h);
           p.pop();
         }
 
-        // 3. "Digital Garbage" - Brutalist blobs
-        for (let i = 0; i < 3; i++) {
-          const x = p.noise(time, i) * p.width;
-          const y = p.noise(i, time) * p.height;
-          p.fill(200, 100, 100); // Harsh blue
-          p.noStroke();
-          p.circle(x, y, 150);
+        // 2. Structural Minimalist Grid (Ghost Grid)
+        p.stroke(0, 10);
+        p.strokeWeight(1);
+        for (let x = 0; x < p.width; x += p.width / 5)
+          p.line(x, 0, x, p.height);
+        for (let y = 0; y < p.height; y += p.height / 4)
+          p.line(0, y, p.width, y);
 
-          p.fill(0, 0, 100);
-          p.textSize(40);
-          p.text("ERROR", x - 60, y + 10);
-        }
+        // 3. One single aggressive element
+        p.fill(0);
+        p.noStroke();
+        p.push();
+        p.translate(p.width * 0.5, p.height * 0.5);
+        p.rotate(0.1);
+        p.rectMode(p.CENTER);
+        p.rect(0, 0, p.width * 0.9, 80);
+        p.fill(255);
+        p.textSize(45);
+        p.textStyle(p.BOLD);
+        p.textAlign(p.CENTER, p.CENTER);
+        p.text("ABSTRACT_UGLY", 0, 0);
+        p.pop();
 
-        // 4. Broken Lines
-        p.stroke(0, 100, 100);
-        p.strokeWeight(10);
-        for (let i = 0; i < 5; i++) {
-          p.line(0, p.random(p.height), p.width, p.random(p.height));
+        // 4. Subtle Post-Digital Noise
+        for (let i = 0; i < 100; i++) {
+          p.stroke(0, 20);
+          p.point(p.random(p.width), p.random(p.height));
         }
       };
 
-      (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
+      (p as any).customResize = (w: number, h: number) => {
+        p.resizeCanvas(w, h);
+        p.redraw();
+      };
     },
   },
   {

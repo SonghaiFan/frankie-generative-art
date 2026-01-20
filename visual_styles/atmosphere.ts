@@ -385,4 +385,170 @@ export const atmosphereStyles: ArtStyle[] = [
       };
     },
   },
+  {
+    id: "frutiger_aero",
+    name: "Frutiger Aero (弗鲁蒂格航空)",
+    era: "2004-2013",
+    driver: "p5",
+    description:
+      "拟物化的图标、光泽的水晶质感、清新的极光与气泡。一个承诺过的美好未来。",
+    prompt: "你是否怀念那个科技曾向我们承诺‘一切都会更清洁、更美好’的年代？",
+    styleTags: ["Glossy", "Bubbles", "Optimism"],
+    sketch: (p: p5, seed: string) => {
+      p.setup = () => {
+        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.colorMode(p.HSB, 360, 100, 100, 100);
+        p.noLoop();
+      };
+
+      p.draw = () => {
+        // 1. Fresh Background (Linear Gradient Green to Blue)
+        for (let y = 0; y < p.height; y++) {
+          const inter = p.map(y, 0, p.height, 0, 1);
+          const c = p.lerpColor(
+            p.color(120, 40, 95),
+            p.color(200, 60, 90),
+            inter,
+          ); // Green to Blue
+          p.stroke(c);
+          p.line(0, y, p.width, y);
+        }
+
+        // 2. The "Aurora" Waves (Abstract Flow)
+        p.noFill();
+        p.strokeWeight(2);
+        for (let i = 0; i < 5; i++) {
+          p.stroke(0, 0, 100, 30); // White transparent lines
+          p.beginShape();
+          for (let x = 0; x <= p.width; x += 20) {
+            const y =
+              p.height / 2 +
+              Math.sin(x * 0.005 + i) * 100 +
+              p.noise(x * 0.01, i) * 100;
+            p.vertex(x, y);
+          }
+          p.endShape();
+        }
+
+        // 3. Glossy Bubbles (Skeumorphism simulation)
+        const numBubbles = 15;
+        for (let i = 0; i < numBubbles; i++) {
+          const x = p.random(p.width);
+          const y = p.random(p.height);
+          const r = p.random(30, 100); // Radius
+
+          p.noStroke();
+
+          // Body of bubble
+          p.fill(0, 0, 100, 10); // Very transparent white body
+          p.circle(x, y, r * 2);
+
+          // Inner Glow (Bottom Right)
+          p.fill(200, 40, 90, 20); // Cyan tint
+          p.circle(x, y, r * 1.8);
+
+          // Specular Highlight (Top Left - Key to Glossy look)
+          p.fill(0, 0, 100, 90); // Pure White, high opacity
+          p.ellipse(x - r * 0.4, y - r * 0.4, r * 0.6, r * 0.4); // Oval highlight
+
+          // Secondary Highlight (Bottom Right Reflection)
+          p.fill(0, 0, 100, 40);
+          p.ellipse(x + r * 0.4, y + r * 0.4, r * 0.2, r * 0.2);
+
+          // Glass Rim
+          p.stroke(0, 0, 100, 50);
+          p.strokeWeight(1);
+          p.noFill();
+          p.circle(x, y, r * 2);
+        }
+
+        // 4. Lens Flare / Sparkle
+        p.fill(0, 0, 100);
+        p.noStroke();
+        const lx = p.width * 0.8;
+        const ly = p.height * 0.2;
+        p.circle(lx, ly, 20); // Core
+        p.stroke(0, 0, 100, 50);
+        p.strokeWeight(2);
+        p.line(lx - 50, ly, lx + 50, ly); // Cross
+        p.line(lx, ly - 50, lx, ly + 50);
+      };
+      (p as any).customResize = (w: number, h: number) => {
+        p.resizeCanvas(w, h);
+        p.redraw();
+      };
+    },
+  },
+  {
+    id: "poolcore",
+    name: "Poolcore (池核)",
+    era: "Liminal Space Subgenre",
+    driver: "p5",
+    description: "无尽的白色瓷砖、清澈到令人恐惧的浅蓝水体、听觉上的回声感。",
+    prompt: "这水清澈得看起来像固体。你敢跳下去吗？",
+    styleTags: ["Tiles", "Water", "Sterile"],
+    sketch: (p: p5, seed: string) => {
+      // Poolcore: Abstract Minimalist Version
+      p.setup = () => {
+        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.colorMode(p.HSB, 360, 100, 100, 100);
+      };
+
+      p.draw = () => {
+        const time = p.frameCount * 0.01;
+        const cx = p.width / 2;
+        const cy = p.height * 0.45;
+
+        p.background(190, 15, 5); // Abyss base
+
+        // 1. Perspective Geometry (Structural Essence)
+        p.noFill();
+        p.strokeWeight(1);
+
+        const res = 15;
+        for (let i = 1; i <= res; i++) {
+          const z = i / res;
+          const s = Math.pow(z, 3); // Deeper perspective
+          const w = p.width * s;
+          const h = p.height * s;
+
+          p.stroke(190, 40, 90, p.map(i, 0, res, 5, 40));
+          p.rectMode(p.CENTER);
+          p.rect(cx, cy, w, h);
+
+          // Structural lines
+          p.line(cx - w / 2, cy - h / 2, cx, cy);
+          p.line(cx + w / 2, cy - h / 2, cx, cy);
+        }
+
+        // 2. The Abyss (Clean Water Plane)
+        const waterY = cy + p.height * 0.2;
+        p.noStroke();
+        p.fill(185, 70, 20); // Deep cyan plane
+        p.rectMode(p.CORNER);
+        p.rect(0, waterY, p.width, p.height - waterY);
+
+        // Single light source
+        const glow = 20 + p.sin(time) * 10;
+        p.fill(190, 10, 100, glow);
+        p.circle(cx, cy, 2);
+
+        // 3. Atmosphere (Mist)
+        const grad = p.drawingContext.createRadialGradient(
+          cx,
+          cy,
+          0,
+          cx,
+          cy,
+          p.width * 0.7,
+        );
+        grad.addColorStop(0, "rgba(0,0,0,0)");
+        grad.addColorStop(1, "rgba(0,15,20,0.6)");
+        p.drawingContext.fillStyle = grad;
+        p.rect(0, 0, p.width, p.height);
+      };
+
+      (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
+    },
+  },
 ];
