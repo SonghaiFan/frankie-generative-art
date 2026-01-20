@@ -117,59 +117,150 @@ export const atmosphereStyles: ArtStyle[] = [
     prompt: "如果画布是整片土地，你想在地球表面画出怎样的一笔？",
     styleTags: ["Earth", "Spiral", "Site-Specific"],
     sketch: (p: p5, seed: string) => {
-      // Spiral Jetty Influence
+      // Improved Land Art: Monumental Geometries + Atmospheric Decay
+      const getSeedNum = (s: string) => {
+        let h = 0;
+        for (let i = 0; i < s.length; i++)
+          h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+        return Math.abs(h);
+      };
+
       p.setup = () => {
         p.createCanvas(p.windowWidth, p.windowHeight);
         p.colorMode(p.HSB, 360, 100, 100, 100);
+        p.noLoop();
       };
-      p.draw = () => {
-        const horizon = p.height * 0.45;
-        const t = p.frameCount * 0.01;
 
-        // Sky
-        for (let y = 0; y < horizon; y += 2) {
-          const k = p.map(y, 0, horizon, 0, 1);
-          p.stroke(210, 30 * k, 90 - k * 20);
+      const drawHorizon = (y: number, complexity: number) => {
+        p.beginShape();
+        p.vertex(0, p.height);
+        p.vertex(0, y);
+        for (let x = 0; x <= p.width; x += 20) {
+          let noiseVal = p.noise(x * 0.005, y);
+          p.vertex(x, y - noiseVal * complexity);
+        }
+        p.vertex(p.width, y);
+        p.vertex(p.width, p.height);
+        p.endShape(p.CLOSE);
+      };
+
+      p.draw = () => {
+        p.randomSeed(getSeedNum(seed));
+        p.noiseSeed(getSeedNum(seed));
+
+        const horizon = p.height * 0.5;
+
+        // 1. Atmospheric Sky
+        const skyHue = p.random([200, 30, 10, 280]); // Blue, Gold, Red, or Purple
+        for (let y = 0; y < horizon; y++) {
+          let inter = p.map(y, 0, horizon, 0, 1);
+          p.stroke(skyHue, 40 * inter, 90 - 20 * inter);
           p.line(0, y, p.width, y);
         }
 
-        // Water/Earth
+        // 2. Distant Mountains
         p.noStroke();
-        p.fill(340, 60, 40); // Pinkish salt lake water
+        p.fill(skyHue, 20, 40);
+        drawHorizon(horizon, 150);
+
+        // 3. Terrain (Salt Lake or Desert)
+        const groundHue = p.random([0, 30, 340]); // Red Clay, Sand, or Pink Salt
+        p.fill(groundHue, 10, 20); // Deep background
         p.rect(0, horizon, p.width, p.height - horizon);
 
-        // Spiral
+        // Texture for ground
+        for (let i = 0; i < 5000; i++) {
+          p.fill(groundHue, p.random(10, 30), p.random(20, 50), 30);
+          p.circle(
+            p.random(p.width),
+            p.random(horizon, p.height),
+            p.random(1, 4),
+          );
+        }
+
+        // 4. The Earthwork Structure
         p.push();
-        p.translate(p.width / 2, p.height * 0.75);
-        // p.scale(1, 0.6); // Perspective squash
+        const cx = p.width / 2;
+        const cy = horizon + (p.height - horizon) * 0.6;
+        p.translate(cx, cy);
 
-        let coils = 4;
-        let points = 500;
-        let radiusMax = Math.min(p.width, p.height) * 0.4;
+        const type = p.floor(p.random(3)); // 0: Spiral, 1: Concentric, 2: Linear
+        const accentHue = (groundHue + 180) % 360;
 
-        for (let i = 0; i < points; i++) {
-          let theta = (i / points) * p.TWO_PI * coils;
-          let r = (i / points) * radiusMax;
-
-          // Animated tide?
-          let tide = Math.sin(t * 5 + r * 0.05) * 5;
-
-          let x = Math.cos(theta) * r;
-          let y = Math.sin(theta) * r * 0.6; // Perspective
-
-          // Rocks
-          let rockSize = p.map(i, 0, points, 5, 20) + p.random(-2, 2);
-          p.fill(20, 10, 20); // Dark rocks
-          p.ellipse(x, y, rockSize, rockSize * 0.8);
-
-          // Salt crust
-          if (tide > 0) {
-            p.fill(0, 0, 95, 50); // White salt foam
-            p.ellipse(x + 5, y + 5, rockSize * 1.2, rockSize);
+        if (type === 0) {
+          // Spiral (Robert Smithson vibe)
+          let coils = p.random(3, 6);
+          let points = 800;
+          let rMax = p.min(p.width, p.height) * 0.4;
+          for (let i = 0; i < points; i++) {
+            let t = i / points;
+            let theta = t * p.TWO_PI * coils;
+            let r = t * rMax;
+            let x = Math.cos(theta) * r;
+            let y = Math.sin(theta) * r * 0.5; // Perspective
+            drawRock(p, x, y, p.map(i, 0, points, 4, 15));
+          }
+        } else if (type === 1) {
+          // Concentric Circles (Richard Long vibe)
+          let rings = p.floor(p.random(4, 8));
+          for (let r = 0; r < rings; r++) {
+            let radius = (r + 1) * 40;
+            let count = radius * 0.8;
+            for (let i = 0; i < count; i++) {
+              let theta = (p.TWO_PI / count) * i;
+              let x = Math.cos(theta) * radius * 2.5;
+              let y = Math.sin(theta) * radius * 1.25;
+              drawRock(p, x, y, p.random(8, 12));
+            }
+          }
+        } else {
+          // Linear / Trench (Walter De Maria / Michael Heizer vibe)
+          let lines = p.floor(p.random(5, 12));
+          for (let l = 0; l < lines; l++) {
+            let xOff = (l - lines / 2) * 50;
+            for (let j = 0; j < 400; j += 10) {
+              let yOff = j - 200;
+              drawRock(p, xOff + yOff * 0.5, yOff, 8);
+            }
           }
         }
         p.pop();
+
+        // 5. Atmospheric effects (Mist/Sun flare)
+        p.noStroke();
+        for (let r = 500; r > 0; r -= 10) {
+          p.fill(skyHue, 10, 100, 1);
+          p.circle(p.width * 0.8, horizon * 0.4, r);
+        }
       };
+
+      const drawRock = (p: p5, x: number, y: number, size: number) => {
+        p.push();
+        p.translate(x, y);
+        p.rotate(p.random(p.TWO_PI));
+
+        // Shadow
+        p.fill(0, 0, 0, 30);
+        p.ellipse(2, 2, size, size * 0.6);
+
+        // Rock body
+        const rockCol = p.random(20, 40);
+        p.fill(0, 0, rockCol);
+        p.beginShape();
+        for (let a = 0; a < p.TWO_PI; a += p.PI / 3) {
+          let r = size * 0.5 + p.random(-size * 0.2, size * 0.2);
+          p.vertex(Math.cos(a) * r, Math.sin(a) * r);
+        }
+        p.endShape(p.CLOSE);
+
+        // Salt crust / Highlights
+        if (p.random() > 0.6) {
+          p.fill(0, 0, 100, 40);
+          p.circle(-size * 0.2, -size * 0.2, size * 0.3);
+        }
+        p.pop();
+      };
+
       (p as any).customResize = (w: number, h: number) => {
         p.resizeCanvas(w, h);
       };

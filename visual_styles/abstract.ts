@@ -292,39 +292,80 @@ export const abstractStyles: ArtStyle[] = [
     prompt: "如果剥离了所有社会意义，艺术还剩下什么？",
     styleTags: ["Geometric", "Minimal", "Floating"],
     sketch: (p: p5, seed: string) => {
+      // Improved Suprematism: Seeded, Balanced Composition, Iconic Palette
+      const getSeedNum = (s: string) => {
+        let h = 0;
+        for (let i = 0; i < s.length; i++) h = Math.imul(31, h) + s.charCodeAt(i) | 0;
+        return Math.abs(h);
+      };
+
       let shapes: any[] = [];
-      p.setup = () => {
-        p.createCanvas(p.windowWidth, p.windowHeight);
-        p.rectMode(p.CENTER);
-        p.noStroke();
-        for (let i = 0; i < 10; i++) {
+      const initShapes = () => {
+        p.randomSeed(getSeedNum(seed));
+        shapes = [];
+        const count = p.floor(p.random(8, 15));
+        
+        // Ensure at least one Large Central Element (The "Black Square" or "Red Circle" feel)
+        shapes.push({
+          type: 'rect',
+          x: p.width / 2 + p.random(-100, 100),
+          y: p.height / 2 + p.random(-100, 100),
+          w: p.random(150, 300),
+          h: p.random(150, 300),
+          rot: p.random(p.QUARTER_PI),
+          col: p.random() > 0.7 ? [0, 80, 80] : [0, 0, 0], // Red or Black
+          phase: p.random(p.TWO_PI)
+        });
+
+        for (let i = 0; i < count; i++) {
           shapes.push({
-            x: p.random(p.width),
-            y: p.random(p.height),
-            w: p.random(20, 100),
-            h: p.random(20, 200),
-            c: p.random([0, 200]),
+            type: p.random(['rect', 'rect', 'circle', 'line']),
+            x: p.random(p.width * 0.1, p.width * 0.9),
+            y: p.random(p.height * 0.1, p.height * 0.9),
+            w: p.random(20, 350),
+            h: p.random(10, 120),
+            rot: p.random(p.TWO_PI),
+            col: p.random([[0, 0, 0], [0, 85, 85], [45, 90, 95], [210, 80, 50]]), // Black, Red, Yellow, Blue
+            phase: p.random(p.TWO_PI)
           });
         }
       };
+
+      p.setup = () => {
+        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.colorMode(p.HSB, 360, 100, 100, 100);
+        p.rectMode(p.CENTER);
+        initShapes();
+      };
+
       p.draw = () => {
-        p.background(245);
+        p.background(0, 0, 95); // Off-white/Gallery white
+        
         shapes.forEach((s) => {
-          s.y += Math.sin(p.frameCount * 0.02 + s.x) * 0.5;
-          // Fix: p.fill ambiguity between number and Color object
-          if (s.c === 200) {
-            p.fill(200, 0, 0);
-          } else {
-            p.fill(0);
-          }
           p.push();
-          p.translate(s.x, s.y);
-          p.rotate(s.x);
-          p.rect(0, 0, s.w, s.h);
+          // Subtle floating movement
+          let driftY = Math.sin(p.frameCount * 0.015 + s.phase) * 15;
+          p.translate(s.x, s.y + driftY);
+          p.rotate(s.rot);
+          
+          p.noStroke();
+          p.fill(s.col[0], s.col[1], s.col[2]);
+
+          if (s.type === 'rect') {
+            p.rect(0, 0, s.w, s.h);
+          } else if (s.type === 'circle') {
+            p.ellipse(0, 0, s.w, s.w);
+          } else if (s.type === 'line') {
+            p.rect(0, 0, s.w, 4);
+          }
           p.pop();
         });
       };
-      (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
+
+      (p as any).customResize = (w: number, h: number) => {
+        p.resizeCanvas(w, h);
+        initShapes();
+      };
     },
   },
   {

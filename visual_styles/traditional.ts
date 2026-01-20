@@ -94,23 +94,93 @@ export const traditionalStyles: ArtStyle[] = [
     prompt: "如果没有颜色，你会如何描绘世界的灵魂？",
     styleTags: ["Flow", "Void", "Brushstroke"],
     sketch: (p: p5, seed: string) => {
-      let drops: any[] = [];
+      // Improved Ink Wash: Procedural Mountains + Shufa Strokes
+      const getSeedNum = (s: string) => {
+        let h = 0;
+        for (let i = 0; i < s.length; i++)
+          h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+        return Math.abs(h);
+      };
+
       p.setup = () => {
         p.createCanvas(p.windowWidth, p.windowHeight);
+        p.noLoop();
       };
-      p.draw = () => {
-        p.background(240, 20); // paper
-        if (p.frameCount % 20 === 0) {
-          drops.push({ x: p.random(p.width), y: p.random(p.height), r: 0 });
-        }
+
+      const drawMountain = (
+        y: number,
+        baseH: number,
+        col: number,
+        s: number,
+      ) => {
+        p.fill(col, 200);
         p.noStroke();
-        p.fill(0, 20);
-        drops.forEach((d) => {
-          d.r += 0.5;
-          if (d.r < 100) p.circle(d.x, d.y, d.r);
-        });
+        p.beginShape();
+        p.vertex(0, p.height);
+        for (let x = 0; x <= p.width; x += 5) {
+          let n = p.noise(x * 0.005, s * 100);
+          let h = n * baseH;
+          p.vertex(x, y - h);
+        }
+        p.vertex(p.width, p.height);
+        p.endShape(p.CLOSE);
+
+        // Add "mist" effect at the bottom
+        for (let i = 0; i < 5; i++) {
+          p.fill(245, 150); // Paper color mist
+          p.rect(0, p.height - i * 20, p.width, 30);
+        }
       };
-      (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
+
+      const drawStroke = (x: number, y: number, len: number, angle: number) => {
+        p.push();
+        p.translate(x, y);
+        p.rotate(angle);
+        p.fill(0, 180);
+        p.beginShape();
+        let sw = p.random(2, 8);
+        for (let i = 0; i < len; i += 2) {
+          let r = sw * p.noise(i * 0.1);
+          p.circle(i, p.random(-r, r), r);
+        }
+        p.endShape();
+        p.pop();
+      };
+
+      p.draw = () => {
+        p.randomSeed(getSeedNum(seed));
+        p.noiseSeed(getSeedNum(seed));
+        p.background(245); // Warm paper back
+
+        // 1. Distant Mountains (Lightest)
+        for (let i = 0; i < 3; i++) {
+          drawMountain(p.height * 0.5 + i * 50, 200 - i * 30, 200 - i * 20, i);
+        }
+
+        // 2. Middle Ground
+        drawMountain(p.height * 0.7, 300, 100, 5);
+
+        // 3. Foreground Brushstrokes (like reeds or branches)
+        for (let i = 0; i < 15; i++) {
+          drawStroke(
+            p.random(p.width),
+            p.height,
+            p.random(100, 300),
+            -p.PI / 2 + p.random(-0.5, 0.5),
+          );
+        }
+
+        // 4. Ink Splatters
+        for (let i = 0; i < 20; i++) {
+          p.fill(0, p.random(50, 150));
+          p.circle(p.random(p.width), p.random(p.height), p.random(1, 5));
+        }
+      };
+
+      (p as any).customResize = (w: number, h: number) => {
+        p.resizeCanvas(w, h);
+        p.redraw();
+      };
     },
   },
   {
@@ -122,25 +192,88 @@ export const traditionalStyles: ArtStyle[] = [
     prompt: "在时间的沙漠中，什么颜色能永不褪色？",
     styleTags: ["Earth Tones", "Ribbons", "Gold"],
     sketch: (p: p5, seed: string) => {
+      // Improved Dunhuang: Mineral Palette + Flowing Ribbons + Weathered Texture
+      const getSeedNum = (s: string) => {
+        let h = 0;
+        for (let i = 0; i < s.length; i++)
+          h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+        return Math.abs(h);
+      };
+
       p.setup = () => {
         p.createCanvas(p.windowWidth, p.windowHeight);
         p.colorMode(p.HSB, 360, 100, 100, 100);
-        p.noFill();
+        p.noLoop();
       };
+
+      const drawRibbon = (y: number, hue: number, seed: number) => {
+        p.push();
+        p.noFill();
+        p.stroke(hue, 60, 50, 80);
+        p.strokeWeight(p.random(10, 30));
+        p.beginShape();
+        for (let x = -50; x < p.width + 50; x += 10) {
+          let n = p.noise(x * 0.003, seed, p.frameCount * 0.01);
+          let yOff = p.map(n, 0, 1, -150, 150);
+          p.curveVertex(x, y + yOff);
+        }
+        p.endShape();
+        p.pop();
+      };
+
       p.draw = () => {
-        p.background(30, 40, 80, 0.1);
-        const t = p.frameCount * 0.02;
-        const colors = [160, 10, 30];
-        colors.forEach((hue, i) => {
-          p.stroke(hue, 60, 60);
+        p.randomSeed(getSeedNum(seed));
+        p.noiseSeed(getSeedNum(seed));
+
+        // 1. Weathered Sandstone Background
+        p.background(35, 30, 85); // Warm Gobi sand
+        for (let i = 0; i < 2000; i++) {
+          p.noStroke();
+          p.fill(35, 40, 70, 10);
+          p.circle(p.random(p.width), p.random(p.height), p.random(2, 5));
+        }
+
+        // 2. Mineral Colors Flowing
+        const mineralPalette = [10, 160, 200, 45]; // Vermilion, Malachite, Lapis, Ochre
+        for (let i = 0; i < 8; i++) {
+          drawRibbon(p.height * (0.2 + i * 0.1), p.random(mineralPalette), i);
+        }
+
+        // 3. Gold Accents (Houshi pattern)
+        for (let i = 0; i < 30; i++) {
+          let x = p.random(p.width);
+          let y = p.random(p.height);
+          p.stroke(45, 80, 90, 60); // Golden
+          p.strokeWeight(2);
+          p.noFill();
+          p.push();
+          p.translate(x, y);
+          for (let j = 0; j < 4; j++) {
+            p.rotate(p.HALF_PI);
+            p.arc(5, 5, 20, 20, 0, p.HALF_PI);
+          }
+          p.pop();
+        }
+
+        // 4. Weathered Cracks
+        p.stroke(20, 10, 30, 15);
+        p.strokeWeight(1);
+        for (let i = 0; i < 5; i++) {
+          let x = p.random(p.width);
+          let y = 0;
           p.beginShape();
-          for (let x = 0; x < p.width; x += 20) {
-            p.vertex(x, p.height / 2 + Math.sin(x * 0.01 + t + i) * 100);
+          for (let j = 0; j < p.height; j += 10) {
+            x += p.random(-5, 5);
+            p.vertex(x, j);
           }
           p.endShape();
-        });
+        }
       };
-      (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
+
+      (p as any).customResize = (w: number, h: number) => {
+        p.resizeCanvas(w, h);
+        p.redraw();
+      };
     },
   },
   {
@@ -152,25 +285,96 @@ export const traditionalStyles: ArtStyle[] = [
     prompt: "纯粹的蓝与白，是否足以讲述万物？",
     styleTags: ["Cobalt Blue", "Pattern", "Ceramic"],
     sketch: (p: p5, seed: string) => {
+      // Improved Blue & White: Chanzhi Patterns + Glaze Texture
+      const getSeedNum = (s: string) => {
+        let h = 0;
+        for (let i = 0; i < s.length; i++)
+          h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+        return Math.abs(h);
+      };
+
       p.setup = () => {
         p.createCanvas(p.windowWidth, p.windowHeight);
-        p.stroke(20, 50, 150);
-        p.noFill();
+        p.colorMode(p.HSB, 360, 100, 100, 100);
+        p.noLoop();
       };
-      p.draw = () => {
-        p.background(245);
-        p.translate(p.width / 2, p.height / 2);
-        p.rotate(p.frameCount * 0.005);
-        for (let r = 50; r < 300; r += 30) {
-          p.strokeWeight(r / 50);
-          p.circle(0, 0, r * 2);
-          const dots = Math.floor(r / 5);
-          for (let i = 0; i < dots; i++) {
-            p.point(r * Math.cos(i), r * Math.sin(i));
+
+      const drawVine = (x: number, y: number, r: number, angle: number) => {
+        p.push();
+        p.translate(x, y);
+        p.rotate(angle);
+        p.noFill();
+        p.stroke(230, 80, 60, 70); // Cobalt Blue
+        p.strokeWeight(2);
+
+        p.beginShape();
+        for (let i = 0; i < 100; i += 5) {
+          let nx = i;
+          let ny = Math.sin(i * 0.05) * 20;
+          p.vertex(nx, ny);
+          if (i % 20 === 0) {
+            p.push();
+            p.fill(230, 80, 50, 40);
+            p.noStroke();
+            p.ellipse(nx, ny, 15, 8);
+            p.pop();
           }
         }
+        p.endShape();
+        p.pop();
       };
-      (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
+
+      p.draw = () => {
+        p.randomSeed(getSeedNum(seed));
+        p.background(200, 5, 98); // Glazed porcelain white
+
+        // 1. Ceramic Glaze Shine
+        p.noStroke();
+        for (let i = 0; i < 50; i++) {
+          p.fill(0, 0, 100, 10);
+          p.ellipse(p.random(p.width), p.random(p.height), p.random(100, 300));
+        }
+
+        // 2. Chanzhi (Intertwined Vine) Pattern
+        for (let i = 0; i < 12; i++) {
+          drawVine(
+            p.random(p.width),
+            p.random(p.height),
+            200,
+            p.random(p.TWO_PI),
+          );
+        }
+
+        // 3. Central Medallion
+        p.push();
+        p.translate(p.width / 2, p.height / 2);
+        p.stroke(230, 90, 40);
+        p.strokeWeight(4);
+        p.noFill();
+        p.circle(0, 0, 200);
+        p.circle(0, 0, 210);
+
+        // Ruyi pattern in center
+        for (let a = 0; a < p.TWO_PI; a += p.PI / 4) {
+          p.push();
+          p.rotate(a);
+          p.fill(230, 80, 60, 30);
+          p.arc(60, 0, 40, 40, -p.HALF_PI, p.HALF_PI);
+          p.pop();
+        }
+        p.pop();
+
+        // 4. Border Pattern
+        p.stroke(230, 80, 50);
+        p.strokeWeight(10);
+        p.noFill();
+        p.rect(20, 20, p.width - 40, p.height - 40);
+      };
+
+      (p as any).customResize = (w: number, h: number) => {
+        p.resizeCanvas(w, h);
+        p.redraw();
+      };
     },
   },
   {

@@ -199,132 +199,197 @@ export const popStyles: ArtStyle[] = [
     prompt: "如果只能在一面墙上留下一个词，你会写什么？",
     styleTags: ["Urban", "Tag", "Spray"],
     sketch: (p: p5, seed: string) => {
-      // Improved Graffiti: Wildstyle + Drips + Texture
+      // Abstract Dynamic Graffiti: Wildstyle + Splatters + Seeded Chaos
       p.setup = () => {
         p.createCanvas(p.windowWidth, p.windowHeight);
         p.colorMode(p.HSB, 360, 100, 100, 100);
         p.noLoop();
       };
 
-      const sprayLine = (
-        x1: number,
-        y1: number,
-        x2: number,
-        y2: number,
-        color: any,
-        weight: number,
-      ) => {
-        // Simulate spray can stroke
-        const d = p.dist(x1, y1, x2, y2);
-        const steps = d;
-        for (let i = 0; i < steps; i += 2) {
-          const t = i / steps;
-          const x = p.lerp(x1, x2, t);
-          const y = p.lerp(y1, y2, t);
+      const getSeedNum = (s: string) => {
+        let h = 0;
+        for (let i = 0; i < s.length; i++)
+          h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+        return Math.abs(h);
+      };
 
-          // Scatter
-          p.noStroke();
-          p.fill(color);
-          for (let j = 0; j < 10; j++) {
-            const r = p.random(weight);
-            const angle = p.random(p.TWO_PI);
-            const sx = x + Math.cos(angle) * r;
-            const sy = y + Math.sin(angle) * r;
-            p.circle(sx, sy, p.random(1, 3));
-          }
+      const spraySplatter = (
+        x: number,
+        y: number,
+        color: any,
+        size: number,
+      ) => {
+        p.noStroke();
+        p.fill(color);
+        for (let i = 0; i < 30; i++) {
+          const r = p.random(size);
+          const angle = p.random(p.TWO_PI);
+          const d = p.pow(p.random(), 1.5) * r;
+          p.circle(
+            x + Math.cos(angle) * d,
+            y + Math.sin(angle) * d,
+            p.random(1, 4),
+          );
         }
       };
 
-      const drawTag = (cx: number, cy: number, str: string, color: any) => {
-        p.stroke(color);
-        p.strokeWeight(15);
-        p.strokeJoin(p.ROUND);
-        p.noFill();
-        // Abstracted wildstyle letters (just curves imitating text)
+      const drawWildShape = (
+        cx: number,
+        cy: number,
+        w: number,
+        h: number,
+        col: any,
+        isOutline = false,
+      ) => {
+        if (isOutline) {
+          p.noFill();
+          p.stroke(0, 0, 100);
+          p.strokeWeight(20);
+        } else {
+          p.fill(col);
+          p.noStroke();
+        }
+
         p.beginShape();
-        for (let i = 0; i < 6; i++) {
-          p.curveVertex(cx + p.random(-150, 150), cy + p.random(-50, 50));
+        const pts = 10;
+        for (let i = 0; i <= pts; i++) {
+          const angle = (p.TWO_PI / pts) * i;
+          const r = p.random(0.5, 1.3) * (w / 2);
+          const px = cx + Math.cos(angle) * r;
+          const py = cy + Math.sin(angle) * r * (h / w);
+          if (i === 0) p.vertex(px, py);
+          else {
+            p.bezierVertex(
+              cx + p.random(-w, w) * 0.5,
+              cy + p.random(-h, h) * 0.5,
+              px + p.random(-50, 50),
+              py + p.random(-50, 50),
+              px,
+              py,
+            );
+          }
         }
-        p.endShape();
-        // Drips
-        for (let i = 0; i < 5; i++) {
-          let dripX = cx + p.random(-100, 100);
-          let dripY = cy + p.random(20, 50);
-          let len = p.random(20, 150);
-          p.strokeWeight(p.random(3, 8));
-          p.line(dripX, dripY, dripX, dripY + len + p.random(5, 5));
-          p.circle(dripX, dripY + len, 5);
-        }
+        p.endShape(p.CLOSE);
       };
 
       p.draw = () => {
-        // 1. Concrete Wall Texture
-        p.background(40, 10, 30);
-        p.loadPixels();
-        for (let x = 0; x < p.width; x += 4) {
-          for (let y = 0; y < p.height; y += 4) {
-            if (p.random() > 0.5) {
-              p.fill(0, 0, p.random(20, 40), 50);
-              p.noStroke();
-              p.rect(x, y, 4, 4);
-            }
-          }
+        p.randomSeed(getSeedNum(seed));
+
+        // 1. Gritty Concrete Texture
+        p.background(0, 0, 25);
+        for (let i = 0; i < 800; i++) {
+          p.fill(0, 0, p.random(15, 35), 40);
+          p.noStroke();
+          p.rect(
+            p.random(p.width),
+            p.random(p.height),
+            p.random(1, 6),
+            p.random(1, 6),
+          );
         }
 
-        // 2. Old faded tags (background noise)
-        for (let i = 0; i < 10; i++) {
-          let x = p.random(p.width);
-          let y = p.random(p.height);
-          p.stroke(0, 0, 60, 30);
-          p.strokeWeight(5);
+        // 2. Faded Background Tags
+        for (let i = 0; i < 8; i++) {
+          p.stroke(0, 0, 50, 15);
+          p.strokeWeight(p.random(5, 40));
           p.noFill();
           p.beginShape();
-          p.vertex(x, y);
-          p.bezierVertex(x + 50, y - 50, x - 50, y + 50, x + 100, y);
+          const startX = p.random(p.width);
+          const startY = p.random(p.height);
+          for (let j = 0; j < 5; j++) {
+            p.curveVertex(
+              startX + p.random(-200, 200),
+              startY + p.random(-200, 200),
+            );
+          }
           p.endShape();
         }
 
-        // 3. Main Piece (Gradient Fill + Outline)
+        const mainHue = p.random(360);
         const cx = p.width / 2;
         const cy = p.height / 2;
+        const baseW = p.min(p.width, p.height) * 0.7;
 
-        // Outline / "Bubble" background
-        p.stroke(0, 0, 100); // White outline
-        p.strokeWeight(40);
-        p.strokeJoin(p.ROUND);
-        p.noFill();
-        p.beginShape();
-        p.vertex(cx - 200, cy);
-        p.bezierVertex(cx - 100, cy - 150, cx + 100, cy - 150, cx + 200, cy);
-        p.bezierVertex(cx + 250, cy + 100, cx - 250, cy + 100, cx - 200, cy);
-        p.endShape(p.CLOSE);
+        // 3. Main Piece: Wildstyle Abstraction
+        // 3D Shadow
+        drawWildShape(
+          cx + 20,
+          cy + 20,
+          baseW,
+          baseW * 0.6,
+          p.color(0, 0, 0, 40),
+        );
+        // Bold Outline
+        drawWildShape(
+          cx,
+          cy,
+          baseW + 30,
+          baseW * 0.6 + 30,
+          p.color(0, 0, 100),
+          true,
+        );
+        // Fill
+        drawWildShape(cx, cy, baseW, baseW * 0.6, p.color(mainHue, 80, 90));
+        // Inner Pattern/Highlight
+        drawWildShape(
+          cx + p.random(-40, 40),
+          cy + p.random(-40, 40),
+          baseW * 0.6,
+          baseW * 0.3,
+          p.color((mainHue + 40) % 360, 60, 100, 50),
+        );
 
-        // Fill ("Throw up")
-        p.fill(320, 80, 90); // Pink
-        p.noStroke();
-        p.beginShape();
-        p.vertex(cx - 200, cy);
-        p.bezierVertex(cx - 100, cy - 150, cx + 100, cy - 150, cx + 200, cy);
-        p.bezierVertex(cx + 250, cy + 100, cx - 250, cy + 100, cx - 200, cy);
-        p.endShape(p.CLOSE);
-
-        // Inner Details / Highlights
-        p.fill(320, 40, 100);
-        p.circle(cx - 100, cy - 50, 40);
-        p.circle(cx + 80, cy - 40, 30);
-
-        p.stroke(0);
-        p.strokeWeight(10);
-        p.noFill();
-        // Arrow
-        p.line(cx + 180, cy + 50, cx + 250, cy);
-        p.line(cx + 250, cy, cx + 230, cy - 20);
-
-        // Drips from the piece
-        p.stroke(320, 80, 90);
+        // 4. Dynamic Details: Highlights, Drips, and Arrows
+        p.stroke(0, 0, 100, 70);
         p.strokeWeight(8);
-        p.line(cx - 50, cy + 80, cx - 50, cy + 200);
-        p.line(cx + 120, cy + 80, cx + 120, cy + 250);
+        p.noFill();
+        for (let i = 0; i < 5; i++) {
+          const hx = cx + p.random(-baseW * 0.4, baseW * 0.4);
+          const hy = cy + p.random(-baseW * 0.2, baseW * 0.2);
+          p.arc(
+            hx,
+            hy,
+            p.random(40, 100),
+            p.random(10, 30),
+            p.random(p.PI),
+            p.random(p.TWO_PI),
+          );
+        }
+
+        // Drips
+        for (let i = 0; i < 12; i++) {
+          const dx = cx + p.random(-baseW / 2, baseW / 2);
+          const dy = cy + p.random(0, baseW * 0.2);
+          const len = p.random(50, 250);
+          p.stroke(mainHue, 85, 95);
+          p.strokeWeight(p.random(3, 10));
+          p.line(dx, dy, dx, dy + len);
+          p.noStroke();
+          p.fill(mainHue, 85, 95);
+          p.circle(dx, dy + len, p.random(6, 12));
+          if (p.random() > 0.5)
+            spraySplatter(dx, dy + len + 5, p.color(mainHue, 85, 95, 30), 20);
+        }
+
+        // Abstract Arrows
+        p.stroke(0);
+        p.strokeWeight(12);
+        for (let i = 0; i < 2; i++) {
+          const ax = cx + (p.random() > 0.5 ? baseW * 0.5 : -baseW * 0.5);
+          const ay = cy + p.random(-50, 50);
+          p.line(ax, ay, ax + p.random(50, 100), ay + p.random(-30, 30));
+        }
+
+        // 5. Final Spray Splatters
+        for (let i = 0; i < 10; i++) {
+          const col = p.color(p.random(360), 70, 100, 20);
+          spraySplatter(
+            p.random(p.width),
+            p.random(p.height),
+            col,
+            p.random(40, 120),
+          );
+        }
       };
 
       (p as any).customResize = (w: number, h: number) => {
