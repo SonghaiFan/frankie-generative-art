@@ -313,82 +313,76 @@ export const atmosphereStyles: ArtStyle[] = [
     prompt: "你曾在这个地方待过，或者这只是你从未醒来的那个午后？",
     styleTags: ["Nostalgia", "Surreal", "Liminal", "Hazy"],
     sketch: (p: p5, seed: string) => {
-      // Dreamcore: Liminal spaces and Surreal Symbols
-      const getSeedNum = (s: string) => {
-        let h = 0;
-        for (let i = 0; i < s.length; i++)
-          h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
-        return Math.abs(h);
-      };
-
+      // Dreamcore: Surreal nostalgia, liminal spaces, eyes, and lo-fi grain.
       p.setup = () => {
         p.createCanvas(p.windowWidth, p.windowHeight);
         p.colorMode(p.HSB, 360, 100, 100, 100);
+        p.noLoop();
       };
 
       p.draw = () => {
-        p.randomSeed(getSeedNum(seed));
-        const time = p.frameCount * 0.01;
-
-        // 1. Hazy Background (Overexposed / Low contrast)
-        p.background(200, 5, 90);
-
-        // Soft focus light gradients
-        for (let i = 0; i < 3; i++) {
-          const x = p.noise(time * 0.2, i) * p.width;
-          const y = p.noise(i, time * 0.1) * p.height;
-          p.noStroke();
-          for (let r = 400; r > 0; r -= 40) {
-            p.fill(20, 20, 100, 2);
-            p.circle(x, y, r);
-          }
+        // 1. The "Fake" Sky (Unnaturally Blue Gradient)
+        for (let y = 0; y < p.height; y++) {
+          const inter = p.map(y, 0, p.height, 0, 1);
+          p.stroke(
+            p.lerpColor(p.color(200, 80, 90), p.color(180, 20, 100), inter),
+          );
+          p.line(0, y, p.width, y);
         }
 
-        // 2. Liminal Architecture (Simplified hallway/doorway)
-        p.push();
-        p.translate(p.width / 2, p.height / 2);
+        // 2. The "Liminal" Meadow (Unnaturally Green Hills)
         p.noStroke();
-
-        // Infinite hallway effect
-        for (let i = 5; i > 0; i--) {
-          const s = i * 0.2;
-          p.fill(200, 10, 80 - i * 10);
-          p.rectMode(p.CENTER);
-          p.rect(0, 0, p.width * s, p.height * s);
-          // Dark "End" of the hall
-          if (i === 1) {
-            p.fill(0, 0, 10);
-            p.rect(0, 0, p.width * 0.2, p.height * 0.2);
-          }
+        p.fill(100, 70, 80); // Bright synthetic green
+        p.beginShape();
+        p.vertex(0, p.height);
+        for (let x = 0; x <= p.width; x += 10) {
+          const y = p.map(
+            p.noise(x * 0.005, seed.length),
+            0,
+            1,
+            p.height * 0.6,
+            p.height * 0.8,
+          );
+          p.vertex(x, y);
         }
+        p.vertex(p.width, p.height);
+        p.endShape(p.CLOSE);
+
+        // 3. The "Entity" (Biblically Accurate Eye)
+        const cx = p.width / 2;
+        const cy = p.height * 0.4;
+        p.push();
+        p.translate(cx, cy);
+        p.fill(0, 0, 100, 90);
+        for (let i = 0; i < 6; i++) {
+          p.push();
+          p.rotate((p.TWO_PI / 6) * i);
+          p.beginShape();
+          p.vertex(0, 0);
+          p.bezierVertex(50, -50, 150, -20, 200, 0);
+          p.bezierVertex(150, 20, 50, 50, 0, 0);
+          p.endShape();
+          p.pop();
+        }
+        p.fill(0, 0, 100);
+        p.ellipse(0, 0, 120, 80);
+        p.fill(340, 60, 90);
+        p.circle(0, 0, 60);
+        p.fill(0);
+        p.circle(0, 0, 30);
         p.pop();
 
-        // 3. Surreal Floating Elements (The "Eye")
-        const eyeX = p.width * 0.7 + p.sin(time) * 50;
-        const eyeY = p.height * 0.3 + p.cos(time * 0.5) * 30;
-
-        // Eye White
-        p.fill(0, 0, 100);
-        p.ellipse(eyeX, eyeY, 80, 50);
-        // Pupil
-        p.fill(0);
-        p.circle(eyeX + p.sin(time * 2) * 10, eyeY, 30);
-
-        // 4. VHS Grain & Scanlines
-        p.strokeWeight(1);
-        for (let i = 0; i < 300; i++) {
-          p.stroke(0, 0, 0, 10);
+        // 4. Nostalgia Filter (Grain)
+        for (let i = 0; i < 5000; i++) {
+          p.stroke(0, 0, 100, 10);
           p.point(p.random(p.width), p.random(p.height));
-        }
-
-        // Scanlines
-        for (let y = 0; y < p.height; y += 4) {
-          p.stroke(0, 0, 0, 4);
-          p.line(0, y, p.width, y);
         }
       };
 
-      (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
+      (p as any).customResize = (w: number, h: number) => {
+        p.resizeCanvas(w, h);
+        p.redraw();
+      };
     },
   },
 ];
