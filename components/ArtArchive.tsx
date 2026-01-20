@@ -60,26 +60,22 @@ const ArtArchive: React.FC<ArtArchiveProps> = ({ cards, onSelectionComplete }) =
 
       {/* 1. HERO SECTION (Architectural Layout) */}
       <section className="relative w-full min-h-screen snap-start flex flex-col">
-        <div className="flex-1 border-b border-white/20 relative flex flex-col p-6 md:p-20 overflow-hidden">
+        <div className="flex-1 border-b border-white/20 relative flex flex-col p-6 md:p-20 overflow-hidden pointer-events-none">
           {/* Random Artwork Background */}
           {randomArtwork && (
-            <div className="absolute inset-0 opacity-10 pointer-events-none">
+            <div className="absolute inset-0 opacity-10 pointer-events-auto">
               <iframe
                 src={`/${randomArtwork}`}
                 className="w-full h-full"
+                style={{ border: 'none' }}
                 title="Background Artwork"
               />
             </div>
           )}
 
-          {/* Architectural Grid Background */}
-          <div className="absolute inset-0 pointer-events-none opacity-[0.02]"
-            style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
-
-
           {/* Main Title Block */}
           <div className="relative z-10">
-            <div className="flex flex-col border-l-2 border-white pl-8 md:pl-12">
+            <div className="flex flex-col border-l-2 border-white pl-8 md:pl-12 pointer-events-auto">
               <span className="font-ui text-[10px] tracking-[0.8em] uppercase text-white/30 mb-4">{t('hero.systemReady')}</span>
               <h1 className="text-[12vw] md:text-[7.5vw] font-serif leading-[0.85] text-white tracking-widest uppercase mb-12" style={{ whiteSpace: 'pre-line' }}>
                 {t('hero.title')}
