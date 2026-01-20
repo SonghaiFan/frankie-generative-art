@@ -1,0 +1,37 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>流转侘寂水墨 (Kineto-Sabi Ink Flux) - Art Archive Oracle</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;400;700&display=swap');
+    body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Noto Serif SC', serif; }
+    canvas { display: block; }
+    #overlay {
+        position: absolute;
+        bottom: 40px;
+        left: 40px;
+        max-width: 600px;
+        color: white;
+        mix-blend-mode: difference;
+        pointer-events: none;
+        z-index: 100;
+    }
+    h1 { font-size: 3rem; margin: 0 0 1rem 0; font-weight: 200; letter-spacing: 0.05em; }
+    p { font-size: 1rem; line-height: 1.6; opacity: 0.9; margin: 0; padding-left: 1rem; border-left: 1px solid rgba(255,255,255,0.5); }
+    .meta { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.3em; margin-bottom: 0.5rem; opacity: 0.7; }
+  </style>
+</head>
+<body>
+  <div id="overlay">
+    <div class="meta">Aesthetic Signature</div>
+    <h1>流转侘寂水墨 (Kineto-Sabi Ink Flux)</h1>
+    <p>此风格将水墨的‘留白’与‘意境’与动态艺术的‘时间性’深度结合。画面采用极简的墨色与大地色调，强调墨迹在数字化空间中的渗化与凋零。每一道线条并非静态的呈现，而是由Perlin噪声驱动的‘生命过程’：它从虚无中生发，经历浓郁与干枯，最终在扩散中归于寂静。这种美学不追求构图的完美，而是捕捉笔触在流转中留下的‘不完美’痕迹，通过动态平衡体现出对时间消逝的敬畏与接纳。</p>
+  </div>
+  <script>
+    let brushes = [];let maxBrushes = 12;function setup() {createCanvas(windowWidth, windowHeight);background(15);for (let i = 0; i < maxBrushes; i++) {brushes.push(new InkBrush());}}function draw() {fill(15, 15, 15, 10);rect(0, 0, width, height);for (let i = brushes.length - 1; i >= 0; i--) {brushes[i].update();brushes[i].display();if (brushes[i].isDead()) {brushes.splice(i, 1);brushes.push(new InkBrush());}}}function windowResized() {resizeCanvas(windowWidth, windowHeight);background(15);}class InkBrush {constructor() {this.reset();}reset() {this.pos = createVector(random(width), random(height));this.prevPos = this.pos.copy();this.vel = createVector(0, 0);this.acc = createVector(0, 0);this.angle = random(TWO_PI);this.speed = random(0.5, 2);this.life = 255;this.decay = random(0.5, 2.0);this.strokeWeight = random(2, 25);this.noiseOffset = random(1000);this.color = floor(random(50, 180));}update() {let n = noise(this.pos.x * 0.005, this.pos.y * 0.005, frameCount * 0.002 + this.noiseOffset);this.angle = n * TWO_PI * 2;this.acc = p5.Vector.fromAngle(this.angle).mult(0.1);this.vel.add(this.acc);this.vel.limit(this.speed);this.prevPos = this.pos.copy();this.pos.add(this.vel);this.life -= this.decay;this.strokeWeight *= 0.997;if (this.pos.x < 0 || this.pos.x > width || this.pos.y < 0 || this.pos.y > height) {this.life = 0;}}display() {let alpha = this.life;stroke(this.color, alpha);strokeWeight(this.strokeWeight);line(this.prevPos.x, this.prevPos.y, this.pos.x, this.pos.y);if (random() > 0.9) {noStroke();fill(this.color, alpha * 0.3);ellipse(this.pos.x + random(-5, 5), this.pos.y + random(-5, 5), this.strokeWeight * 2);}}isDead() {return this.life <= 0;}}function mousePressed() {for (let i = 0; i < 3; i++) {let b = new InkBrush();b.pos = createVector(mouseX, mouseY);b.prevPos = b.pos.copy();brushes.push(b);}}
+  </script>
+</body>
+</html>

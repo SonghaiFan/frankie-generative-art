@@ -1,0 +1,37 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>Deconstructed Flux-Pixelism (解构性像素流派) - Art Archive Oracle</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;400;700&display=swap');
+    body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Noto Serif SC', serif; }
+    canvas { display: block; }
+    #overlay {
+        position: absolute;
+        bottom: 40px;
+        left: 40px;
+        max-width: 600px;
+        color: white;
+        mix-blend-mode: difference;
+        pointer-events: none;
+        z-index: 100;
+    }
+    h1 { font-size: 3rem; margin: 0 0 1rem 0; font-weight: 200; letter-spacing: 0.05em; }
+    p { font-size: 1rem; line-height: 1.6; opacity: 0.9; margin: 0; padding-left: 1rem; border-left: 1px solid rgba(255,255,255,0.5); }
+    .meta { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.3em; margin-bottom: 0.5rem; opacity: 0.7; }
+  </style>
+</head>
+<body>
+  <div id="overlay">
+    <div class="meta">Aesthetic Signature</div>
+    <h1>Deconstructed Flux-Pixelism (解构性像素流派)</h1>
+    <p>此风格融合了激浪派的即时性与像素化的数字秩序。它通过对屏幕像素的‘挪用’与递归重组，将画布视为一个持续演化的行为实验场。视觉上表现为破碎的色块、动态的网格捕捉以及对‘本真’信号的不断采样。这种风格试图在数字化碎片的无序重组中，寻找某种被解构后的、最本质的真实感：即过程本身。</p>
+  </div>
+  <script>
+    let blocks = [];let cols, rows;let blockSize = 40;let sourceX, sourceY;function setup() {createCanvas(windowWidth, windowHeight);cols = floor(width / blockSize);rows = floor(height / blockSize);background(0);for (let i = 0; i < 20; i++) {blocks.push(new Fragment());}}function draw() {background(0, 15);noStroke();for (let i = 0; i < 20; i++) {let x = noise(frameCount * 0.01, i * 100) * width;let y = noise(i * 100, frameCount * 0.01) * height;fill(map(x, 0, width, 100, 255), map(y, 0, height, 100, 255), 200, 50);rect(x, y, 50, 50);}if (frameCount % 5 === 0) {sourceX = floor(random(width - blockSize));sourceY = floor(random(height - blockSize));let imgPart = get(sourceX, sourceY, blockSize, blockSize);push();translate(random(width), random(height));scale(random(1, 4));image(imgPart, 0, 0);pop();}stroke(255, 30);for (let i = 0; i < width; i += blockSize) {line(i, 0, i, height);}for (let j = 0; j < height; j += blockSize) {line(0, j, width, j);}if (mouseIsPressed) {fill(255);textSize(24);textAlign(CENTER);text('DECONSTRUCTING AUTHENTICITY', mouseX, mouseY);}for (let b of blocks) {b.update();b.display();}}class Fragment {constructor() {this.x = random(width);this.y = random(height);this.w = random(20, 100);this.h = random(20, 100);this.vx = random(-2, 2);this.vy = random(-2, 2);this.col = color(random(255), random(255), random(255), 150);}update() {this.x += this.vx;this.y += this.vy;if (this.x < 0 || this.x > width) this.vx *= -1;if (this.y < 0 || this.y > height) this.vy *= -1;}display() {fill(this.col);rect(floor(this.x / blockSize) * blockSize, floor(this.y / blockSize) * blockSize, blockSize, blockSize);}}function windowResized() {resizeCanvas(windowWidth, windowHeight);cols = floor(width / blockSize);rows = floor(height / blockSize);}
+  </script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>星云色域空间主义 (Nebulous Chromaspatialism) - Art Archive Oracle</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;400;700&display=swap');
+    body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Noto Serif SC', serif; }
+    canvas { display: block; }
+    #overlay {
+        position: absolute;
+        bottom: 40px;
+        left: 40px;
+        max-width: 600px;
+        color: white;
+        mix-blend-mode: difference;
+        pointer-events: none;
+        z-index: 100;
+    }
+    h1 { font-size: 3rem; margin: 0 0 1rem 0; font-weight: 200; letter-spacing: 0.05em; }
+    p { font-size: 1rem; line-height: 1.6; opacity: 0.9; margin: 0; padding-left: 1rem; border-left: 1px solid rgba(255,255,255,0.5); }
+    .meta { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.3em; margin-bottom: 0.5rem; opacity: 0.7; }
+  </style>
+</head>
+<body>
+  <div id="overlay">
+    <div class="meta">Aesthetic Signature</div>
+    <h1>星云色域空间主义 (Nebulous Chromaspatialism)</h1>
+    <p>这种风格是色域绘画的宏大叙事、晕涂法的朦胧质感与装置艺术空间深度的高度融合。它摒弃了明确的线条，转而利用流动的色彩梯度和光影层级来构建一个多维的感官场域。视觉上，它呈现为呼吸般的色彩律动和无边界的视觉过渡，每一层色彩的叠加都像是在虚拟空间中布置的感官装置，引导观众进入一种非线性的、沉浸式的冥想状态。这种美学直接回应了您对模糊界限与情感深度的渴望。请点击屏幕并移动鼠标，这会扰动场域内的能量流，改变色彩星云的聚散与漂移，感受边界在互动中不断消融的过程。</p>
+  </div>
+  <script>
+    let clouds = [];let palette;function setup() {createCanvas(windowWidth, windowHeight);palette = [color(20, 30, 80, 5), color(100, 40, 120, 5), color(40, 180, 160, 5), color(250, 180, 50, 5), color(10, 10, 20, 10)];for (let i = 0; i < 20; i++) {clouds.push(new Cloud());}background(5, 5, 15);noStroke();}function draw() {if (mouseIsPressed) {blendMode(ADD);} else {blendMode(BLEND);}for (let c of clouds) {c.update();c.display();}if (frameCount % 120 == 0) {fill(5, 5, 15, 2);rect(0, 0, width, height);}}function windowResized() {resizeCanvas(windowWidth, windowHeight);background(5, 5, 15);}class Cloud {constructor() {this.pos = createVector(random(width), random(height));this.vel = createVector(0, 0);this.acc = createVector(0, 0);this.maxSpeed = 1.5;this.size = random(width * 0.3, width * 0.6);this.col = random(palette);this.noiseOffset = random(1000);}update() {let n = noise(this.pos.x * 0.001, this.pos.y * 0.001, frameCount * 0.002 + this.noiseOffset);let angle = n * TWO_PI * 2;let steer = p5.Vector.fromAngle(angle);steer.mult(0.05);this.acc.add(steer);if (mouseIsPressed) {let m = createVector(mouseX, mouseY);let dir = p5.Vector.sub(m, this.pos);dir.normalize();dir.mult(0.1);this.acc.add(dir);}this.vel.add(this.acc);this.vel.limit(this.maxSpeed);this.pos.add(this.vel);this.acc.mult(0);if (this.pos.x < -this.size) this.pos.x = width + this.size;if (this.pos.x > width + this.size) this.pos.x = -this.size;if (this.pos.y < -this.size) this.pos.y = height + this.size;if (this.pos.y > height + this.size) this.pos.y = -this.size;}display() {fill(this.col);push();translate(this.pos.x, this.pos.y);for (let i = 0; i < 3; i++) {let s = this.size * (1 - i * 0.2);ellipse(0, 0, s, s * 0.8);}pop();}}
+  </script>
+</body>
+</html>

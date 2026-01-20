@@ -1,0 +1,145 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>映影星云派 (Reflective Nebulism) - Art Archive Oracle</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;400;700&display=swap');
+    body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Noto Serif SC', serif; }
+    canvas { display: block; }
+    #overlay {
+        position: absolute;
+        bottom: 40px;
+        left: 40px;
+        max-width: 600px;
+        color: white;
+        mix-blend-mode: difference;
+        pointer-events: none;
+        z-index: 100;
+    }
+    h1 { font-size: 3rem; margin: 0 0 1rem 0; font-weight: 200; letter-spacing: 0.05em; }
+    p { font-size: 1rem; line-height: 1.6; opacity: 0.9; margin: 0; padding-left: 1rem; border-left: 1px solid rgba(255,255,255,0.5); }
+    .meta { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.3em; margin-bottom: 0.5rem; opacity: 0.7; }
+  </style>
+</head>
+<body>
+  <div id="overlay">
+    <div class="meta">Aesthetic Signature</div>
+    <h1>映影星云派 (Reflective Nebulism)</h1>
+    <p>这种风格融合了达芬奇式的‘晕涂法’（Sfumato）与‘水镜反射’的哲学隐喻。它体现了你对边界模糊化的深刻追求——没有绝对的黑白，只有无限的过渡。视觉上，该风格通过数千个带有极低透明度的流体粒子在画布上缓慢晕染，模拟出一种如同在水雾弥漫的深夜湖泊中捕捉到的自我倒影。色彩偏向于冷峻的深蓝、银灰与微光金，象征着内省与深层情感的流动。由于浏览器限制，请点击屏幕启动画面，通过鼠标或手指的移动，你可以像触碰水面一样搅动这些迷雾，感受自我与环境的交融与消散。</p>
+  </div>
+  <script>
+    let particles = [];
+const PARTICLE_COUNT = 120;
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  background(15, 20, 30);
+  for (let i = 0; i < PARTICLE_COUNT; i++) {
+    particles.push(new NebulaParticle());
+  }
+}
+
+function draw() {
+  // 缓慢的背景覆盖实现拖尾效果，模拟晕涂的层次感
+  fill(15, 20, 30, 15);
+  noStroke();
+  rect(0, 0, width, height);
+
+  // 绘制粒子并进行垂直对称镜像，模拟水中倒影
+  for (let p of particles) {
+    p.update();
+    p.display(1); // 原始形态
+    p.display(-1); // 镜像形态
+  }
+
+  // 顶层淡淡的烟雾层
+  if (frameCount % 5 === 0) {
+    filter(BLUR, 1);
+  }
+}
+
+class NebulaParticle {
+  constructor() {
+    this.init();
+  }
+
+  init() {
+    this.pos = createVector(random(width), random(height / 2));
+    this.vel = createVector(random(-0.5, 0.5), random(-0.2, 0.2));
+    this.acc = createVector(0, 0);
+    this.maxSpeed = 1.5;
+    this.size = random(40, 100);
+    this.color = color(
+      random(100, 150), 
+      random(120, 180), 
+      random(200, 255), 
+      5
+    );
+    this.noiseOffset = random(1000);
+  }
+
+  update() {
+    // 鼠标交互：如同在水面产生涟漪
+    let mouse = createVector(mouseX, mouseY > height/2 ? height - mouseY : mouseY);
+    let dir = p5.Vector.sub(mouse, this.pos);
+    let d = dir.mag();
+    if (d < 200) {
+      dir.setMag(0.05);
+      this.acc.add(dir);
+    }
+
+    // 柏林噪声流场
+    let angle = noise(this.pos.x * 0.005, this.pos.y * 0.005, frameCount * 0.005) * TWO_PI * 2;
+    let nV = p5.Vector.fromAngle(angle);
+    nV.mult(0.02);
+    this.acc.add(nV);
+
+    this.vel.add(this.acc);
+    this.vel.limit(this.maxSpeed);
+    this.pos.add(this.vel);
+    this.acc.mult(0);
+
+    // 边界检查
+    if (this.pos.x < -100) this.pos.x = width + 100;
+    if (this.pos.x > width + 100) this.pos.x = -100;
+    if (this.pos.y < -100) this.pos.y = height / 2 + 100;
+    if (this.pos.y > height / 2 + 100) this.pos.y = -100;
+  }
+
+  display(side) {
+    push();
+    noStroke();
+    if (side === 1) {
+      // 上半部分：真实
+      translate(this.pos.x, this.pos.y);
+      fill(this.color);
+    } else {
+      // 下半部分：倒影
+      translate(this.pos.x, height - this.pos.y);
+      let reflectColor = color(
+        red(this.color) * 0.6, 
+        green(this.color) * 0.7, 
+        blue(this.color) * 0.8, 
+        3
+      );
+      fill(reflectColor);
+    }
+    
+    // 使用多层椭圆叠加模拟晕涂效果
+    for (let i = 0; i < 3; i++) {
+      ellipse(0, 0, this.size + i * 15, this.size * 0.6 + i * 10);
+    }
+    pop();
+  }
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  background(15, 20, 30);
+}
+  </script>
+</body>
+</html>

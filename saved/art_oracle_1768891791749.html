@@ -1,0 +1,37 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>Spectral Chroma-Resonance (灵视色域共振) - Art Archive Oracle</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;400;700&display=swap');
+    body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Noto Serif SC', serif; }
+    canvas { display: block; }
+    #overlay {
+        position: absolute;
+        bottom: 40px;
+        left: 40px;
+        max-width: 600px;
+        color: white;
+        mix-blend-mode: difference;
+        pointer-events: none;
+        z-index: 100;
+    }
+    h1 { font-size: 3rem; margin: 0 0 1rem 0; font-weight: 200; letter-spacing: 0.05em; }
+    p { font-size: 1rem; line-height: 1.6; opacity: 0.9; margin: 0; padding-left: 1rem; border-left: 1px solid rgba(255,255,255,0.5); }
+    .meta { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.3em; margin-bottom: 0.5rem; opacity: 0.7; }
+  </style>
+</head>
+<body>
+  <div id="overlay">
+    <div class="meta">Aesthetic Signature</div>
+    <h1>Spectral Chroma-Resonance (灵视色域共振)</h1>
+    <p>这种风格名为“灵视色域共振”，它将马克·罗斯科（Mark Rothko）的色域绘画与当代数字感知技术相融合。它不再仅仅是静态的画布，而是通过摄像头捕捉现实世界的颜色与光影节奏，将其转化为层层叠加、缓慢呼吸的半透明色彩矩形。视觉语言以模糊的边缘、微妙的渐变以及由于摄像头捕捉到的运动而引起的色块颤动为特征。这种风格追求一种“数字冥想”，让用户在环境光的流动中感受到超越物质的情绪能量。请在程序运行时点击屏幕以激活摄像头感应。</p>
+  </div>
+  <script>
+    let capture;let colorFields = [];let numFields = 4;function setup() {createCanvas(windowWidth, windowHeight);capture = createCapture(VIDEO);capture.size(64, 48);capture.hide();for (let i = 0; i < numFields; i++) {colorFields.push({y: (i * height) / numFields,h: height / numFields,col: color(0, 0, 0),targetCol: color(0, 0, 0),noiseOffset: random(1000)});}}function draw() {background(0);if (capture.loadedmetadata) {capture.loadPixels();let stepX = capture.width / 1;let stepY = capture.height / numFields;for (let i = 0; i < numFields; i++) {let x = floor(capture.width / 2);let y = floor((i + 0.5) * stepY);let index = (y * capture.width + x) * 4;let r = capture.pixels[index];let g = capture.pixels[index + 1];let b = capture.pixels[index + 2];colorFields[i].targetCol = color(r, g, b);}}for (let i = 0; i < colorFields.length; i++) {let f = colorFields[i];f.col = lerpColor(f.col, f.targetCol, 0.02);let n = noise(f.noiseOffset + frameCount * 0.005) * 50;fill(f.col);rectMode(CORNER);drawingContext.shadowBlur = 150;drawingContext.shadowColor = f.col;push();translate(0, f.y);noStroke();for (let j = 4; j > 0; j--) {let alphaVal = map(j, 4, 0, 50, 255);let c = color(red(f.col), green(f.col), blue(f.col), alphaVal);fill(c);rect(-100, -n, width + 200, f.h + n * 2);}pop();}drawGrain();}function drawGrain() {stroke(255, 15);for (let i = 0; i < 500; i++) {let x = random(width);let y = random(height);point(x, y);}}function windowResized() {resizeCanvas(windowWidth, windowHeight);for (let i = 0; i < numFields; i++) {colorFields[i].y = (i * height) / numFields;colorFields[i].h = height / numFields;}}function mousePressed() {if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {DeviceOrientationEvent.requestPermission();}}
+  </script>
+</body>
+</html>

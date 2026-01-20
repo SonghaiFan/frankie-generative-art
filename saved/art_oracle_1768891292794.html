@@ -1,0 +1,125 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>光感抒情流场 (Luminous Lyrical Flow) - Art Archive Oracle</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;400;700&display=swap');
+    body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Noto Serif SC', serif; }
+    canvas { display: block; }
+    #overlay {
+        position: absolute;
+        bottom: 40px;
+        left: 40px;
+        max-width: 600px;
+        color: white;
+        mix-blend-mode: difference;
+        pointer-events: none;
+        z-index: 100;
+    }
+    h1 { font-size: 3rem; margin: 0 0 1rem 0; font-weight: 200; letter-spacing: 0.05em; }
+    p { font-size: 1rem; line-height: 1.6; opacity: 0.9; margin: 0; padding-left: 1rem; border-left: 1px solid rgba(255,255,255,0.5); }
+    .meta { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.3em; margin-bottom: 0.5rem; opacity: 0.7; }
+  </style>
+</head>
+<body>
+  <div id="overlay">
+    <div class="meta">Aesthetic Signature</div>
+    <h1>光感抒情流场 (Luminous Lyrical Flow)</h1>
+    <p>此艺术风格——‘光感抒情流场’，是对您‘感受光’这一核心诉求的数字化视觉回应。它融合了‘光与空间’运动对感官纯粹性的追求、‘印象派’对光影瞬间捕捉的细腻，以及‘抒情抽象’中那股奔流不息的情感力量。视觉上，作品摒弃了明确的轮廓，转而使用无数具有呼吸感的半透明色彩粒子，在柏林噪声（Perlin Noise）构筑的不可见能量场中优雅漂移。色彩方案采用了莫奈式的互补色系，通过层层叠加产生如同油画色块般的质感。鼠标的移动会干扰流场的稳定性，象征着观察者的存在如何改变了光的本质。请点击屏幕开始这段沉浸式的视觉冥想。</p>
+  </div>
+  <script>
+    let particles = [];
+let numParticles = 800;
+let noiseScale = 0.005;
+let colors = [];
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  background(10);
+  
+  // Impressionist-inspired palette: soft violets, golds, cyans, and corals
+  colors = [
+    color(147, 112, 219, 15), 
+    color(255, 215, 0, 15),   
+    color(0, 191, 255, 15),  
+    color(255, 127, 80, 15),  
+    color(240, 248, 255, 20) 
+  ];
+
+  for (let i = 0; i < numParticles; i++) {
+    particles.push(new Particle());
+  }
+}
+
+function draw() {
+  // Create a slight fading effect for a sense of movement and 'memory'
+  fill(10, 8);
+  rect(0, 0, width, height);
+
+  for (let p of particles) {
+    let n = noise(p.pos.x * noiseScale, p.pos.y * noiseScale, frameCount * 0.002);
+    let angle = TWO_PI * n;
+    p.applyForce(p5.Vector.fromAngle(angle).mult(0.5));
+    
+    // Interaction: Mouse influences flow
+    let d = dist(mouseX, mouseY, p.pos.x, p.pos.y);
+    if (d < 200) {
+      let mouseForce = createVector(p.pos.x - mouseX, p.pos.y - mouseY);
+      mouseForce.setMag(0.8);
+      p.applyForce(mouseForce);
+    }
+
+    p.update();
+    p.display();
+    p.edges();
+  }
+}
+
+class Particle {
+  constructor() {
+    this.pos = createVector(random(width), random(height));
+    this.vel = createVector(random(-1, 1), random(-1, 1));
+    this.acc = createVector(0, 0);
+    this.maxSpeed = random(1, 3);
+    this.size = random(2, 8);
+    this.c = random(colors);
+  }
+
+  applyForce(force) {
+    this.acc.add(force);
+  }
+
+  update() {
+    this.vel.add(this.acc);
+    this.vel.limit(this.maxSpeed);
+    this.pos.add(this.vel);
+    this.acc.mult(0);
+  }
+
+  display() {
+    noStroke();
+    fill(this.c);
+    // Adding a glow effect using layered circles
+    ellipse(this.pos.x, this.pos.y, this.size, this.size);
+    fill(red(this.c), green(this.c), blue(this.c), 5);
+    ellipse(this.pos.x, this.pos.y, this.size * 3, this.size * 3);
+  }
+
+  edges() {
+    if (this.pos.x < 0) this.pos.x = width;
+    if (this.pos.x > width) this.pos.x = 0;
+    if (this.pos.y < 0) this.pos.y = height;
+    if (this.pos.y > height) this.pos.y = 0;
+  }
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  background(10);
+}
+  </script>
+</body>
+</html>

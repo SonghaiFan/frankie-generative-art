@@ -1,0 +1,121 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>偶然流幻主义 (Occasional Flux-Illusionism) - Art Archive Oracle</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;400;700&display=swap');
+    body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Noto Serif SC', serif; }
+    canvas { display: block; }
+    #overlay {
+        position: absolute;
+        bottom: 40px;
+        left: 40px;
+        max-width: 600px;
+        color: white;
+        mix-blend-mode: difference;
+        pointer-events: none;
+        z-index: 100;
+    }
+    h1 { font-size: 3rem; margin: 0 0 1rem 0; font-weight: 200; letter-spacing: 0.05em; }
+    p { font-size: 1rem; line-height: 1.6; opacity: 0.9; margin: 0; padding-left: 1rem; border-left: 1px solid rgba(255,255,255,0.5); }
+    .meta { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.3em; margin-bottom: 0.5rem; opacity: 0.7; }
+  </style>
+</head>
+<body>
+  <div id="overlay">
+    <div class="meta">Aesthetic Signature</div>
+    <h1>偶然流幻主义 (Occasional Flux-Illusionism)</h1>
+    <p>这种风格融合了自动主义的潜意识笔触、浮世绘的色彩张力以及动态艺术的物理律动。它强调‘偶然’作为美的发源地。视觉上，作品通过生成式流场（Flow Field）模拟浮世绘中的波浪与云气，线条的游走呈现出一种如自动写作般的直觉感。色彩选用了深邃的靛青、朱砂红与矿物金，在极黑的背景上进行动态层叠。通过粒子系统的非线性运动，每一瞬间的构图都是唯一的、不可复制的，体现了对生命流变与刹那永恒的深刻致敬。</p>
+  </div>
+  <script>
+    let particles = [];
+let numParticles = 800;
+let noiseScale = 0.005;
+let colors = ['#2C3E50', '#E74C3C', '#F1C40F', '#ECF0F1', '#1A5276'];
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  background(5);
+  for (let i = 0; i < numParticles; i++) {
+    particles.push(new Particle());
+  }
+}
+
+function draw() {
+  // Fade effect for trails
+  fill(5, 15);
+  noStroke();
+  rect(0, 0, width, height);
+
+  for (let p of particles) {
+    p.update();
+    p.display();
+    p.edges();
+  }
+}
+
+class Particle {
+  constructor() {
+    this.init();
+  }
+
+  init() {
+    this.pos = createVector(random(width), random(height));
+    this.prevPos = this.pos.copy();
+    this.vel = createVector(0, 0);
+    this.acc = createVector(0, 0);
+    this.maxSpeed = random(1, 3);
+    this.color = color(random(colors));
+    this.strokeWeight = random(1, 4);
+    this.noiseOffset = random(1000);
+  }
+
+  update() {
+    let angle = noise(this.pos.x * noiseScale, this.pos.y * noiseScale, frameCount * 0.002) * TWO_PI * 4;
+    this.acc = p5.Vector.fromAngle(angle);
+    this.acc.mult(0.1);
+    this.vel.add(this.acc);
+    this.vel.limit(this.maxSpeed);
+    this.prevPos = this.pos.copy();
+    this.pos.add(this.vel);
+
+    // Chance interaction
+    if (mouseIsPressed) {
+      let mouseVec = createVector(mouseX, mouseY);
+      let dir = p5.Vector.sub(mouseVec, this.pos);
+      dir.setMag(0.5);
+      this.acc.add(dir);
+    }
+  }
+
+  display() {
+    stroke(this.color);
+    strokeWeight(this.strokeWeight);
+    line(this.prevPos.x, this.prevPos.y, this.pos.x, this.pos.y);
+
+    // Add woodblock texture-like dots occasionally
+    if (random(1) > 0.995) {
+      noStroke();
+      fill(this.color);
+      ellipse(this.pos.x, this.pos.y, this.strokeWeight * 3);
+    }
+  }
+
+  edges() {
+    if (this.pos.x < 0 || this.pos.x > width || this.pos.y < 0 || this.pos.y > height) {
+      this.pos = createVector(random(width), random(height));
+      this.prevPos = this.pos.copy();
+    }
+  }
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  background(5);
+}
+  </script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>独善拓扑构筑 (Solitary Topological Constructivism) - Art Archive Oracle</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;400;700&display=swap');
+    body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Noto Serif SC', serif; }
+    canvas { display: block; }
+    #overlay {
+        position: absolute;
+        bottom: 40px;
+        left: 40px;
+        max-width: 600px;
+        color: white;
+        mix-blend-mode: difference;
+        pointer-events: none;
+        z-index: 100;
+    }
+    h1 { font-size: 3rem; margin: 0 0 1rem 0; font-weight: 200; letter-spacing: 0.05em; }
+    p { font-size: 1rem; line-height: 1.6; opacity: 0.9; margin: 0; padding-left: 1rem; border-left: 1px solid rgba(255,255,255,0.5); }
+    .meta { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.3em; margin-bottom: 0.5rem; opacity: 0.7; }
+  </style>
+</head>
+<body>
+  <div id="overlay">
+    <div class="meta">Aesthetic Signature</div>
+    <h1>独善拓扑构筑 (Solitary Topological Constructivism)</h1>
+    <p>这种风格融合了包豪斯的理性秩序与拓扑学的流动连续性，体现了你‘从理性底层逻辑出发构建美感’的特质。视觉核心是一个在虚空中自我维持、自我循环的几何孤岛。红、黄、蓝三原色的工业化构件（圆、方、三角）被编织进复杂的拓扑点云网络中，象征着在变幻莫测的数据中提取出的恒定秩序。‘独善其身’的哲学内核通过‘自平衡系统’实现：即便鼠标的介入会扰动结构，系统也会通过内在的拓扑逻辑迅速恢复其初始的完美形态，不随外力而瓦解，展现出一种理性的孤独与极致的工业纯粹感。</p>
+  </div>
+  <script>
+    let points = [];let numPoints = 120;let radius = 220;function setup() {createCanvas(windowWidth, windowHeight, WEBGL);for (let i = 0; i < numPoints; i++) {let u = random(PI * 2);let v = random(PI);let x = radius * sin(v) * cos(u);let y = radius * sin(v) * sin(u);let z = radius * cos(v);points.push({pos: createVector(x, y, z),orig: createVector(x, y, z),color: floor(random(3))});}}function draw() {background(15);orbitControl();rotateY(frameCount * 0.005);rotateX(frameCount * 0.003);noFill();strokeWeight(0.5);let mouseV = createVector(mouseX - width / 2, mouseY - height / 2, 0);for (let i = 0; i < points.length; i++) {let p = points[i];let noiseVal = noise(p.orig.x * 0.01, p.orig.y * 0.01, frameCount * 0.01);let offset = p5.Vector.mult(p.orig, 0.1 * noiseVal);let d = dist(mouseV.x, mouseV.y, p.pos.x, p.pos.y);if (d < 150) {let force = map(d, 0, 150, 1, 0);let push = p5.Vector.sub(p.pos, mouseV).normalize().mult(force * 50);p.pos.add(push);}p.pos.lerp(p.orig.copy().add(offset), 0.1);stroke(200, 100);for (let j = i + 1; j < points.length; j++) {let d2 = p.pos.dist(points[j].pos);if (d2 < 80) {line(p.pos.x, p.pos.y, p.pos.z, points[j].pos.x, points[j].pos.y, points[j].pos.z);}}push();translate(p.pos.x, p.pos.y, p.pos.z);noStroke();if (p.color === 0) fill(220, 30, 30);else if (p.color === 1) fill(250, 200, 0);else fill(0, 80, 160);if (i % 15 === 0) {box(15);} else if (i % 10 === 0) {sphere(6, 6, 6);} else {rect(-4, -4, 8, 8);}pop();}stroke(255, 30);strokeWeight(1);noFill();box(radius * 2.2);push();rotateX(PI/2);ellipse(0,0,radius*2.5, radius*2.5);pop();}function windowResized() {resizeCanvas(windowWidth, windowHeight);}
+  </script>
+</body>
+</html>

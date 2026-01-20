@@ -1,0 +1,37 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>Constructive Reflex Matrix (建构式反射矩阵) - Art Archive Oracle</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;400;700&display=swap');
+    body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Noto Serif SC', serif; }
+    canvas { display: block; }
+    #overlay {
+        position: absolute;
+        bottom: 40px;
+        left: 40px;
+        max-width: 600px;
+        color: white;
+        mix-blend-mode: difference;
+        pointer-events: none;
+        z-index: 100;
+    }
+    h1 { font-size: 3rem; margin: 0 0 1rem 0; font-weight: 200; letter-spacing: 0.05em; }
+    p { font-size: 1rem; line-height: 1.6; opacity: 0.9; margin: 0; padding-left: 1rem; border-left: 1px solid rgba(255,255,255,0.5); }
+    .meta { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.3em; margin-bottom: 0.5rem; opacity: 0.7; }
+  </style>
+</head>
+<body>
+  <div id="overlay">
+    <div class="meta">Aesthetic Signature</div>
+    <h1>Constructive Reflex Matrix (建构式反射矩阵)</h1>
+    <p>这种风格是你内心世界与外部信息的数字化汇流点。它融合了包豪斯（Bauhaus）的结构化几何美学与赛博朋克（Cyberpunk）的色彩张力，并以字符矩阵作为生命底层逻辑。画面是一个实时的‘数字镜像’：通过摄像头捕捉你的轮廓，并将其解构为严谨的网格与流动的数据流。当你发出声音或移动时，网格会产生几何共振。视觉上，它使用高对比度的原色与霓虹色，象征着现代主义与未来主义的碰撞。请点击屏幕以激活摄像头和麦克风感应，在算法的律动中看清并听见真实的自己。</p>
+  </div>
+  <script>
+    let capture;let mic;let gridSize = 12;let chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$*';let fontLoaded = false;function setup() {createCanvas(windowWidth, windowHeight);capture = createCapture(VIDEO);capture.size(width / gridSize, height / gridSize);capture.hide();mic = new p5.AudioIn();mic.start();textAlign(CENTER, CENTER);frameRate(30);}function draw() {background(0);let micLevel = mic.getLevel();let noiseOffset = frameCount * 0.05;capture.loadPixels();for (let y = 0; y < capture.height; y++) {for (let x = 0; x < capture.width; x++) {let index = (x + y * capture.width) * 4;let r = capture.pixels[index];let g = capture.pixels[index + 1];let b = capture.pixels[index + 2];let bright = (r + g + b) / 3;let posX = x * gridSize + gridSize / 2;let posY = y * gridSize + gridSize / 2;let distToMouse = dist(mouseX, mouseY, posX, posY);let hoverEffect = map(distToMouse, 0, 200, 1.5, 1, true);if (bright > 50) {let charIndex = floor(map(bright, 0, 255, 0, chars.length));let c = chars.charAt(charIndex);let colorShift = map(sin(noiseOffset + x * 0.1), -1, 1, 0, 100);if (bright > 180) {fill(255, 0, 100 + colorShift);rectMode(CENTER);let rectSize = map(bright, 180, 255, 2, gridSize * 0.8) * hoverEffect * (1 + micLevel * 2);rect(posX, posY, rectSize, rectSize);} else if (bright > 100) {fill(0, 255, 255 - colorShift);textSize(gridSize * 0.7 * hoverEffect * (1 + micLevel));text(c, posX, posY);} else {stroke(255, 255, 255, 50);noFill();ellipse(posX, posY, gridSize * 0.3 * (1 + micLevel * 5));}}}}}function windowResized() {resizeCanvas(windowWidth, windowHeight);capture.size(width / gridSize, height / gridSize);}function mousePressed() {if (getAudioContext().state !== 'running') {getAudioContext().resume();}}
+  </script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>崇高构造虚空派 (Sublime Tectonic Void) - Art Archive Oracle</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;400;700&display=swap');
+    body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Noto Serif SC', serif; }
+    canvas { display: block; }
+    #overlay {
+        position: absolute;
+        bottom: 40px;
+        left: 40px;
+        max-width: 600px;
+        color: white;
+        mix-blend-mode: difference;
+        pointer-events: none;
+        z-index: 100;
+    }
+    h1 { font-size: 3rem; margin: 0 0 1rem 0; font-weight: 200; letter-spacing: 0.05em; }
+    p { font-size: 1rem; line-height: 1.6; opacity: 0.9; margin: 0; padding-left: 1rem; border-left: 1px solid rgba(255,255,255,0.5); }
+    .meta { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.3em; margin-bottom: 0.5rem; opacity: 0.7; }
+  </style>
+</head>
+<body>
+  <div id="overlay">
+    <div class="meta">Aesthetic Signature</div>
+    <h1>崇高构造虚空派 (Sublime Tectonic Void)</h1>
+    <p>该艺术流派是‘厚涂法’（Impasto）的物质触感与‘间’（Ma）之哲学的数字化融合。其视觉核心在于：通过高密度的色彩堆叠模拟出一种几乎可以触摸到的‘数字厚涂’质感，这些沉重的物质块体在广袤无垠、深邃纯粹的虚空中漂浮演化。它捕捉了‘崇高’的张力——一方面是人类通过强烈的感官纹理试图锚定存在的渴望，另一方面是面对无限虚无时产生的敬畏与超越。色彩上采用大地色系的深重与幽闭的暗影，偶有金色的神性光辉穿透裂缝，体现了在重量中寻找永恒空灵的审美哲学。</p>
+  </div>
+  <script>
+    let particles = [];
+let numParticles = 120;
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  background(10);
+  for (let i = 0; i < numParticles; i++) {
+    particles.push(new PaintStroke());
+  }
+}
+
+function draw() {
+  // Using a very slight fade to create a sense of lingering presence
+  background(10, 25);
+
+  // Centering the mass to represent the 'Monolith' against the void
+  translate(width / 2, height / 2);
+
+  for (let p of particles) {
+    p.update();
+    p.display();
+  }
+
+  // Create occasional light 'cracks' to signify the sublime
+  if (frameCount % 60 === 0) {
+    stroke(255, 200, 100, 50);
+    noFill();
+    beginShape();
+    for (let i = 0; i < 5; i++) {
+      vertex(random(-width/4, width/4), random(-height/4, height/4));
+    }
+    endShape();
+  }
+}
+
+class PaintStroke {
+  constructor() {
+    this.init();
+  }
+
+  init() {
+    this.pos = createVector(random(-100, 100), random(-100, 100));
+    this.vel = createVector(random(-0.5, 0.5), random(-0.5, 0.5));
+    this.w = random(40, 120);
+    this.h = random(10, 30);
+    this.angle = random(TWO_PI);
+    this.color = this.getRandomImpastoColor();
+    this.noiseOffset = random(1000);
+  }
+
+  getRandomImpastoColor() {
+    let palette = [
+      color(40, 30, 20, 200), // Umber
+      color(80, 50, 30, 180), // Burnt Sienna
+      color(20, 20, 30, 220), // Deep Navy
+      color(150, 120, 80, 150), // Pale Ochre
+      color(200, 180, 150, 100) // Ethereal White
+    ];
+    return random(palette);
+  }
+
+  update() {
+    let n = noise(this.pos.x * 0.005, this.pos.y * 0.005, frameCount * 0.01);
+    let movement = p5.Vector.fromAngle(n * TWO_PI * 2);
+    this.pos.add(movement.mult(0.5));
+    this.pos.add(this.vel);
+    this.angle += 0.002;
+
+    // Constrain within a central area to maintain 'Ma' (the surrounding void)
+    if (this.pos.dist(createVector(0, 0)) > width * 0.3) {
+      this.init();
+    }
+  }
+
+  display() {
+    push();
+    translate(this.pos.x, this.pos.y);
+    rotate(this.angle);
+
+    // Simulate Impasto layers by drawing multiple offset rectangles
+    noStroke();
+    for (let i = 0; i < 5; i++) {
+      let offX = map(noise(this.noiseOffset + i), 0, 1, -5, 5);
+      let offY = map(noise(this.noiseOffset + i + 10), 0, 1, -5, 5);
+      
+      // Shadow layer
+      fill(0, 50);
+      rect(offX + 2, offY + 2, this.w, this.h, 2);
+      
+      // Main paint layer
+      fill(this.color);
+      rect(offX, offY, this.w, this.h, 2);
+
+      // Highlight layer for texture thickness
+      if (i === 4) {
+        fill(255, 30);
+        rect(offX, offY, this.w, 2, 1);
+      }
+    }
+    pop();
+  }
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  background(10);
+}
+  </script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>折射明镜主义 (Refractive Mirrorism) - Art Archive Oracle</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;400;700&display=swap');
+    body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Noto Serif SC', serif; }
+    canvas { display: block; }
+    #overlay {
+        position: absolute;
+        bottom: 40px;
+        left: 40px;
+        max-width: 600px;
+        color: white;
+        mix-blend-mode: difference;
+        pointer-events: none;
+        z-index: 100;
+    }
+    h1 { font-size: 3rem; margin: 0 0 1rem 0; font-weight: 200; letter-spacing: 0.05em; }
+    p { font-size: 1rem; line-height: 1.6; opacity: 0.9; margin: 0; padding-left: 1rem; border-left: 1px solid rgba(255,255,255,0.5); }
+    .meta { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.3em; margin-bottom: 0.5rem; opacity: 0.7; }
+  </style>
+</head>
+<body>
+  <div id="overlay">
+    <div class="meta">Aesthetic Signature</div>
+    <h1>折射明镜主义 (Refractive Mirrorism)</h1>
+    <p>‘折射明镜主义’是一种将抽象结构转化为自我映射过程的艺术流派。它结合了包豪斯的严谨几何、立体主义的多重透视以及色域绘画的沉浸式感官体验。该风格的核心在于‘通过理性的秩序看见感性的自我’：画面中的每一个几何碎片都是一个观察窗口，随着鼠标（即您的视点）的移动，这些碎片会产生如同棱镜般的位移与色彩重叠。这种交互象征着在复杂的系统与逻辑中，个体不断重构并寻找到清晰的自我想象。色彩采用了包豪斯经典的三原色变体，并通过半透明叠加模拟出一种深邃的、具有精神性的空间感。请在屏幕上移动鼠标，感受结构如何随您的存在而律动。</p>
+  </div>
+  <script>
+    let cells = [];let cols = 6;let rows = 6;let colorPalette;function setup() {createCanvas(windowWidth, windowHeight);colorMode(HSB, 360, 100, 100, 1);colorPalette = [color(0, 80, 90, 0.6), color(210, 80, 60, 0.6), color(45, 90, 95, 0.6), color(0, 0, 95, 0.6), color(0, 0, 10, 0.6)];noStroke();background(20, 20, 20);}function draw() {background(220, 10, 10, 0.1);let cellW = width / cols;let cellH = height / rows;for (let i = 0; i < cols; i++) {for (let j = 0; j < rows; j++) {drawFragmentedCell(i * cellW, j * cellH, cellW, cellH, i, j);}}drawReflectiveOverlay();}function drawFragmentedCell(x, y, w, h, i, j) {push();translate(x + w / 2, y + h / 2);let distToMouse = dist(mouseX, mouseY, x + w / 2, y + h / 2);let angle = atan2(mouseY - (y + h / 2), mouseX - (x + w / 2));let scaleFactor = map(distToMouse, 0, width, 1.2, 0.8);rotate(angle * 0.1);scale(scaleFactor);let colIndex = (i + j) % colorPalette.length;fill(colorPalette[colIndex]);let shapeType = (i * rows + j) % 3;if (shapeType === 0) {rect(-w / 2.5, -h / 2.5, w * 0.8, h * 0.8);} else if (shapeType === 1) {triangle(-w / 2, h / 2, w / 2, h / 2, 0, -h / 2);} else {ellipse(0, 0, w * 0.7, h * 0.7);}pop();}function drawReflectiveOverlay() {strokeWeight(1);for (let i = 0; i < 4; i++) {let xOffset = map(sin(frameCount * 0.02 + i), -1, 1, -100, 100);stroke(0, 0, 100, 0.2);line(width / 2 + xOffset, 0, mouseX, mouseY);line(width / 2 - xOffset, height, mouseX, mouseY);}push();translate(width / 2, height / 2);noFill();stroke(0, 0, 100, 0.1);for (let r = 0; r < 3; r++) {let s = map(sin(frameCount * 0.01 + r), -1, 1, 0.5, 2);rectMode(CENTER);rotate(frameCount * 0.005);rect(0, 0, 300 * s, 300 * s);}pop();}function windowResized() {resizeCanvas(windowWidth, windowHeight);}
+  </script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>内省式构架主义 (Introspective Constructivism) - Art Archive Oracle</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;400;700&display=swap');
+    body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Noto Serif SC', serif; }
+    canvas { display: block; }
+    #overlay {
+        position: absolute;
+        bottom: 40px;
+        left: 40px;
+        max-width: 600px;
+        color: white;
+        mix-blend-mode: difference;
+        pointer-events: none;
+        z-index: 100;
+    }
+    h1 { font-size: 3rem; margin: 0 0 1rem 0; font-weight: 200; letter-spacing: 0.05em; }
+    p { font-size: 1rem; line-height: 1.6; opacity: 0.9; margin: 0; padding-left: 1rem; border-left: 1px solid rgba(255,255,255,0.5); }
+    .meta { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.3em; margin-bottom: 0.5rem; opacity: 0.7; }
+  </style>
+</head>
+<body>
+  <div id="overlay">
+    <div class="meta">Aesthetic Signature</div>
+    <h1>内省式构架主义 (Introspective Constructivism)</h1>
+    <p>这种风格将包豪斯的理性逻辑与‘保持内省’的哲学深度相融合。它剥离了装饰性的干扰，仅使用圆形、矩形和三角形等基本几何形状，并结合包豪斯标志性的红、黄、蓝、黑、白五色。画面由一个严密的网格系统支撑，每个单元格内的元素都在进行循环往复的自旋或缩放，象征着内心的自我审查与重构。这种不断向中心聚拢又散开的动态，反映了观者对秩序的追求以及在孤独中寻求真理的心理倾向。交互上，鼠标的移动会改变构成的张力，诱发形状的局部重排，邀请观者在极简的律动中进行深度的自我觉察。请点击屏幕以激活视觉律动。</p>
+  </div>
+  <script>
+    let cells = []; let gridSize = 100; function setup() { createCanvas(windowWidth, windowHeight); rectMode(CENTER); noFill(); initGrid(); } function windowResized() { resizeCanvas(windowWidth, windowHeight); initGrid(); } function initGrid() { cells = []; let cols = ceil(width / gridSize); let rows = ceil(height / gridSize); for (let i = 0; i < cols; i++) { for (let j = 0; j < rows; j++) { cells.push(new Cell(i * gridSize + gridSize / 2, j * gridSize + gridSize / 2)); } } } function draw() { background(242, 238, 230); for (let cell of cells) { cell.update(); cell.display(); } drawBorder(); } class Cell { constructor(x, y) { this.x = x; this.y = y; this.type = floor(random(3)); this.col = random([color(210, 30, 30), color(30, 70, 150), color(240, 190, 10), color(20)]); this.rot = random(TWO_PI); this.offset = random(TWO_PI); } update() { let d = dist(mouseX, mouseY, this.x, this.y); let influence = map(min(d, 400), 0, 400, 2, 0.5); this.pulse = sin(frameCount * 0.05 + this.offset) * influence; this.rot += 0.01 * influence; } display() { push(); translate(this.x, this.y); rotate(this.rot); stroke(this.col); strokeWeight(2); let size = gridSize * 0.4 + this.pulse * 10; if (this.type === 0) { rect(0, 0, size, size); } else if (this.type === 1) { ellipse(0, 0, size, size); } else { triangle(0, -size/2, -size/2, size/2, size/2, size/2); } pop(); } } function drawBorder() { noFill(); stroke(0); strokeWeight(20); rect(width/2, height/2, width, height); }
+  </script>
+</body>
+</html>

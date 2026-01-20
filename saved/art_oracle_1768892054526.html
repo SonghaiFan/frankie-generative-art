@@ -1,0 +1,37 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>折射身份汇编主义 (Refracted Identity Assemblage) - Art Archive Oracle</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;400;700&display=swap');
+    body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Noto Serif SC', serif; }
+    canvas { display: block; }
+    #overlay {
+        position: absolute;
+        bottom: 40px;
+        left: 40px;
+        max-width: 600px;
+        color: white;
+        mix-blend-mode: difference;
+        pointer-events: none;
+        z-index: 100;
+    }
+    h1 { font-size: 3rem; margin: 0 0 1rem 0; font-weight: 200; letter-spacing: 0.05em; }
+    p { font-size: 1rem; line-height: 1.6; opacity: 0.9; margin: 0; padding-left: 1rem; border-left: 1px solid rgba(255,255,255,0.5); }
+    .meta { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.3em; margin-bottom: 0.5rem; opacity: 0.7; }
+  </style>
+</head>
+<body>
+  <div id="overlay">
+    <div class="meta">Aesthetic Signature</div>
+    <h1>折射身份汇编主义 (Refracted Identity Assemblage)</h1>
+    <p>这种风格直接回应了您对‘自我剪贴画’的渴望，将个体的面部特征与身体符号视为可以被无限挪用、拆解并重构的‘文化零件’。在视觉上，它采用了数字化剪贴艺术的逻辑：通过高频的网格偏移、CMYK分色错位以及几何化的面部抽象，将‘自我’从单一的肖像转化为流动的、由碎片组成的叙事。画面中的每一次闪烁和重排都象征着对身份原创性的批判性重审——我们并非一个整体，而是过往记忆、社会符号与他人视角的汇编。请移动鼠标或点击屏幕，来触发身份碎片的重新编排与挪用过程。</p>
+  </div>
+  <script>
+    let fragments = [];let grainCount = 500;function setup() {createCanvas(windowWidth, windowHeight);rectMode(CENTER);noStroke();for (let i = 0; i < 15; i++) {fragments.push(new IdentityFragment());}}function draw() {background(240, 235, 220);drawGrid();for (let f of fragments) {f.update();f.display();}applyGrain();if (frameCount % 60 == 0) {shuffleFragments();}drawPaperTexture();}function drawGrid() {stroke(200, 100);strokeWeight(1);for (let i = 0; i < width; i += 50) line(i, 0, i, height);for (let j = 0; j < height; j += 50) line(0, j, width, j);}function applyGrain() {loadPixels();for (let i = 0; i < grainCount; i++) {let x = floor(random(width));let y = floor(random(height));let index = (x + y * width) * 4;pixels[index] *= 0.9;pixels[index + 1] *= 0.9;pixels[index + 2] *= 0.9;}updatePixels();}function drawPaperTexture() {noFill();stroke(0, 15);for (let i = 0; i < 100; i++) {let x = random(width);let y = random(height);line(x, y, x + random(-5, 5), y + random(-5, 5));}}function mousePressed() {shuffleFragments();}function shuffleFragments() {for (let f of fragments) {f.targetPos = createVector(random(width * 0.2, width * 0.8), random(height * 0.2, height * 0.8));f.targetRot = random(TWO_PI);}}function windowResized() {resizeCanvas(windowWidth, windowHeight);}class IdentityFragment {constructor() {this.pos = createVector(random(width), random(height));this.targetPos = this.pos.copy();this.size = random(80, 200);this.rot = random(TWO_PI);this.targetRot = this.rot;this.type = floor(random(4));this.col = color(random([255, 50, 80, 20]), random([50, 150, 255]), random([20, 20, 20]));this.col.setAlpha(200);}update() {this.pos = p5.Vector.lerp(this.pos, this.targetPos, 0.1);this.rot = lerp(this.rot, this.targetRot, 0.1);}display() {push();translate(this.pos.x, this.pos.y);rotate(this.rot);fill(this.col);drawingContext.shadowOffsetX = 5;drawingContext.shadowOffsetY = 5;drawingContext.shadowBlur = 10;drawingContext.shadowColor = 'rgba(0,0,0,0.2)';blendMode(MULTIPLY);if (this.type === 0) {this.drawEye();} else if (this.type === 1) {this.drawMouth();} else if (this.type === 2) {this.drawNose();} else {this.drawFaceEdge();}pop();}}IdentityFragment.prototype.drawEye = function() {ellipse(0, 0, this.size, this.size * 0.6);fill(255);ellipse(0, 0, this.size * 0.4, this.size * 0.4);fill(0);ellipse(sin(frameCount * 0.05) * 10, 0, this.size * 0.2, this.size * 0.2);};IdentityFragment.prototype.drawMouth = function() {arc(0, 0, this.size, this.size * 0.8, 0, PI, CHORD);line(-this.size / 2, 0, this.size / 2, 0);};IdentityFragment.prototype.drawNose = function() {triangle(0, -this.size / 2, -this.size / 3, this.size / 2, this.size / 3, this.size / 2);};IdentityFragment.prototype.drawFaceEdge = function() {rect(0, 0, this.size * 0.8, this.size, 5);stroke(0);strokeWeight(2);noFill();rect(5, 5, this.size * 0.8, this.size, 5);};
+  </script>
+</body>
+</html>

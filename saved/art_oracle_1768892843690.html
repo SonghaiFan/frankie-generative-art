@@ -1,0 +1,37 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>超饱和阈限波普 (Hyper-Saturated Liminal Pop) - Art Archive Oracle</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;400;700&display=swap');
+    body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Noto Serif SC', serif; }
+    canvas { display: block; }
+    #overlay {
+        position: absolute;
+        bottom: 40px;
+        left: 40px;
+        max-width: 600px;
+        color: white;
+        mix-blend-mode: difference;
+        pointer-events: none;
+        z-index: 100;
+    }
+    h1 { font-size: 3rem; margin: 0 0 1rem 0; font-weight: 200; letter-spacing: 0.05em; }
+    p { font-size: 1rem; line-height: 1.6; opacity: 0.9; margin: 0; padding-left: 1rem; border-left: 1px solid rgba(255,255,255,0.5); }
+    .meta { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.3em; margin-bottom: 0.5rem; opacity: 0.7; }
+  </style>
+</head>
+<body>
+  <div id="overlay">
+    <div class="meta">Aesthetic Signature</div>
+    <h1>超饱和阈限波普 (Hyper-Saturated Liminal Pop)</h1>
+    <p>这种艺术风格名为‘超饱和阈限波普’，是波普艺术的商业符号性与梦核（Dreamcore）的超现实空寂感的深度融合。它捕捉了大众传媒图像在人类潜意识中留下的扭曲残影。视觉特征包括：1. 极高饱和度的CMYK色调与怀旧的低画质噪点并存；2. 规则的网格系统（代表工业化生产）在空间中发生非欧几里得几何式的弯曲（代表梦境的逻辑）；3. 重复的眼球、几何体等符号在无尽的阈限走廊中漂浮。这种风格旨在探讨数字时代下，群体记忆如何被商业符号重塑并最终演化为一种私密的、略带不安的心理景观。点击屏幕可触发色彩的反转与噪点的爆发，模拟意识在现实与梦境间的瞬间断层。</p>
+  </div>
+  <script>
+    let pg; let particles = []; let angle = 0; function setup() { createCanvas(windowWidth, windowHeight, WEBGL); pg = createGraphics(200, 200); drawPattern(); for (let i = 0; i < 50; i++) { particles.push({ x: random(-width, width), y: random(-height, height), z: random(-1000, 500), size: random(20, 80), col: color(random(["#ff00ff", "#00ffff", "#ffff00", "#000000"])) }); } } function drawPattern() { pg.background(255); pg.fill(0); pg.noStroke(); let spacing = 20; for (let x = 0; x < pg.width; x += spacing) { for (let y = 0; y < pg.height; y += spacing) { pg.ellipse(x + spacing / 2, y + spacing / 2, spacing * 0.7); } } } function draw() { background(240); let intensity = map(mouseX, 0, width, 0.5, 2.0); rotateY(frameCount * 0.01); rotateX(frameCount * 0.005); ambientLight(150); pointLight(255, 255, 255, 200, -200, 400); noStroke(); push(); fill(200, 50); for (let i = -5; i < 5; i++) { push(); translate(0, 0, i * 300); box(width * 2, height * 2, 10); pop(); } pop(); particles.forEach((p, index) => { push(); translate(p.x, p.y, p.z + (frameCount * 2) % 1500 - 750); rotateX(frameCount * 0.02 + index); rotateZ(frameCount * 0.01); if (mouseIsPressed) { fill(random(255), random(255), random(255)); scale(1.5); } else { fill(p.col); } texture(pg); if (index % 3 == 0) { box(p.size * intensity); } else if (index % 3 == 1) { sphere(p.size * 0.6 * intensity); } else { torus(p.size * 0.5, p.size * 0.2); } pop(); }); push(); resetMatrix(); translate(-width / 2, -height / 2); fill(255, 30); for (let i = 0; i < 100; i++) { let x = random(width); let y = random(height); rect(x, y, random(2, 5), random(2, 5)); } pop(); angle += 0.01; } function windowResized() { resizeCanvas(windowWidth, windowHeight); }
+  </script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>自由工业故障主义 (Libre-Industrial Glitchism) - Art Archive Oracle</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;400;700&display=swap');
+    body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Noto Serif SC', serif; }
+    canvas { display: block; }
+    #overlay {
+        position: absolute;
+        bottom: 40px;
+        left: 40px;
+        max-width: 600px;
+        color: white;
+        mix-blend-mode: difference;
+        pointer-events: none;
+        z-index: 100;
+    }
+    h1 { font-size: 3rem; margin: 0 0 1rem 0; font-weight: 200; letter-spacing: 0.05em; }
+    p { font-size: 1rem; line-height: 1.6; opacity: 0.9; margin: 0; padding-left: 1rem; border-left: 1px solid rgba(255,255,255,0.5); }
+    .meta { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.3em; margin-bottom: 0.5rem; opacity: 0.7; }
+  </style>
+</head>
+<body>
+  <div id="overlay">
+    <div class="meta">Aesthetic Signature</div>
+    <h1>自由工业故障主义 (Libre-Industrial Glitchism)</h1>
+    <p>这种风格是包豪斯严谨秩序与蒸汽波虚无美学的视觉对撞。它以包豪斯的网格系统为骨架，象征社会生产的逻辑；以现成品的几何原型为元素，强调日常工业件的重组。核心的‘自由’通过实时生成的故障艺术（Glitch Art）表达：当严整的矩形阵列受到算法扰动而产生色彩溢出、位移与形变时，艺术从生产线的束缚中获得解放。色彩上，工业灰与深沉黑作为背景，衬托出霓虹粉、电光蓝等蒸汽波高频色，形成一种在数字残骸中寻求意志自由的深邃意境。</p>
+  </div>
+  <script>
+    let gridCount = 8;let shapes = [];function setup() {createCanvas(windowWidth, windowHeight);rectMode(CENTER);for (let i = 0; i < gridCount; i++) {for (let j = 0; j < gridCount; j++) {shapes.push(new IndustrialShape(i, j));}}}function draw() {background(15, 15, 20);let w = width / gridCount;let h = height / gridCount;for (let s of shapes) {s.update();s.display(w, h);}if (random(1) > 0.92) {drawGlitch();}drawFreedomCore();}function drawGlitch() {push();noFill();stroke(255, 113, 206, 150);strokeWeight(random(1, 5));let y = random(height);line(0, y, width, y);pop();push();translate(random(-10, 10), 0);copy(0, floor(random(height)), width, floor(random(10, 50)), floor(random(-20, 20)), floor(random(height)), width, floor(random(10, 50)));pop();}function drawFreedomCore() {push();translate(mouseX, mouseY);noFill();stroke(5, 255, 161);strokeWeight(2);let count = 6;for (let i = 0; i < count; i++) {rotate(frameCount * 0.02 + i);rect(0, 0, 40 + i * 10, 40 + i * 10);ellipse(20 + i * 5, 0, 5, 5);}pop();}class IndustrialShape {constructor(i, j) {this.i = i;this.j = j;this.offset = random(TWO_PI);this.col = random([color(1, 205, 254), color(255, 113, 206), color(185, 103, 255)]);this.sizeMult = random(0.3, 0.7);}update() {this.offset += 0.03;}display(w, h) {push();translate(this.i * w + w / 2, this.j * h + h / 2);let flicker = sin(this.offset) > 0.8 ? random(255) : 100;stroke(this.col, flicker);strokeWeight(1);noFill();if (sin(this.offset) > 0.5) {fill(this.col, 30);}rect(0, 0, w * this.sizeMult, h * this.sizeMult);if (dist(mouseX, mouseY, this.i * w + w / 2, this.j * h + h / 2) < 100) {stroke(255);line(-w / 2, -h / 2, w / 2, h / 2);}pop();}}function windowResized() {resizeCanvas(windowWidth, windowHeight);}
+  </script>
+</body>
+</html>

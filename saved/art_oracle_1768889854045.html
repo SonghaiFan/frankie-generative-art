@@ -1,0 +1,128 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>幽冥映心主义 (Ethereal Introspectivism) - Art Archive Oracle</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;400;700&display=swap');
+    body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Noto Serif SC', serif; }
+    canvas { display: block; }
+    #overlay {
+        position: absolute;
+        bottom: 40px;
+        left: 40px;
+        max-width: 600px;
+        color: white;
+        mix-blend-mode: difference;
+        pointer-events: none;
+        z-index: 100;
+    }
+    h1 { font-size: 3rem; margin: 0 0 1rem 0; font-weight: 200; letter-spacing: 0.05em; }
+    p { font-size: 1rem; line-height: 1.6; opacity: 0.9; margin: 0; padding-left: 1rem; border-left: 1px solid rgba(255,255,255,0.5); }
+    .meta { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.3em; margin-bottom: 0.5rem; opacity: 0.7; }
+  </style>
+</head>
+<body>
+  <div id="overlay">
+    <div class="meta">Aesthetic Signature</div>
+    <h1>幽冥映心主义 (Ethereal Introspectivism)</h1>
+    <p>这种风格是‘色域绘画’与‘晕涂法’在数字维度的深度融合，旨在通过流动的色彩场域营造一种‘装置艺术’般的沉浸感。视觉语言由缓慢移动的流场（Flow Field）构成，这些线条不具实体，而是通过极低透明度的堆叠模拟出烟雾缭绕的朦芜效果。色彩在深邃的暗调与温润的流金、幽紫间交替，象征着潜意识的起伏。互动的核心在于：鼠标所在之处即是‘觉醒之光’，它会拨开混沌的粒子，在模糊的视觉感知中强行开辟出一片清明。这种从模糊到清晰的动态转变，精准回应了您‘看清自己’的心理渴求——在宏大的精神底噪中，通过主观意识的介入，寻找那一抹属于真实的轮廓。请点击并在屏幕上移动，体验在迷雾中照见自我的过程。</p>
+  </div>
+  <script>
+    let particles = [];
+let numParticles = 800;
+let noiseScale = 0.005;
+let colors = [];
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  background(10, 10, 15);
+  colors = [
+    color(40, 50, 90, 15),
+    color(90, 40, 70, 15),
+    color(100, 100, 150, 15),
+    color(255, 200, 100, 10)
+  ];
+  for (let i = 0; i < numParticles; i++) {
+    particles.push(new Particle());
+  }
+}
+
+function draw() {
+  // Fade background slightly to create Sfumato trailing effect
+  fill(10, 10, 15, 5);
+  rect(0, 0, width, height);
+
+  for (let p of particles) {
+    p.update();
+    p.display();
+    p.edges();
+  }
+}
+
+class Particle {
+  constructor() {
+    this.pos = createVector(random(width), random(height));
+    this.vel = createVector(0, 0);
+    this.acc = createVector(0, 0);
+    this.maxSpeed = 1.5;
+    this.col = random(colors);
+  }
+
+  update() {
+    let n = noise(this.pos.x * noiseScale, this.pos.y * noiseScale, frameCount * 0.002);
+    let angle = TWO_PI * n;
+    let steer = createVector(cos(angle), sin(angle));
+    this.acc.add(steer);
+
+    // Interaction: Repel or attract based on mouse - the 'clearing' effect
+    let mouse = createVector(mouseX, mouseY);
+    let d = dist(this.pos.x, this.pos.y, mouseX, mouseY);
+    if (d < 200) {
+      let clearDir = p5.Vector.sub(this.pos, mouse);
+      clearDir.normalize();
+      clearDir.mult(0.5);
+      this.acc.add(clearDir);
+      this.maxSpeed = 4; // Move faster when 'seen' by consciousness
+    } else {
+      this.maxSpeed = 1.5;
+    }
+
+    this.vel.add(this.acc);
+    this.vel.limit(this.maxSpeed);
+    this.pos.add(this.vel);
+    this.acc.mult(0);
+  }
+
+  display() {
+    noStroke();
+    let d = dist(this.pos.x, this.pos.y, mouseX, mouseY);
+    let alpha = map(d, 0, 300, 150, 20);
+    fill(red(this.col), green(this.col), blue(this.col), alpha);
+    
+    // Sfumato technique: soft overlapping circles
+    ellipse(this.pos.x, this.pos.y, random(2, 8));
+    if (d < 100) {
+      // High clarity point when close to the 'self' focus
+      fill(255, 255, 255, 30);
+      ellipse(this.pos.x, this.pos.y, 1);
+    }
+  }
+
+  edges() {
+    if (this.pos.x < 0) this.pos.x = width;
+    if (this.pos.x > width) this.pos.x = 0;
+    if (this.pos.y < 0) this.pos.y = height;
+    if (this.pos.y > height) this.pos.y = 0;
+  }
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  background(10, 10, 15);
+}
+  </script>
+</body>
+</html>
