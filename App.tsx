@@ -126,7 +126,7 @@ const App: React.FC = () => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `art_oracle_${Date.now()}.html`;
+    link.download = `art_${Date.now()}.html`;
     link.click();
     URL.revokeObjectURL(url);
   };

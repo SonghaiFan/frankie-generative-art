@@ -12,14 +12,13 @@ interface ArtArchiveProps {
 }
 
 // Available art oracle HTML files
-const artOracleModules = import.meta.glob('../public/art_oracle_*.html', {
+const artOracleModules = import.meta.glob('../public/art_*.html', {
   eager: true,
   query: '?url',
   import: 'default'
 });
 const artOracleFiles = Object.values(artOracleModules)
-  .map((url) => (typeof url === 'string' ? url.split('/').pop() : ''))
-  .filter(Boolean) as string[];
+  .filter((url): url is string => typeof url === 'string');
 
 const ArtArchive: React.FC<ArtArchiveProps> = ({ cards, onSelectionComplete }) => {
   const { t } = useTranslation();
@@ -65,7 +64,7 @@ const ArtArchive: React.FC<ArtArchiveProps> = ({ cards, onSelectionComplete }) =
           {randomArtwork && (
             <div className="absolute inset-0 opacity-10 pointer-events-auto">
               <iframe
-                src={`/${randomArtwork}`}
+                src={randomArtwork}
                 className="w-full h-full"
                 style={{ border: 'none' }}
                 title="Background Artwork"
