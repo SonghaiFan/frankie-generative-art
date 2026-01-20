@@ -7,18 +7,16 @@ interface SpotlightProps {
 }
 
 const Spotlight: React.FC<SpotlightProps> = ({ isActive }) => {
-  // 1. Raw Mouse Position (Instant) - For the Cursor Dot
-  const mouseX = useMotionValue(window.innerWidth / 2);
-  const mouseY = useMotionValue(window.innerHeight / 2);
+  // Initialize in center for that "Stage Light" feel immediately upon load
+  const mouseX = useMotionValue(typeof window !== 'undefined' ? window.innerWidth / 2 : 0);
+  const mouseY = useMotionValue(typeof window !== 'undefined' ? window.innerHeight / 2 : 0);
 
-  // 2. Spring Physics (Smooth) - Only for the Atmosphere/Beam
   const springConfig = { damping: 25, stiffness: 120, mass: 0.8 };
   const smoothX = useSpring(mouseX, springConfig);
   const smoothY = useSpring(mouseY, springConfig);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      // Update raw values immediately
       mouseX.set(e.clientX);
       mouseY.set(e.clientY);
     };
@@ -29,21 +27,28 @@ const Spotlight: React.FC<SpotlightProps> = ({ isActive }) => {
 
   return (
     <>
-      {/* The Darkness/Beam Overlay - Expanded Visibility */}
+      {/* 
+         The Darkness/Beam Overlay 
+         We use a radial gradient that is transparent in the middle and black outside.
+         Radius adjusted to 600px for a more focused "stage light" feel on desktop.
+         
+         CRITICAL: We set width to calc(100% - 10px) to ensure the rightmost scrollbar 
+         area is NOT covered by this overlay. This ensures the pure white scrollbar 
+         remains visible and "above" the darkness.
+      */}
       <motion.div 
-        className="pointer-events-none fixed inset-0 z-40 will-change-transform"
+        className="pointer-events-none fixed top-0 left-0 bottom-0 z-40 will-change-transform"
         style={{
-          // Increased radius to 800px and adjusted stops for a smoother falloff
-          background: "radial-gradient(circle 800px at var(--x) var(--y), transparent 10%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.9) 70%, #000 100%)",
+          width: 'calc(100% - 10px)',
+          background: "radial-gradient(circle 600px at var(--x) var(--y), transparent 5%, rgba(0,0,0,0.4) 30%, rgba(0,0,0,0.95) 60%, #000 100%)",
         }}
       >
-        {/* We use a CSS variable helper to bind the spring values to the gradient efficiently */}
         <GradientUpdater x={smoothX} y={smoothY} />
       </motion.div>
 
-      {/* The Cursor Dot - Follows Instantly (1:1 with hardware mouse) */}
+      {/* The Cursor Dot - Subtle feedback */}
       <motion.div 
-        className="fixed top-0 left-0 z-[100] pointer-events-none mix-blend-screen"
+        className="fixed top-0 left-0 z-[100] pointer-events-none mix-blend-difference"
         style={{ 
             x: mouseX, 
             y: mouseY, 
@@ -51,35 +56,25 @@ const Spotlight: React.FC<SpotlightProps> = ({ isActive }) => {
             translateY: '-50%' 
         }}
       >
-        {/* Core Dot - Sharp and precise */}
-        <div className="w-2 h-2 bg-white rounded-full shadow-[0_0_8px_1px_rgba(255,255,255,1)]" />
-        
-        {/* Subtle Ring - Decorative */}
-        <div className="absolute inset-0 -m-3 w-8 h-8 border border-white/20 rounded-full animate-pulse opacity-50" />
+        <div className="w-1.5 h-1.5 bg-white rounded-full opacity-80" />
       </motion.div>
     </>
   );
 };
 
-// Optimization component to update CSS variables for the gradient
 const GradientUpdater: React.FC<{ x: any, y: any }> = ({ x, y }) => {
     const ref = React.useRef<HTMLDivElement>(null);
-    
     useEffect(() => {
         const update = () => {
-            if (ref.current) {
-                const parent = ref.current.parentElement;
-                if (parent) {
-                    parent.style.setProperty('--x', `${x.get()}px`);
-                    parent.style.setProperty('--y', `${y.get()}px`);
-                }
+            if (ref.current && ref.current.parentElement) {
+                ref.current.parentElement.style.setProperty('--x', `${x.get()}px`);
+                ref.current.parentElement.style.setProperty('--y', `${y.get()}px`);
             }
         };
         const unsubX = x.on("change", update);
         const unsubY = y.on("change", update);
         return () => { unsubX(); unsubY(); };
     }, [x, y]);
-
     return <div ref={ref} style={{ display: 'none' }} />;
 };
 

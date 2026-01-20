@@ -28,16 +28,22 @@
         font-family: 'Cinzel', serif;
       }
 
-      /* Custom scrollbar for content areas */
+      /* Custom scrollbar - Pure White for high visibility against darkness */
       ::-webkit-scrollbar {
-        width: 4px;
-      }
-      ::-webkit-scrollbar-track {
+        width: 10px;
         background: #000;
       }
+      ::-webkit-scrollbar-track {
+        background: #000000;
+        border-left: 1px solid #333;
+      }
       ::-webkit-scrollbar-thumb {
-        background: #333;
-        border-radius: 2px;
+        background-color: #ffffff;
+        border-radius: 0px;
+        border: 2px solid #000000; /* Padding effect */
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background-color: #dddddd;
       }
       
       .preserve-3d {
@@ -57,8 +63,7 @@
     "react": "https://esm.sh/react@^19.2.3",
     "@google/genai": "https://esm.sh/@google/genai@^1.37.0",
     "framer-motion": "https://esm.sh/framer-motion@^12.27.1",
-    "p5": "https://esm.sh/p5@1.9.0",
-    "d3": "https://esm.sh/d3@7.9.0"
+    "p5": "https://esm.sh/p5@1.9.0"
   }
 }
 </script>

@@ -1,27 +1,10 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
-import { ArtCardData, UserInteraction, AnalysisResult, CreativeArtResult } from "../types";
-import { PREDEFINED_CARDS, FALLBACK_CREATIVE_RESULT } from "../constants";
+import { UserInteraction, AnalysisResult, CreativeArtResult } from "../types";
+import { FALLBACK_CREATIVE_RESULT } from "../constants";
 
 const apiKey = process.env.API_KEY || '';
 const ai = new GoogleGenAI({ apiKey });
-
-// Helper to generate a random art history card
-export const generateArtCard = async (excludeTerms: string[]): Promise<ArtCardData> => {
-    // Filter out cards the user has already seen/interacted with in this session
-    const available = PREDEFINED_CARDS.filter(c => !excludeTerms.includes(c.term));
-    
-    // If we've run out of cards, recycle the whole list but keep it random
-    const pool = available.length > 0 ? available : PREDEFINED_CARDS;
-    
-    const randomCard = pool[Math.floor(Math.random() * pool.length)];
-
-    // Return unique object with new ID
-    return {
-        ...randomCard,
-        id: Date.now().toString() 
-    };
-};
 
 // Analyze user preferences
 export const analyzeUserStyle = async (history: UserInteraction[]): Promise<AnalysisResult> => {

@@ -278,40 +278,46 @@ export const VISUAL_STYLES: Record<string, (p: p5, seed: string) => void> = {
     p.setup = () => {
       p.createCanvas(p.windowWidth, p.windowHeight);
       p.colorMode(p.HSB, 360, 100, 100, 100);
-      for (let i = 0; i < 50; i++) {
+      for (let i = 0; i < 70; i++) {
         nodes.push({
           x: p.random(p.width),
           y: p.random(p.height),
-          vx: p.random(-0.5, 0.5),
-          vy: p.random(-0.5, 0.5),
+          vx: p.random(-0.7, 0.7),
+          vy: p.random(-0.7, 0.7),
         });
       }
     };
     p.draw = () => {
-      p.background(0, 0, 98, 20); // 极淡的拖尾
+      p.background(0, 0, 98, 15); // 稍微更明显的拖尾
 
       nodes.forEach((n, i) => {
         n.x += n.vx;
         n.y += n.vy;
-        if (n.x < 0 || n.x > p.width) n.vx *= -1;
-        if (n.y < 0 || n.y > p.height) n.vy *= -1;
 
-        // 绘制节点
-        p.noStroke();
-        p.fill(150, 40, 60, 50);
-        p.circle(n.x, n.y, 3);
+        // 边界穿墙 (Rhizome 是蔓延的)
+        if (n.x < 0) n.x = p.width;
+        if (n.x > p.width) n.x = 0;
+        if (n.y < 0) n.y = p.height;
+        if (n.y > p.height) n.y = 0;
 
-        // 根茎状连接：只连接附近的点
+        // 连接
+        let connectionCount = 0;
         nodes.forEach((other, j) => {
           if (i !== j) {
             const d = p.dist(n.x, n.y, other.x, other.y);
-            if (d < 120) {
-              p.strokeWeight(p.map(d, 0, 120, 2, 0));
-              p.stroke(140, 30, 70, 15); // 淡绿色/灰色连接线
+            if (d < 130) {
+              p.strokeWeight(p.map(d, 0, 130, 1.5, 0));
+              p.stroke(160, 20, 60, 20); // 墨绿色/灰色
               p.line(n.x, n.y, other.x, other.y);
+              connectionCount++;
             }
           }
         });
+
+        // 节点大小随连接数变化 (活跃度)
+        p.noStroke();
+        p.fill(160, 40, 60, 60);
+        p.circle(n.x, n.y, 2 + connectionCount * 0.5);
       });
     };
     (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
@@ -463,7 +469,7 @@ export const VISUAL_STYLES: Record<string, (p: p5, seed: string) => void> = {
         const r = 100 + p.noise(a * 5, 100) * 40;
         p.vertex(
           p.width / 2 + Math.cos(a) * r,
-          p.height / 2 + Math.sin(a) * r + 50
+          p.height / 2 + Math.sin(a) * r + 50,
         );
       }
       p.endShape(p.CLOSE);
@@ -542,7 +548,7 @@ export const VISUAL_STYLES: Record<string, (p: p5, seed: string) => void> = {
           let nVal = p.noise(x * nScale, y * nScale, t);
           const distFromCenterTop = p.dist(x, y, p.width / 2, 0);
           const maxDist = p.sqrt(
-            (p.width / 2) * (p.width / 2) + p.height * p.height
+            (p.width / 2) * (p.width / 2) + p.height * p.height,
           );
           const normDist = distFromCenterTop / maxDist;
 
@@ -553,7 +559,7 @@ export const VISUAL_STYLES: Record<string, (p: p5, seed: string) => void> = {
               0,
               1,
               30,
-              95 * (1 - normDist * 2)
+              95 * (1 - normDist * 2),
             );
           } else {
             brightness = p.map(nVal, 0, 1, 5, 35);
@@ -798,7 +804,7 @@ export const VISUAL_STYLES: Record<string, (p: p5, seed: string) => void> = {
         p.width * 0.15,
         p.height * 0.3 + overhang,
         p.width * 0.4,
-        p.height * 0.1
+        p.height * 0.1,
       );
 
       p.fill(0, 0, 30); // 更深
@@ -1085,149 +1091,353 @@ export const VISUAL_STYLES: Record<string, (p: p5, seed: string) => void> = {
           i + Math.sin(p.frameCount * 0.05 + i * 0.01) * 50,
           0,
           i + Math.sin(p.frameCount * 0.05 + i * 0.01) * 50,
-          p.height
+          p.height,
         );
       }
     };
     (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
   },
 
-  // 23. Constructivism
+  // 23. Constructivism (构成主义): 工业、革命、红黑白几何。
   static_23: (p, seed) => {
+    let shapes: any[] = [];
     p.setup = () => {
       p.createCanvas(p.windowWidth, p.windowHeight);
-      p.background(240);
-      p.noLoop();
+      p.colorMode(p.HSB, 360, 100, 100, 100);
+      // 生成一些固定的几何元件
+      for (let i = 0; i < 10; i++) {
+        shapes.push({
+          type: p.random(["rect", "circle", "line"]),
+          x: p.random(p.width),
+          y: p.random(p.height),
+          w: p.random(50, 400),
+          h: p.random(10, 50),
+          angle: p.random([0, p.PI / 4, -p.PI / 4]), // 只有特定角度
+          col: p.random() > 0.6 ? [0, 90, 80] : [0, 0, 10], // 红 or 黑
+          speed: p.random(0.2, 0.8),
+        });
+      }
     };
     p.draw = () => {
-      p.background(240);
+      p.background(40, 10, 95); // 米白色纸张
+
+      // 对角线动态，象征“进取”
+      const t = p.frameCount * 0.01;
+
+      // 背景巨大的红色圆形 (象征革命太阳)
+      p.noStroke();
+      p.fill(0, 90, 90);
+      const sunSize = Math.min(p.width, p.height) * 0.6;
+      p.circle(p.width * 0.7, p.height * 0.3, sunSize);
+
+      // 叠加黑色结构
+      p.stroke(0, 0, 10);
+      p.strokeWeight(2);
+      p.line(0, p.height, p.width, 0); // 强对角线
+
+      shapes.forEach((s, i) => {
+        p.push();
+        p.translate(s.x, s.y);
+        // 机械式运动
+        if (i % 2 === 0) p.translate(Math.sin(t * s.speed) * 20, 0);
+        else p.translate(0, Math.cos(t * s.speed) * 20);
+
+        p.rotate(s.angle);
+        p.noStroke();
+        p.fill(s.col[0], s.col[1], s.col[2], 90);
+
+        if (s.type === "rect") {
+          p.rect(0, 0, s.w, s.h);
+        } else if (s.type === "circle") {
+          p.circle(0, 0, s.w / 2);
+        } else {
+          p.stroke(s.col[0], s.col[1], s.col[2]);
+          p.strokeWeight(8);
+          p.line(-s.w / 2, 0, s.w / 2, 0);
+        }
+        p.pop();
+      });
+    };
+    (p as any).customResize = (w: number, h: number) => {
+      p.resizeCanvas(w, h);
+    };
+  },
+
+  // 24. Ukiyo-e (浮世绘): 波浪，色彩平涂，渐变。
+  static_24: (p, seed) => {
+    let waves: any[] = [];
+    p.setup = () => {
+      p.createCanvas(p.windowWidth, p.windowHeight);
+      p.colorMode(p.HSB, 360, 100, 100, 100);
+      // 创建层层叠叠的波浪
+      for (let i = 0; i < 6; i++) {
+        waves.push({
+          yBase: p.height * (0.3 + i * 0.12),
+          color: [210, 60 + i * 5, 40 + i * 10], // Prussian Blue distinct layers
+          speed: 0.01 + i * 0.005,
+          amplitude: 30 + i * 10,
+        });
+      }
+    };
+    p.draw = () => {
+      p.background(40, 15, 95); // 仿古纸色
+
+      // 远处的山
+      p.noStroke();
+      p.fill(220, 20, 80);
+      p.triangle(
+        p.width * 0.2,
+        p.height * 0.5,
+        p.width * 0.5,
+        p.height * 0.2,
+        p.width * 0.8,
+        p.height * 0.5,
+      );
+
+      // 绘制波浪
+      p.stroke(220, 80, 20); // 深蓝勾线
+      p.strokeWeight(1.5);
+
+      waves.forEach((w, layerIndex) => {
+        p.fill(w.color[0], w.color[1], w.color[2]);
+        p.beginShape();
+        p.vertex(0, p.height);
+
+        for (let x = 0; x <= p.width; x += 10) {
+          // 复杂的波形叠加
+          let y = w.yBase;
+          const t = p.frameCount * w.speed;
+          y += Math.sin(x * 0.01 + t) * w.amplitude;
+          y += Math.sin(x * 0.03 + t * 2) * (w.amplitude * 0.3);
+
+          // 模仿海浪尖端的钩子形状 (Great Wave style)
+          if (layerIndex === 2 && y < w.yBase - 20 && x % 80 < 10) {
+            y -= 10; // 尖端突起
+          }
+          p.vertex(x, y);
+        }
+
+        p.vertex(p.width, p.height);
+        p.endShape(p.CLOSE);
+      });
+    };
+    (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
+  },
+
+  // 25. Light and Space (光与空间): 极简，渐变，感知的边界。
+  static_25: (p, seed) => {
+    p.setup = () => {
+      p.createCanvas(p.windowWidth, p.windowHeight);
+      p.colorMode(p.HSB, 360, 100, 100, 100);
+      p.noStroke();
+    };
+    p.draw = () => {
+      p.rectMode(p.CORNER); // 确保背景绘制正确
+
+      // 没有任何硬边，全是柔和的渐变
+      const t = p.frameCount * 0.005;
+
+      // 基础氛围色 (Turrell style: Purple/Blue/Pink)
+      const baseH = 260 + Math.sin(t) * 40;
+
+      // 绘制全屏梯度，模拟一种“Ganzfeld”效果（感知丧失）
+      for (let y = 0; y < p.height; y += 4) {
+        // 垂直方向的微妙变化
+        const inter = p.map(y, 0, p.height, 0, 1);
+        const s = 60 - inter * 20;
+        const b = 80 + Math.sin(t + inter) * 10;
+        p.fill(baseH, s, b);
+        p.rect(0, y, p.width, 4);
+      }
+
+      // 中心光晕，仿佛墙上开了一个洞 (James Turrell "Skyspace" square aperture)
+      const cx = p.width / 2;
+      const cy = p.height / 2;
+      const maxSize = Math.min(p.width, p.height) * 0.55;
+
+      p.rectMode(p.CENTER); // 切换为中心绘制模式
+      for (let s = maxSize; s > 0; s -= 8) {
+        const alpha = p.map(s, 0, maxSize, 50, 0); // 中心不透明，边缘消失
+        // 互补色光晕
+        p.fill((baseH + 180) % 360, 25, 95, alpha * 0.05);
+        p.rect(cx, cy, s, s);
+      }
+    };
+    (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
+  },
+
+  // 26. Action Painting (行动绘画): 能量爆发，滴洒与混乱。
+  static_26: (p, seed) => {
+    p.setup = () => {
+      p.createCanvas(p.windowWidth, p.windowHeight);
+      p.colorMode(p.HSB, 360, 100, 100, 100);
+      p.background(40, 10, 95);
+    };
+    p.draw = () => {
+      // 快速且混乱的笔触
+      const moves = 5;
+      for (let i = 0; i < moves; i++) {
+        const x = p.random(p.width);
+        const y = p.random(p.height);
+
+        // 主要是黑色和大地色，偶尔爆发亮色
+        let hu = 0,
+          sa = 0,
+          br = 10;
+        if (p.random() > 0.8) {
+          hu = p.random(360);
+          sa = 80;
+          br = 90;
+        } else {
+          hu = 30;
+          sa = p.random(20);
+          br = p.random(20);
+        }
+
+        p.stroke(hu, sa, br, 80);
+        p.strokeWeight(p.random(1, 8));
+        p.noFill();
+
+        // 模仿 Pollock 的滴洒曲线
+        p.beginShape();
+        let cx = x,
+          cy = y;
+        for (let j = 0; j < 6; j++) {
+          p.curveVertex(cx, cy);
+          cx += p.random(-60, 60);
+          cy += p.random(-60, 60);
+        }
+        p.endShape();
+
+        // 飞溅的墨点
+        if (p.random() > 0.6) {
+          p.fill(hu, sa, br, 80);
+          p.noStroke();
+          const splashX = x + p.random(-50, 50);
+          const splashY = y + p.random(-50, 50);
+          p.circle(splashX, splashY, p.random(2, 6));
+        }
+      }
+    };
+    (p as any).customResize = (w: number, h: number) => {
+      p.resizeCanvas(w, h);
+      p.background(40, 10, 95);
+    };
+  },
+
+  // 27. Cubism (立体主义): 破碎的视角，几何重构，褐色调。
+  static_27: (p, seed) => {
+    p.setup = () => {
+      p.createCanvas(p.windowWidth, p.windowHeight);
+      p.colorMode(p.HSB, 360, 100, 100, 100);
+      p.rectMode(p.CENTER);
+      p.background(30, 10, 85); // 初始画布底色
+    };
+    p.draw = () => {
+      // 每一帧并不清空，而是缓慢叠加，形成复杂的肌理
+      if (p.frameCount % 200 === 0) {
+        p.background(30, 10, 85, 90); // 偶尔淡化背景
+      }
+
+      p.noStroke();
+      const x = p.random(p.width);
+      const y = p.random(p.height);
+      const size = p.random(50, 250);
+
+      // 毕加索/布拉克时期的配色：赭石、灰、黑、浊蓝、深红
+      const colors = [
+        [35, 40, 70], // Ochre
+        [210, 20, 50], // Blue Grey
+        [0, 0, 20], // Dark Grey
+        [0, 0, 95], // White/Cream
+        [10, 40, 50], // Brown/Red
+      ];
+      const col = p.random(colors);
+      p.fill(col[0], col[1], col[2], 70); // 半透明
+
       p.push();
-      p.translate(p.width / 2, p.height / 2);
-      p.rotate(p.QUARTER_PI);
-      p.fill(200, 0, 0);
-      p.rect(0, 0, 300, 50);
-      p.fill(0);
-      p.circle(-50, -50, 100);
+      p.translate(x, y);
+      p.rotate(p.random(p.TWO_PI)); // 旋转视角
+
+      // 绘制“碎片”：模拟被拆解的吉他、瓶子或面孔的局部
+      const type = Math.floor(p.random(4));
+      if (type === 0) {
+        p.triangle(-size / 2, size / 2, 0, -size / 2, size / 2, size / 2);
+      } else if (type === 1) {
+        p.rect(0, 0, size, size * p.random(0.2, 0.8));
+      } else if (type === 2) {
+        p.arc(0, 0, size, size, 0, p.PI);
+      } else {
+        // 剪影效果
+        p.beginShape();
+        p.vertex(-size / 2, -size / 2);
+        p.vertex(size / 3, -size / 4);
+        p.vertex(size / 2, size / 2);
+        p.vertex(-size / 4, size / 3);
+        p.endShape(p.CLOSE);
+      }
+
+      // 结构线
+      p.stroke(0, 0, 10, 60);
+      p.strokeWeight(1.5);
+      if (p.random() > 0.5) p.line(-size, 0, size, 0);
+
       p.pop();
     };
     (p as any).customResize = (w: number, h: number) => {
       p.resizeCanvas(w, h);
-      p.redraw();
+      p.background(30, 10, 85);
     };
   },
 
-  // 24. Ukiyo-e
-  static_24: (p, seed) => {
-    p.setup = () => {
-      p.createCanvas(p.windowWidth, p.windowHeight);
-      p.noFill();
-      p.stroke(0, 0, 100);
-      p.strokeWeight(2);
-    };
-    p.draw = () => {
-      p.background(20, 50, 100);
-      for (let y = 100; y < p.height; y += 50) {
-        p.beginShape();
-        for (let x = 0; x < p.width; x += 10) {
-          p.vertex(x, y + Math.sin(x * 0.02 + p.frameCount * 0.05) * 20);
-        }
-        p.endShape();
-      }
-    };
-    (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
-  },
-
-  // 25. Light and Space
-  static_25: (p, seed) => {
-    p.setup = () => {
-      p.createCanvas(p.windowWidth, p.windowHeight);
-    };
-    p.draw = () => {
-      p.background(200, 200, 255);
-      p.noStroke();
-      let c = p.color(255, 100, 200, 50);
-      p.fill(c);
-      p.rect(
-        0,
-        0,
-        p.width * (0.5 + Math.sin(p.frameCount * 0.01) * 0.2),
-        p.height
-      );
-    };
-    (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
-  },
-
-  // 26. Action Painting
-  static_26: (p, seed) => {
-    let x = 0,
-      y = 0;
-    p.setup = () => {
-      p.createCanvas(p.windowWidth, p.windowHeight);
-      p.background(240);
-      x = p.width / 2;
-      y = p.height / 2;
-    };
-    p.draw = () => {
-      for (let i = 0; i < 10; i++) {
-        x += p.random(-20, 20);
-        y += p.random(-20, 20);
-        p.strokeWeight(p.random(1, 5));
-        p.stroke(0);
-        p.point(x, y);
-      }
-    };
-    (p as any).customResize = (w: number, h: number) => {
-      p.resizeCanvas(w, h);
-      p.background(240);
-    };
-  },
-
-  // 27. Cubism
-  static_27: (p, seed) => {
-    p.setup = () => {
-      p.createCanvas(p.windowWidth, p.windowHeight);
-      p.background(100);
-      p.noLoop();
-    };
-    p.draw = () => {
-      for (let i = 0; i < 20; i++) {
-        p.fill(p.random(100, 200), p.random(100, 200), p.random(100, 200), 150);
-        p.rect(
-          p.random(p.width),
-          p.random(p.height),
-          p.random(50, 150),
-          p.random(50, 150)
-        );
-      }
-    };
-    (p as any).customResize = (w: number, h: number) => {
-      p.resizeCanvas(w, h);
-      p.redraw();
-    };
-  },
-
-  // 28. ASCII Art
+  // 28. ASCII Art (字符艺术): 字符流，密度映射。
   static_28: (p, seed) => {
+    const chars = " .:-=+*#%@"; // 密度从低到高
+    // const chars = "  ▂▃▄▅▆▇█"; // Alternative block chars
+    const fontSize = 16;
+
     p.setup = () => {
       p.createCanvas(p.windowWidth, p.windowHeight);
-      p.textFont("monospace");
-      p.textSize(12);
+      p.textFont("Courier New");
+      p.textSize(fontSize);
+      p.textAlign(p.CENTER, p.CENTER);
+      p.colorMode(p.HSB, 360, 100, 100, 100);
+      p.frameRate(24); // 降低帧率以获得更好的字符跳动感
     };
     p.draw = () => {
       p.background(0);
-      p.fill(0, 255, 0);
-      for (let y = 12; y < p.height; y += 12) {
-        for (let x = 0; x < p.width; x += 8) {
-          if (p.random() > 0.5)
-            p.text(String.fromCharCode(0x30a0 + p.random(96)), x, y);
+      p.fill(120, 100, 100); // Terminal Green
+
+      const cols = Math.ceil(p.width / fontSize);
+      const rows = Math.ceil(p.height / fontSize);
+      const t = p.frameCount * 0.03; // 时间流速
+
+      for (let j = 0; j < rows; j++) {
+        for (let i = 0; i < cols; i++) {
+          // 使用 Perlin Noise 生成有机流动的图案
+          const n = p.noise(i * 0.08, j * 0.08 + t);
+
+          // 只有在亮度足够的地方才绘制，优化性能且制造负空间
+          if (n > 0.3) {
+            const charIndex = Math.floor(p.map(n, 0.3, 0.8, 0, chars.length));
+            // safe clamp
+            const idx = Math.max(0, Math.min(charIndex, chars.length - 1));
+            const char = chars[idx];
+
+            // 颜色微变：高亮处偏白，暗处偏深绿
+            const brightness = p.map(n, 0.3, 0.8, 50, 100);
+            p.fill(120, 80, brightness);
+
+            p.text(
+              char,
+              i * fontSize + fontSize / 2,
+              j * fontSize + fontSize / 2,
+            );
+          }
         }
       }
-      p.noLoop();
     };
-    (p as any).customResize = (w: number, h: number) => {
-      p.resizeCanvas(w, h);
-      p.loop();
-    };
+    (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
   },
 
   // 29. Kinetic Art
@@ -1250,39 +1460,119 @@ export const VISUAL_STYLES: Record<string, (p: p5, seed: string) => void> = {
     (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
   },
 
-  // 30. Gothic
+  // 30. Gothic (哥特式): 垂直线条，尖拱，神性光辉。
   static_30: (p, seed) => {
     p.setup = () => {
       p.createCanvas(p.windowWidth, p.windowHeight);
-      p.stroke(200);
-      p.noFill();
+      p.colorMode(p.HSB, 360, 100, 100, 100);
+      p.noLoop();
     };
     p.draw = () => {
-      p.background(20);
-      for (let x = 0; x < p.width; x += 100) {
+      p.background(240, 40, 15); // 深邃的午夜蓝/黑
+
+      // 1. 垂直线条 - 飞扶壁/柱子
+      const cols = Math.floor(p.width / 60);
+      const colW = p.width / cols;
+
+      for (let i = 0; i <= cols; i++) {
+        const x = i * colW;
+
+        // 柱子
+        p.stroke(0, 0, 20); // 深色石材
+        p.strokeWeight(2);
+        p.line(x, 0, x, p.height);
+
+        // 尖拱 (Ogive Arch)
+        p.noFill();
+        p.stroke(0, 0, 40);
+        p.strokeWeight(1);
+
+        // 左半拱
         p.beginShape();
         p.vertex(x, p.height);
-        p.vertex(x, p.height / 2);
-        (p as any).bezierVertex(
-          x + 20,
-          p.height / 2 - 50,
-          x + 50,
-          p.height / 2 - 100,
-          x + 50,
-          p.height / 2 - 150
+        p.vertex(x, p.height * 0.6);
+        // 控制点模拟尖顶
+        p.bezierVertex(
+          x,
+          p.height * 0.4,
+          x + colW,
+          p.height * 0.3,
+          x + colW / 2,
+          0,
         );
-        (p as any).bezierVertex(
-          x + 50,
-          p.height / 2 - 100,
-          x + 80,
-          p.height / 2 - 50,
-          x + 100,
-          p.height / 2
+        p.endShape();
+
+        // 右半拱
+        p.beginShape();
+        p.vertex(x + colW, p.height);
+        p.vertex(x + colW, p.height * 0.6);
+        p.bezierVertex(
+          x + colW,
+          p.height * 0.4,
+          x,
+          p.height * 0.3,
+          x + colW / 2,
+          0,
         );
-        p.vertex(x + 100, p.height);
         p.endShape();
       }
-      p.noLoop();
+
+      // 2. 玫瑰花窗 (Rosette) - 抽象的神性光辉
+      const cx = p.width / 2;
+      const cy = p.height * 0.35;
+
+      // 外部光晕
+      for (let r = 350; r > 100; r -= 40) {
+        p.noStroke();
+        p.fill(50, 60, 100, 2); // 圣洁的金色光
+        p.circle(cx, cy, r);
+      }
+
+      // 花窗结构
+      const petals = 12;
+      const radius = 100;
+
+      p.push();
+      p.translate(cx, cy);
+
+      // 彩色玻璃填充
+      for (let i = 0; i < petals; i++) {
+        p.push();
+        p.rotate((p.TWO_PI / petals) * i);
+
+        // 典型的哥特配色：钴蓝、深红、紫
+        const hueType = i % 3;
+        if (hueType === 0)
+          p.fill(220, 80, 60, 70); // Blue
+        else if (hueType === 1)
+          p.fill(340, 90, 60, 70); // Red
+        else p.fill(280, 70, 50, 70); // Purple
+
+        p.noStroke();
+        // 花瓣形状
+        p.beginShape();
+        p.vertex(0, 0);
+        p.bezierVertex(20, radius * 0.3, 30, radius * 0.8, 0, radius);
+        p.bezierVertex(-30, radius * 0.8, -20, radius * 0.3, 0, 0);
+        p.endShape();
+        p.pop();
+      }
+
+      // 铅条勾勒 (Tracery)
+      p.noFill();
+      p.stroke(0, 0, 0);
+      p.strokeWeight(3);
+      p.circle(0, 0, radius * 2);
+      p.circle(0, 0, radius * 0.4);
+
+      p.pop();
+
+      // 3. 尘埃粒子 - 增加空气感
+      for (let i = 0; i < 150; i++) {
+        p.stroke(40, 20, 100, p.random(10, 40));
+        p.strokeWeight(p.random(1, 2.5));
+        p.point(p.random(p.width), p.random(p.height));
+      }
     };
     (p as any).customResize = (w: number, h: number) => {
       p.resizeCanvas(w, h);
