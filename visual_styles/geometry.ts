@@ -850,4 +850,243 @@ export const geometryStyles: ArtStyle[] = [
       };
     },
   },
+  {
+    id: "isometric",
+    name: "Isometric (等轴测)",
+    era: "Architectural/Game",
+    driver: "p5",
+    description:
+      "没有透视的平行世界。在这里，距离不会改变物体的大小，一切都井然有序。",
+    prompt: "如果世界是一个可以随意搭建的积木游戏，你会建造什么？",
+    styleTags: ["Grid", "Cube", "Order"],
+    sketch: (p: p5, seed: string) => {
+      p.setup = () => {
+        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.colorMode(p.HSB, 360, 100, 100, 100);
+      };
+
+      p.draw = () => {
+        p.background(220, 15, 98); // Clean light background
+
+        const time = p.frameCount * 0.01;
+        const tileW = 36;
+        const tileH = tileW / 2;
+
+        // Draw function for a single cube
+        const drawCube = (x: number, y: number, h: number, hue: number) => {
+          p.push();
+          p.noStroke();
+
+          // Top face (Highlight)
+          p.fill(hue, 30, 95);
+          p.beginShape();
+          p.vertex(x, y - h);
+          p.vertex(x + tileW, y - tileH - h);
+          p.vertex(x + tileW * 2, y - h);
+          p.vertex(x + tileW, y + tileH - h);
+          p.endShape(p.CLOSE);
+
+          // Right face (Shadow)
+          const shadowHue = (hue + 10) % 360;
+          p.fill(shadowHue, 50, 65);
+          p.beginShape();
+          p.vertex(x + tileW * 2, y - h);
+          p.vertex(x + tileW, y + tileH - h);
+          p.vertex(x + tileW, y + tileH + 80 - h); // fixed base height
+          p.vertex(x + tileW * 2, y + 80 - h);
+          p.endShape(p.CLOSE);
+
+          // Left face (Mid-tone)
+          p.fill(hue, 40, 85);
+          p.beginShape();
+          p.vertex(x, y - h);
+          p.vertex(x + tileW, y + tileH - h);
+          p.vertex(x + tileW, y + tileH + 80 - h);
+          p.vertex(x, y + 80 - h);
+          p.endShape(p.CLOSE);
+          p.pop();
+        };
+
+        // Static parameters
+        const cols = 12;
+        const rows = 12;
+        const startX = p.width / 2 - cols * tileW;
+        const startY = p.height / 3;
+
+        // Render back-to-front for correct layering
+        for (let i = 0; i < cols; i++) {
+          for (let j = 0; j < rows; j++) {
+            const x = startX + i * tileW + j * tileW;
+            const y = startY + i * tileH - j * tileH + p.height * 0.15;
+
+            // Animated Height using multiple frequencies of noise
+            const noiseVal = p.noise(i * 0.15, j * 0.15, time);
+
+            // Only render blocks that "emerge"
+            if (noiseVal > 0.4) {
+              const h =
+                p.map(noiseVal, 0.4, 1, 0, 150) *
+                Math.sin(time * 0.5 + (i + j) * 0.1);
+              const finalH = Math.max(0, h);
+
+              // Color based on height and position + mouse interaction
+              const mouseDist = p.dist(p.mouseX, p.mouseY, x, y);
+              const hueOffset = p.map(mouseDist, 0, 500, 40, 0);
+              const baseHue = (200 + (i + j) * 5 + hueOffset) % 360;
+
+              drawCube(x, y, finalH, baseHue);
+            }
+          }
+        }
+      };
+      (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
+    },
+  },
+  {
+    id: "fractal_nature",
+    name: "Fractal Nature (分形自然)",
+    era: "Mathematics / Chaos",
+    driver: "p5",
+    description:
+      "自相似性是宇宙的指纹。从闪电到山脉，秩序在不断递归的尺度中重现。",
+    prompt: "如果你能无限缩小，你认为你会重新看到那个原本巨大的世界吗？",
+    styleTags: ["Recursive", "Organic", "Structure"],
+    sketch: (p: p5, seed: string) => {
+      // Recursive Tree / Fractal Geometry
+      p.setup = () => {
+        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.colorMode(p.HSB, 360, 100, 100, 100);
+      };
+
+      const branch = (len: number, angle: number, weight: number) => {
+        p.strokeWeight(weight);
+        p.stroke(200, 20, 100, 50);
+        p.line(0, 0, 0, -len);
+        p.translate(0, -len);
+
+        if (len > 10) {
+          p.push();
+          p.rotate(angle);
+          branch(len * 0.67, angle, weight * 0.7);
+          p.pop();
+
+          p.push();
+          p.rotate(-angle);
+          branch(len * 0.67, angle, weight * 0.7);
+          p.pop();
+        }
+      };
+
+      p.draw = () => {
+        p.background(220, 80, 10); // Midnight deep indigo
+
+        const time = p.frameCount * 0.01;
+        const dynamicAngle = p.map(p.sin(time), -1, 1, p.PI / 8, p.PI / 2.5);
+
+        p.push();
+        p.translate(p.width / 2, p.height * 0.9);
+        // Draw the main trunk and its recursive branches
+        branch(p.height * 0.25, dynamicAngle, 8);
+        p.pop();
+
+        // Secondary "Ghost" trees in background
+        p.randomSeed(99);
+        for (let i = 0; i < 3; i++) {
+          p.push();
+          p.translate(p.width * p.random(0.1, 0.9), p.height * 0.95);
+          p.opacity = 20;
+          branch(p.height * 0.1, dynamicAngle * 0.8, 2);
+          p.pop();
+        }
+      };
+
+      (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
+    },
+  },
+  {
+    id: "harmonograph",
+    name: "Harmonograph (谐波轨迹)",
+    era: "Victorian Science / Math Art",
+    driver: "p5",
+    description:
+      "多个单摆运动交织而成的精细曲线。它揭示了引力与时间在数学上的和谐平衡。",
+    prompt: "如果你的情绪也有波动频率，当它们叠加在一起时，会画出怎样的轨迹？",
+    styleTags: ["Mathematical", "Symmetry", "Linework", "Ethereal"],
+    sketch: (p: p5, seed: string) => {
+      // 3D-like Harmonograph using parametric equations
+      let t = 0;
+      let points: any[] = [];
+      const maxPoints = 2000;
+
+      // Parameters for the oscillators
+      const f1 = 2,
+        f2 = 3,
+        f3 = 1.01,
+        f4 = 0.99; // Frequencies
+      const p1 = 0,
+        p2 = p.PI / 2,
+        p3 = p.PI / 3,
+        p4 = p.PI / 4; // Phases
+      const d1 = 0.001,
+        d2 = 0.001,
+        d3 = 0.001,
+        d4 = 0.001; // Damping forces
+
+      p.setup = () => {
+        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.colorMode(p.HSB, 360, 100, 100, 100);
+        p.background(0);
+      };
+
+      p.draw = () => {
+        p.background(0, 0, 0, 5); // Persistent trails
+
+        p.translate(p.width / 2, p.height / 2);
+
+        // Calculate point using 4 oscillators
+        const amp = p.min(p.width, p.height) * 0.4;
+
+        const x =
+          amp *
+          (p.sin(t * f1 + p1) * p.exp(-d1 * t) +
+            p.sin(t * f2 + p2) * p.exp(-d2 * t));
+        const y =
+          amp *
+          (p.sin(t * f3 + p3) * p.exp(-d3 * t) +
+            p.sin(t * f4 + p4) * p.exp(-d4 * t));
+
+        points.push({ x, y, h: (t * 10) % 360 });
+        if (points.length > maxPoints) points.shift();
+
+        // Draw the path as a glowing silk-like ribbon
+        p.noFill();
+        p.beginShape();
+        for (let i = 1; i < points.length; i++) {
+          const pt = points[i];
+          const prev = points[i - 1];
+          const opacity = p.map(i, 0, points.length, 0, 80);
+
+          p.stroke(pt.h, 70, 100, opacity);
+          p.vertex(pt.x, pt.y);
+
+          // Connect nearby points to create "web" or "silk" effect
+          if (i > 10 && i % 40 === 0) {
+            const distantPt = points[i - 10];
+            p.stroke(pt.h, 70, 100, 5);
+            p.line(pt.x, pt.y, distantPt.x, distantPt.y);
+          }
+        }
+        p.endShape();
+
+        t += 0.02;
+      };
+
+      (p as any).customResize = (w: number, h: number) => {
+        p.resizeCanvas(w, h);
+        p.background(0);
+        points = [];
+        t = 0;
+      };
+    },
+  },
 ];

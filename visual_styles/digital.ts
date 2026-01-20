@@ -415,4 +415,183 @@ export const digitalStyles: ArtStyle[] = [
       (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
     },
   },
+  {
+    id: "acid",
+    name: "Acid (酸性)",
+    era: "Y2K Revival",
+    driver: "p5",
+    description:
+      "液态金属、扭曲的网格与高饱和度的霓虹色。一种具有腐蚀性的未来主义。",
+    prompt: "在数字乌托邦融化之后，剩下的是什么形状？",
+    styleTags: ["Liquid", "Chrome", "Distorted"],
+    sketch: (p: p5, seed: string) => {
+      p.setup = () => {
+        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.colorMode(p.HSB, 360, 100, 100, 100);
+      };
+
+      p.draw = () => {
+        p.background(0); // Deep black
+        const time = p.frameCount * 0.015;
+
+        // 1. Animated Distorted Grid Background
+        p.stroke(280, 80, 80, 40); // Subtle Neon Purple
+        p.strokeWeight(1);
+        p.noFill();
+
+        for (let y = -40; y < p.height + 40; y += 40) {
+          p.beginShape();
+          for (let x = 0; x <= p.width; x += 20) {
+            // Sine wave distortion + Time
+            const yOff = Math.sin(x * 0.01 + y * 0.02 + time) * 30;
+            p.vertex(x, y + yOff);
+          }
+          p.endShape();
+        }
+
+        // 2. Liquid Metal Blob (Chrome effect) - Evolving
+        p.push();
+        p.translate(p.width / 2, p.height / 2);
+
+        // Reactive to mouse
+        const mx = (p.mouseX - p.width / 2) * 0.03;
+        const my = (p.mouseY - p.height / 2) * 0.03;
+        p.translate(mx, my);
+
+        p.noStroke();
+
+        const layers = 22;
+        for (let i = layers; i > 0; i--) {
+          const t = i / layers;
+          // Chrome gradient shift
+          let bri = 50;
+          const tone = (t + time * 0.1) % 1;
+          if (tone > 0.8) bri = 100;
+          else if (tone > 0.5) bri = 10;
+          else if (tone > 0.2) bri = 90;
+
+          p.fill(0, 0, bri, 95);
+
+          p.beginShape();
+          for (let a = 0; a < p.TWO_PI; a += 0.1) {
+            // Liquid blob physics simulation using noise
+            const noiseFactor = p.noise(
+              Math.cos(a) * 0.6 + 1,
+              Math.sin(a) * 0.6 + 1,
+              time + i * 0.02,
+            );
+            const r = 130 + noiseFactor * 160;
+            const x = Math.cos(a) * r * t;
+            const y = Math.sin(a) * r * t;
+            p.vertex(x, y);
+          }
+          p.endShape(p.CLOSE);
+        }
+
+        // 3. Acid Symbols - Rotating
+        p.rotate(time * 0.5);
+        p.stroke(120, 100, 100, 70); // Neon Green
+        p.noFill();
+        p.strokeWeight(1.5);
+        p.circle(0, 0, 320 + Math.sin(time * 2) * 15);
+
+        p.line(-180, 0, 180, 0);
+        p.line(0, -180, 0, 180);
+
+        // Dynamic glyphs
+        for (let j = 0; j < 4; j++) {
+          p.rotate(p.HALF_PI);
+          p.rect(140, 140, 12, 12);
+          if (p.frameCount % 60 < 30) {
+            p.fill(120, 100, 100, 50);
+            p.rect(140, 140, 6, 6);
+            p.noFill();
+          }
+        }
+        p.pop();
+      };
+      (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
+    },
+  },
+  {
+    id: "cyber_calligraphy",
+    name: "Cyber Calligraphy (赛博书法)",
+    era: "Post-Digital",
+    driver: "p5",
+    description:
+      "用算法模拟毛笔的运势，但在数字空间中，墨迹会因代码的扰动而产生故障、偏移与几何坍塌。",
+    prompt: "当传统与算法相遇，哪一部分是个性的表达，哪一部分是机器的计算？",
+    styleTags: ["Calligraphy", "Glitch", "Gestural"],
+    sketch: (p: p5, seed: string) => {
+      // Gesture tracking with simulated brush drag and digital corruption
+      let points: { x: number; y: number; w: number }[] = [];
+      let targetX = p.windowWidth / 2;
+      let targetY = p.windowHeight / 2;
+      let x = targetX;
+      let y = targetY;
+
+      p.setup = () => {
+        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.colorMode(p.HSB, 360, 100, 100, 100);
+        p.background(0, 0, 95); // White paper
+      };
+
+      p.draw = () => {
+        // Continuous movement influenced by "Auto-writing"
+        targetX = p.noise(p.frameCount * 0.005) * p.width;
+        targetY = p.noise(p.frameCount * 0.005 + 100) * p.height;
+
+        // Interaction
+        if (p.mouseIsPressed) {
+          targetX = p.mouseX;
+          targetY = p.mouseY;
+        }
+
+        // Smooth follow
+        x = p.lerp(x, targetX, 0.1);
+        y = p.lerp(y, targetY, 0.1);
+
+        // Brush width based on speed
+        const speed = p.dist(p.pmouseX, p.pmouseY, p.mouseX, p.mouseY);
+        const brushW = p.map(speed, 0, 50, 20, 2, true);
+
+        points.push({ x, y, w: brushW });
+        if (points.length > 200) points.shift();
+
+        // Render "Ink" with digital artifacts
+        p.background(0, 0, 95, 10); // Fade for trail
+
+        for (let i = 1; i < points.length; i++) {
+          const pt = points[i];
+          const prev = points[i - 1];
+
+          // Core Stroke
+          p.stroke(0, 0, 10, 80);
+          p.strokeWeight(pt.w);
+          p.line(prev.x, prev.y, pt.x, pt.y);
+
+          // Digital Corruptions (Glitch spikes)
+          if (p.random() > 0.98) {
+            p.stroke(0, 100, 100, 50); // Red glitch
+            p.strokeWeight(0.5);
+            p.line(pt.x, pt.y, pt.x + p.random(-100, 100), pt.y);
+          }
+
+          // Occasional geometric "halos"
+          if (i % 50 === 0) {
+            p.noFill();
+            p.stroke(0, 0, 40, 20);
+            p.rectMode(p.CENTER);
+            p.rect(pt.x, pt.y, 40, 40);
+          }
+        }
+      };
+
+      (p as any).customResize = (w: number, h: number) => {
+        p.resizeCanvas(w, h);
+        p.background(0, 0, 95);
+        points = [];
+      };
+    },
+  },
 ];

@@ -18,6 +18,8 @@ const P5Renderer: React.FC<P5RendererProps> = ({ code }) => {
       <html>
         <head>
           <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/addons/p5.sound.min.js"></script>
+          <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
           <style>
             body { margin: 0; padding: 0; overflow: hidden; background: #000; }
             canvas { display: block; }
@@ -46,6 +48,7 @@ const P5Renderer: React.FC<P5RendererProps> = ({ code }) => {
         title="Generative Art Canvas"
         className="w-full h-full border-none pointer-events-auto"
         sandbox="allow-scripts allow-same-origin"
+        allow="camera; microphone"
       />
     </div>
   );
