@@ -1517,57 +1517,7 @@ export const VISUAL_STYLES: Record<string, (p: p5, seed: string) => void> = {
         p.endShape();
       }
 
-      // 2. 玫瑰花窗 (Rosette) - 抽象的神性光辉
-      const cx = p.width / 2;
-      const cy = p.height * 0.35;
-
-      // 外部光晕
-      for (let r = 350; r > 100; r -= 40) {
-        p.noStroke();
-        p.fill(50, 60, 100, 2); // 圣洁的金色光
-        p.circle(cx, cy, r);
-      }
-
-      // 花窗结构
-      const petals = 12;
-      const radius = 100;
-
-      p.push();
-      p.translate(cx, cy);
-
-      // 彩色玻璃填充
-      for (let i = 0; i < petals; i++) {
-        p.push();
-        p.rotate((p.TWO_PI / petals) * i);
-
-        // 典型的哥特配色：钴蓝、深红、紫
-        const hueType = i % 3;
-        if (hueType === 0)
-          p.fill(220, 80, 60, 70); // Blue
-        else if (hueType === 1)
-          p.fill(340, 90, 60, 70); // Red
-        else p.fill(280, 70, 50, 70); // Purple
-
-        p.noStroke();
-        // 花瓣形状
-        p.beginShape();
-        p.vertex(0, 0);
-        p.bezierVertex(20, radius * 0.3, 30, radius * 0.8, 0, radius);
-        p.bezierVertex(-30, radius * 0.8, -20, radius * 0.3, 0, 0);
-        p.endShape();
-        p.pop();
-      }
-
-      // 铅条勾勒 (Tracery)
-      p.noFill();
-      p.stroke(0, 0, 0);
-      p.strokeWeight(3);
-      p.circle(0, 0, radius * 2);
-      p.circle(0, 0, radius * 0.4);
-
-      p.pop();
-
-      // 3. 尘埃粒子 - 增加空气感
+      // 2. 尘埃粒子 - 增加空气感
       for (let i = 0; i < 150; i++) {
         p.stroke(40, 20, 100, p.random(10, 40));
         p.strokeWeight(p.random(1, 2.5));

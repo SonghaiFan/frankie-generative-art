@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence, useMotionValue } from 'framer-motion';
 import { Download } from 'lucide-react';
 
 import CabinetGrid from './components/CabinetGrid';
@@ -13,10 +13,10 @@ import { PREDEFINED_CARDS } from './constants';
 
 const App: React.FC = () => {
   const [gameState, setGameState] = useState<GameState>(GameState.IDLE);
-  
+
   // In the Cabinet grid flow, we select from predefined cards directly
   const allCards = PREDEFINED_CARDS;
-  
+
   const [userHistory, setUserHistory] = useState<UserInteraction[]>([]);
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const [creativeResult, setCreativeResult] = useState<CreativeArtResult | null>(null);
@@ -26,47 +26,47 @@ const App: React.FC = () => {
   const handleGridSelectionComplete = async (selectedIds: string[]) => {
     // 1. Construct history from selections
     const selectedCards = allCards.filter(c => selectedIds.includes(c.id));
-    
+
     const mockHistory: UserInteraction[] = selectedCards.map(c => ({
-        cardId: c.id,
-        term: c.term,
-        action: 'kept',
-        timestamp: Date.now()
+      cardId: c.id,
+      term: c.term,
+      action: 'kept',
+      timestamp: Date.now()
     }));
 
     setUserHistory(mockHistory);
-    
+
     // 2. Move to Analysis State
     setGameState(GameState.ANALYZING);
-    
+
     // 3. Trigger API
     performAnalysis(mockHistory);
   };
 
   const performAnalysis = async (history: UserInteraction[]) => {
     try {
-        const result = await analyzeUserStyle(history);
-        setAnalysis(result);
+      const result = await analyzeUserStyle(history);
+      setAnalysis(result);
     } catch (e) {
-        setAnalysis({
-            archetype: "Void Walker",
-            philosophy: "You seek structure within chaos.",
-            followUpQuestion: "Is your order internal or external?"
-        });
+      setAnalysis({
+        archetype: "Void Walker",
+        philosophy: "You seek structure within chaos.",
+        followUpQuestion: "Is your order internal or external?"
+      });
     }
   };
 
   const handleFinalResponse = async (response: string) => {
-    setAnalysis(null); 
-    setGameState(GameState.CREATIVE_PATH); 
-    
+    setAnalysis(null);
+    setGameState(GameState.CREATIVE_PATH);
+
     const analysisPhilosophy = analysis?.philosophy || "Unknown";
 
     try {
-        const result = await generateCreativeArt(userHistory, analysisPhilosophy, response);
-        setCreativeResult(result);
+      const result = await generateCreativeArt(userHistory, analysisPhilosophy, response);
+      setCreativeResult(result);
     } catch (e) {
-        console.error(e);
+      console.error(e);
     }
   };
 
@@ -77,9 +77,22 @@ const App: React.FC = () => {
     setCreativeResult(null);
   };
 
+  // --- Custom Cursor Logic ---
+  const cursorX = useMotionValue(-100);
+  const cursorY = useMotionValue(-100);
+
+  useEffect(() => {
+    const moveCursor = (e: MouseEvent) => {
+      cursorX.set(e.clientX - 6);
+      cursorY.set(e.clientY - 6);
+    };
+    window.addEventListener('mousemove', moveCursor);
+    return () => window.removeEventListener('mousemove', moveCursor);
+  }, []);
+
   const handleDownload = () => {
     if (!creativeResult) return;
-    
+
     const htmlContent = `
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -128,8 +141,14 @@ const App: React.FC = () => {
   };
 
   return (
-    <main className="fixed inset-0 w-full h-full bg-black overflow-hidden text-[#d4d4d4] font-serif">
-      
+    <main className="fixed inset-0 w-full h-full bg-black overflow-hidden text-[#d4d4d4] font-serif cursor-none">
+
+      {/* Custom Cursor Dot */}
+      <motion.div
+        className="fixed top-0 left-0 w-3 h-3 bg-white rounded-full pointer-events-none z-[9999] mix-blend-difference"
+        style={{ x: cursorX, y: cursorY }}
+      />
+
       {/* 
          Global Spotlight:
          Provides the "Stage Light" / "Flashlight" effect. 
@@ -139,25 +158,25 @@ const App: React.FC = () => {
       {/* LAYER 1: The Cabinet Grid (Idle State) */}
       <AnimatePresence>
         {gameState === GameState.IDLE && (
-           <motion.div 
-             initial={{ opacity: 0 }} 
-             animate={{ opacity: 1 }}
-             exit={{ opacity: 0, scale: 0.95, filter: "blur(10px)" }}
-             transition={{ duration: 1 }}
-             className="w-full h-full"
-           >
-             <CabinetGrid 
-               cards={allCards} 
-               onSelectionComplete={handleGridSelectionComplete} 
-             />
-           </motion.div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, scale: 0.95, filter: "blur(10px)" }}
+            transition={{ duration: 1 }}
+            className="w-full h-full"
+          >
+            <CabinetGrid
+              cards={allCards}
+              onSelectionComplete={handleGridSelectionComplete}
+            />
+          </motion.div>
         )}
       </AnimatePresence>
 
       {/* LAYER 2: Analysis View */}
       {(gameState === GameState.ANALYZING) && (
-        <AnalysisView 
-          analysis={analysis} 
+        <AnalysisView
+          analysis={analysis}
           isLoading={!analysis}
           onRespond={handleFinalResponse}
         />
@@ -166,60 +185,60 @@ const App: React.FC = () => {
       {/* LAYER 3: Creative Result */}
       <AnimatePresence>
         {gameState === GameState.CREATIVE_PATH && (
-             <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="fixed inset-0 z-[80] bg-black flex flex-col cursor-auto"
-             >
-                 {creativeResult ? (
-                    <>
-                        <div className="absolute inset-0 z-0">
-                            <P5Renderer code={creativeResult.p5Code} />
-                        </div>
-                        
-                        {/* Final Overlay UI */}
-                        <div className="relative z-10 w-full h-full pointer-events-none flex flex-col justify-end p-8 md:p-16">
-                            <div className="max-w-xl pointer-events-auto">
-                                <motion.div 
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 1 }}
-                                >
-                                    <div className="font-ui text-xs tracking-[0.4em] uppercase text-white/50 mb-4">
-                                        Aesthetic Signature
-                                    </div>
-                                    <h1 className="text-5xl md:text-7xl font-serif text-white mb-6 mix-blend-difference">
-                                        {creativeResult.styleName}
-                                    </h1>
-                                    <p className="font-ui text-sm md:text-base text-white/80 leading-relaxed border-l border-white/30 pl-6 mb-8 mix-blend-difference">
-                                        {creativeResult.explanation}
-                                    </p>
-                                    
-                                    <div className="flex items-center gap-6">
-                                        <button 
-                                            onClick={handleDownload}
-                                            className="flex items-center gap-2 px-6 py-3 border border-white/30 rounded-full hover:bg-white hover:text-black transition-colors group"
-                                        >
-                                            <Download size={16} />
-                                            <span className="text-xs uppercase tracking-widest">Save Artifact</span>
-                                        </button>
-                                        <button 
-                                            onClick={resetGame}
-                                            className="text-xs uppercase tracking-widest text-white/50 hover:text-white transition-colors"
-                                        >
-                                            Restart Sequence
-                                        </button>
-                                    </div>
-                                </motion.div>
-                            </div>
-                        </div>
-                    </>
-                 ) : (
-                     <div className="flex items-center justify-center w-full h-full text-white/30 animate-pulse font-serif text-2xl">
-                         Synthesizing Final Form...
-                     </div>
-                 )}
-             </motion.div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="fixed inset-0 z-[80] bg-black flex flex-col cursor-auto"
+          >
+            {creativeResult ? (
+              <>
+                <div className="absolute inset-0 z-0">
+                  <P5Renderer code={creativeResult.p5Code} />
+                </div>
+
+                {/* Final Overlay UI */}
+                <div className="relative z-10 w-full h-full pointer-events-none flex flex-col justify-end p-8 md:p-16">
+                  <div className="max-w-xl pointer-events-auto">
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 1 }}
+                    >
+                      <div className="font-ui text-xs tracking-[0.4em] uppercase text-white/50 mb-4">
+                        Aesthetic Signature
+                      </div>
+                      <h1 className="text-5xl md:text-7xl font-serif text-white mb-6 mix-blend-difference">
+                        {creativeResult.styleName}
+                      </h1>
+                      <p className="font-ui text-sm md:text-base text-white/80 leading-relaxed border-l border-white/30 pl-6 mb-8 mix-blend-difference">
+                        {creativeResult.explanation}
+                      </p>
+
+                      <div className="flex items-center gap-6">
+                        <button
+                          onClick={handleDownload}
+                          className="flex items-center gap-2 px-6 py-3 border border-white/30 rounded-full hover:bg-white hover:text-black transition-colors group"
+                        >
+                          <Download size={16} />
+                          <span className="text-xs uppercase tracking-widest">Save Artifact</span>
+                        </button>
+                        <button
+                          onClick={resetGame}
+                          className="text-xs uppercase tracking-widest text-white/50 hover:text-white transition-colors"
+                        >
+                          Restart Sequence
+                        </button>
+                      </div>
+                    </motion.div>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="flex items-center justify-center w-full h-full text-white/30 animate-pulse font-serif text-2xl">
+                Synthesizing Final Form...
+              </div>
+            )}
+          </motion.div>
         )}
       </AnimatePresence>
 
