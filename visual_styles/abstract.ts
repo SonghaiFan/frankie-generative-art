@@ -295,7 +295,8 @@ export const abstractStyles: ArtStyle[] = [
       // Improved Suprematism: Seeded, Balanced Composition, Iconic Palette
       const getSeedNum = (s: string) => {
         let h = 0;
-        for (let i = 0; i < s.length; i++) h = Math.imul(31, h) + s.charCodeAt(i) | 0;
+        for (let i = 0; i < s.length; i++)
+          h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
         return Math.abs(h);
       };
 
@@ -304,29 +305,34 @@ export const abstractStyles: ArtStyle[] = [
         p.randomSeed(getSeedNum(seed));
         shapes = [];
         const count = p.floor(p.random(8, 15));
-        
+
         // Ensure at least one Large Central Element (The "Black Square" or "Red Circle" feel)
         shapes.push({
-          type: 'rect',
+          type: "rect",
           x: p.width / 2 + p.random(-100, 100),
           y: p.height / 2 + p.random(-100, 100),
           w: p.random(150, 300),
           h: p.random(150, 300),
           rot: p.random(p.QUARTER_PI),
           col: p.random() > 0.7 ? [0, 80, 80] : [0, 0, 0], // Red or Black
-          phase: p.random(p.TWO_PI)
+          phase: p.random(p.TWO_PI),
         });
 
         for (let i = 0; i < count; i++) {
           shapes.push({
-            type: p.random(['rect', 'rect', 'circle', 'line']),
+            type: p.random(["rect", "rect", "circle", "line"]),
             x: p.random(p.width * 0.1, p.width * 0.9),
             y: p.random(p.height * 0.1, p.height * 0.9),
             w: p.random(20, 350),
             h: p.random(10, 120),
             rot: p.random(p.TWO_PI),
-            col: p.random([[0, 0, 0], [0, 85, 85], [45, 90, 95], [210, 80, 50]]), // Black, Red, Yellow, Blue
-            phase: p.random(p.TWO_PI)
+            col: p.random([
+              [0, 0, 0],
+              [0, 85, 85],
+              [45, 90, 95],
+              [210, 80, 50],
+            ]), // Black, Red, Yellow, Blue
+            phase: p.random(p.TWO_PI),
           });
         }
       };
@@ -340,22 +346,22 @@ export const abstractStyles: ArtStyle[] = [
 
       p.draw = () => {
         p.background(0, 0, 95); // Off-white/Gallery white
-        
+
         shapes.forEach((s) => {
           p.push();
           // Subtle floating movement
           let driftY = Math.sin(p.frameCount * 0.015 + s.phase) * 15;
           p.translate(s.x, s.y + driftY);
           p.rotate(s.rot);
-          
+
           p.noStroke();
           p.fill(s.col[0], s.col[1], s.col[2]);
 
-          if (s.type === 'rect') {
+          if (s.type === "rect") {
             p.rect(0, 0, s.w, s.h);
-          } else if (s.type === 'circle') {
+          } else if (s.type === "circle") {
             p.ellipse(0, 0, s.w, s.w);
-          } else if (s.type === 'line') {
+          } else if (s.type === "line") {
             p.rect(0, 0, s.w, 4);
           }
           p.pop();
