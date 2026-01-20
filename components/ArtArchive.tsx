@@ -1,21 +1,40 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { ArtCardData } from '../types';
 import GenerativeArt from './GenerativeArt';
 import { ArrowRight, Sparkles } from 'lucide-react';
 
-interface CabinetGridProps {
+interface ArtArchiveProps {
   cards: ArtCardData[];
   onSelectionComplete: (selectedIds: string[]) => void;
 }
 
-const CabinetGrid: React.FC<CabinetGridProps> = ({ cards, onSelectionComplete }) => {
+// Available art oracle HTML files
+const artOracleModules = import.meta.glob('../public/art_oracle_*.html', { 
+  eager: true, 
+  query: '?url', 
+  import: 'default' 
+});
+const artOracleFiles = Object.values(artOracleModules)
+  .map((url) => (typeof url === 'string' ? url.split('/').pop() : ''))
+  .filter(Boolean) as string[];
+
+const ArtArchive: React.FC<ArtArchiveProps> = ({ cards, onSelectionComplete }) => {
   const { t } = useTranslation();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [isAtTop, setIsAtTop] = useState(true);
+  const [randomArtwork, setRandomArtwork] = useState<string>('');
+
+  useEffect(() => {
+    // Select a random artwork on mount
+    if (artOracleFiles.length > 0) {
+      const randomIndex = Math.floor(Math.random() * artOracleFiles.length);
+      setRandomArtwork(artOracleFiles[randomIndex]);
+    }
+  }, []);
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     setIsAtTop(e.currentTarget.scrollTop < 100);
@@ -42,6 +61,17 @@ const CabinetGrid: React.FC<CabinetGridProps> = ({ cards, onSelectionComplete })
       {/* 1. HERO SECTION (Architectural Layout) */}
       <section className="relative w-full min-h-screen snap-start flex flex-col">
         <div className="flex-1 border-b border-white/20 relative flex flex-col p-6 md:p-20 overflow-hidden">
+          {/* Random Artwork Background */}
+          {randomArtwork && (
+            <div className="absolute inset-0 opacity-10 pointer-events-none">
+              <iframe
+                src={`/${randomArtwork}`}
+                className="w-full h-full"
+                title="Background Artwork"
+              />
+            </div>
+          )}
+
           {/* Architectural Grid Background */}
           <div className="absolute inset-0 pointer-events-none opacity-[0.02]"
             style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
@@ -65,20 +95,7 @@ const CabinetGrid: React.FC<CabinetGridProps> = ({ cards, onSelectionComplete })
             </div>
           </div>
 
-          {/* Scroll Block */}
-          <div className="mt-auto relative z-10 grid grid-cols-1 md:grid-cols-12 gap-8 items-end">
-            <div className="md:col-start-9 md:col-span-4 lg:col-start-10 lg:col-span-3">
-              <div
-                className="w-full h-40 border border-white/10 flex flex-col items-center justify-center pointer-events-none opacity-40"
-              >
-                <div className="font-ui text-[7px] tracking-[0.4em] mb-4 text-white/20 uppercase">{t('hero.systemState')}</div>
-                <div className="flex items-center gap-3">
-                  <div className="w-1.5 h-1.5 bg-white/20 animate-pulse" />
-                  <span className="font-ui text-[9px] tracking-[0.4em] uppercase text-white/40">{t('hero.waitingForInput')}</span>
-                </div>
-              </div>
-            </div>
-          </div>
+
         </div>
       </section>
 
@@ -240,4 +257,4 @@ const CabinetGrid: React.FC<CabinetGridProps> = ({ cards, onSelectionComplete })
   );
 };
 
-export default CabinetGrid;
+export default ArtArchive;

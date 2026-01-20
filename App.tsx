@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Download, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import CabinetGrid from './components/ArtGrid';
+import ArtArchive from './components/ArtArchive';
 import AnalysisView from './components/AnalysisView';
 import P5Renderer from './components/P5Renderer';
 import Spotlight from './components/Spotlight';
@@ -153,7 +153,7 @@ const App: React.FC = () => {
             transition={{ duration: 1 }}
             className="w-full h-full"
           >
-            <CabinetGrid
+            <ArtArchive
               cards={allCards}
               onSelectionComplete={handleGridSelectionComplete}
             />
