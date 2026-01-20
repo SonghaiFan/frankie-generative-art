@@ -1,0 +1,137 @@
+
+import { GoogleGenAI, Type } from "@google/genai";
+import { ArtCardData, UserInteraction, AnalysisResult, CreativeArtResult } from "../types";
+import { PREDEFINED_CARDS, FALLBACK_CREATIVE_RESULT } from "../constants";
+
+const apiKey = process.env.API_KEY || '';
+const ai = new GoogleGenAI({ apiKey });
+
+// Helper to generate a random art history card
+export const generateArtCard = async (excludeTerms: string[]): Promise<ArtCardData> => {
+    // Filter out cards the user has already seen/interacted with in this session
+    const available = PREDEFINED_CARDS.filter(c => !excludeTerms.includes(c.term));
+    
+    // If we've run out of cards, recycle the whole list but keep it random
+    const pool = available.length > 0 ? available : PREDEFINED_CARDS;
+    
+    const randomCard = pool[Math.floor(Math.random() * pool.length)];
+
+    // Return unique object with new ID
+    return {
+        ...randomCard,
+        id: Date.now().toString() 
+    };
+};
+
+// Analyze user preferences
+export const analyzeUserStyle = async (history: UserInteraction[]): Promise<AnalysisResult> => {
+  // If no API key, return a poetic fallback
+  if (!apiKey) return {
+    archetype: "神秘主义漫游者",
+    philosophy: "你似乎在寻找一种超越形式的秩序，在混乱与结构之间游走。",
+    followUpQuestion: "当混乱降临时，你会试图整理它，还是加入它？"
+  };
+
+  const interactionsText = history.map(h => 
+    `User ${h.action} the concept "${h.term}".`
+  ).join('\n');
+
+  const prompt = `
+    Act as an art historian and psychologist. 
+    Analyze the following user interactions with art history cards:
+    ${interactionsText}
+
+    1. Identify a "Style Archetype" (a poetic title in Chinese, e.g. "Structural Poet", "Chaos Navigator").
+    2. Write a brief psychological analysis of their aesthetic tendencies (in Chinese).
+    3. Ask a probing, philosophical question about society or culture related to these tendencies (in Chinese).
+
+    Return JSON.
+  `;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            archetype: { type: Type.STRING },
+            philosophy: { type: Type.STRING },
+            followUpQuestion: { type: Type.STRING }
+          }
+        }
+      }
+    });
+    return JSON.parse(response.text!) as AnalysisResult;
+  } catch (error) {
+    console.error("Analysis Error", error);
+    return {
+      archetype: "观察者",
+      philosophy: "你的选择充满了矛盾与张力，显示出一种不被定义的自由。",
+      followUpQuestion: "你拒绝定义，是为了保护自己，还是为了保持可能？"
+    };
+  }
+};
+
+// Final Generative Art - AI generates p5.js code
+export const generateCreativeArt = async (history: UserInteraction[], analysisText: string, finalChoice: string): Promise<CreativeArtResult> => {
+    
+    if (!apiKey) return {
+      styleName: "Simulated Dream",
+      explanation: "API Key missing. Visualizing fallback dream state.",
+      p5Code: `
+        function setup() { 
+          createCanvas(windowWidth, windowHeight); 
+          background(0); 
+        } 
+        function draw() { 
+          noStroke(); 
+          fill(255, 10); 
+          circle(mouseX, mouseY, 50); 
+        }
+      `
+    };
+
+    const prompt = `
+      Based on the user's interaction history: ${history.map(h => h.term).join(', ')}
+      Their psychological profile: "${analysisText}"
+      And their answer to the final cultural question: "${finalChoice}"
+
+      1. Invent a specific, unique art movement name for them (e.g. "Neo-Digital Decay", "Algorithm Ancestry").
+      2. Explain the visual language of this style (forms, colors, motion) in Chinese.
+      3. Write a complete, functional p5.js sketch that visually represents this style.
+         - The sketch MUST be in GLOBAL mode (define function setup() and function draw() at top level).
+         - Use 'windowWidth' and 'windowHeight' for full screen.
+         - Handle window resizing in 'windowResized()' if possible.
+         - Do NOT use external images or fonts, only p5 drawing primitives.
+         - Make it animated or interactive or both.
+         - It should be visually impressive and immersive. Dark background preferred.
+      
+      Return JSON.
+    `;
+
+    try {
+      const response = await ai.models.generateContent({
+        model: "gemini-3-flash-preview",
+        contents: prompt,
+        config: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              styleName: { type: Type.STRING },
+              explanation: { type: Type.STRING },
+              p5Code: { type: Type.STRING, description: "The full p5.js code string including setup and draw functions." },
+            },
+            required: ["styleName", "explanation", "p5Code"]
+          }
+        }
+      });
+      return JSON.parse(response.text!) as CreativeArtResult;
+    } catch (e) {
+      console.error(e);
+      return FALLBACK_CREATIVE_RESULT;
+    }
+}
