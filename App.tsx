@@ -179,34 +179,35 @@ const App: React.FC = () => {
                 </div>
 
                 {/* Final Overlay UI */}
-                <div className="relative z-10 w-full h-full pointer-events-none flex flex-col justify-end p-8 md:p-16 bg-gradient-to-t from-black via-black/50 to-transparent">
-                  <div className="max-w-xl pointer-events-none">
+                <div className="relative z-10 w-full h-full pointer-events-none flex flex-col justify-end p-10">
+                  <div className="max-w-[600px] pointer-events-none">
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 1 }}
+                      className="mix-blend-difference text-white"
                     >
-                      <div className="font-ui text-xs tracking-[0.4em] uppercase text-white/50 mb-4">
+                      <div className="font-serif text-[0.7rem] font-light text-white/70 uppercase tracking-[0.3em] mb-2">
                         Aesthetic Signature
                       </div>
-                      <h1 className="text-5xl md:text-7xl font-serif text-white mb-6 mix-blend-difference">
+                      <h1 className="text-[3rem] font-serif leading-none mb-4 -ml-1">
                         {creativeResult.styleName}
                       </h1>
-                      <p className="font-ui text-sm md:text-base text-white/80 leading-relaxed border-l border-white/30 pl-6 mb-8 mix-blend-difference">
+                      <p className="font-serif text-[1rem] leading-[1.6] border-l border-white/50 pl-4 mb-10 opacity-90">
                         {creativeResult.explanation}
                       </p>
 
-                      <div className="flex items-center gap-6 pointer-events-auto">
+                      <div className="flex items-center gap-8 pointer-events-auto">
                         <button
                           onClick={handleDownload}
-                          className="flex items-center gap-2 px-6 py-3 border border-white/30 rounded-full hover:bg-white hover:text-black transition-colors group"
+                          className="flex items-center gap-3 px-8 py-3 bg-white text-black rounded-full hover:scale-105 transition-all group shadow-[0_0_20px_rgba(255,255,255,0.2)]"
                         >
-                          <Download size={16} />
-                          <span className="text-xs uppercase tracking-widest">Save Artifact</span>
+                          <Download size={14} />
+                          <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Save Artifact</span>
                         </button>
                         <button
                           onClick={resetGame}
-                          className="text-xs uppercase tracking-widest text-white/50 hover:text-white transition-colors"
+                          className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 hover:opacity-100 transition-opacity"
                         >
                           Restart Sequence
                         </button>
