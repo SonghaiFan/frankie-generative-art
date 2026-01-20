@@ -1,163 +1,199 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
   <meta charset="UTF-8">
   <title>赛博遗迹构解 (Cyberspace Relic Deconstruction) - Art Archive Oracle</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;400;700&display=swap');
-    body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Noto Serif SC', serif; }
-    canvas { display: block; }
-    #overlay {
-        position: absolute;
-        bottom: 40px;
-        left: 40px;
-        max-width: 600px;
-        color: white;
-        mix-blend-mode: difference;
-        pointer-events: none;
-        z-index: 100;
+
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #000;
+      font-family: 'Noto Serif SC', serif;
     }
-    h1 { font-size: 3rem; margin: 0 0 1rem 0; font-weight: 200; letter-spacing: 0.05em; }
-    p { font-size: 1rem; line-height: 1.6; opacity: 0.9; margin: 0; padding-left: 1rem; border-left: 1px solid rgba(255,255,255,0.5); }
-    .meta { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.3em; margin-bottom: 0.5rem; opacity: 0.7; }
+
+    canvas {
+      display: block;
+    }
+
+    #overlay {
+      position: absolute;
+      bottom: 40px;
+      left: 40px;
+      max-width: 600px;
+      color: white;
+      mix-blend-mode: difference;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin: 0 0 1rem 0;
+      font-weight: 200;
+      letter-spacing: 0.05em;
+    }
+
+    p {
+      font-size: 1rem;
+      line-height: 1.6;
+      opacity: 0.9;
+      margin: 0;
+      padding-left: 1rem;
+      border-left: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .meta {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      margin-bottom: 0.5rem;
+      opacity: 0.7;
+    }
   </style>
 </head>
+
 <body>
   <div id="overlay">
     <div class="meta">Aesthetic Signature</div>
     <h1>赛博遗迹构解 (Cyberspace Relic Deconstruction)</h1>
-    <p>此风格是将数字时代的底层逻辑与人类对质感的集体回忆相融合的产物。视觉表现上，它通过高饱和度的荧光色（青、品红、绿）与极简的深黑背景形成对抗，利用粗粝的像素方块构建出宏大的几何结构。ASCII字符在屏幕上如幽灵般漂浮，象征着信息流的碎片化。这种风格强调‘不完美的秩序’，通过有意的图形错位（Glitch）与动态的扫描线，模拟出一种正在崩溃却依然坚韧的数字景观。它引导观者穿透平滑的UI表面，直视比特与字节最原始的、充满张力的美感。</p>
+    <p>
+      此风格是将数字时代的底层逻辑与人类对质感的集体回忆相融合的产物。视觉表现上，它通过高饱和度的荧光色（青、品红、绿）与极简的深黑背景形成对抗，利用粗粝的像素方块构建出宏大的几何结构。ASCII字符在屏幕上如幽灵般漂浮，象征着信息流的碎片化。这种风格强调‘不完美的秩序’，通过有意的图形错位（Glitch）与动态的扫描线，模拟出一种正在崩溃却依然坚韧的数字景观。它引导观者穿透平滑的UI表面，直视比特与字节最原始的、充满张力的美感。
+    </p>
   </div>
   <script>
     let particles = [];
-let cols, rows;
-let spacing = 40;
-let glitchTimer = 0;
+    let cols, rows;
+    let spacing = 40;
+    let glitchTimer = 0;
 
-function setup() {
-  createCanvas(windowWidth, windowHeight);
-  colorMode(RGB, 255);
-  textFont('monospace');
-  for (let i = 0; i < 100; i++) {
-    particles.push(new BitParticle());
-  }
-  cols = floor(width / spacing);
-  rows = floor(height / spacing);
-}
-
-function draw() {
-  background(5, 5, 15, 40);
-  
-  // Draw Digital Grid
-  drawGrid();
-
-  // Update and show particles
-  for (let p of particles) {
-    p.update();
-    p.display();
-  }
-
-  // Central Glitch Entity
-  drawDeconstructedCore();
-
-  // Random Glitch Effect
-  if (random(1) > 0.97) {
-    glitchTimer = 5;
-  }
-
-  if (glitchTimer > 0) {
-    applyGlitch();
-    glitchTimer--;
-  }
-}
-
-function drawGrid() {
-  stroke(0, 255, 150, 20);
-  strokeWeight(1);
-  for (let i = 0; i <= cols; i++) {
-    line(i * spacing, 0, i * spacing, height);
-  }
-  for (let j = 0; j <= rows; j++) {
-    line(0, j * spacing, width, j * spacing);
-  }
-}
-
-function drawDeconstructedCore() {
-  push();
-  translate(width / 2, height / 2);
-  let size = 200 + sin(frameCount * 0.05) * 20;
-  noFill();
-  
-  // Pixelated circles
-  for (let i = 0; i < 5; i++) {
-    let r = size - i * 30;
-    stroke(i % 2 === 0 ? color(0, 255, 255) : color(255, 0, 255));
-    strokeWeight(2);
-    beginShape();
-    for (let a = 0; a < TWO_PI; a += PI / 8) {
-      let x = cos(a + frameCount * 0.01 * (i + 1)) * r;
-      let y = sin(a + frameCount * 0.01 * (i + 1)) * r;
-      rect(x - 5, y - 5, 10, 10); // Pixelated points
+    function setup() {
+      createCanvas(windowWidth, windowHeight);
+      colorMode(RGB, 255);
+      textFont('monospace');
+      for (let i = 0; i < 100; i++) {
+        particles.push(new BitParticle());
+      }
+      cols = floor(width / spacing);
+      rows = floor(height / spacing);
     }
-    endShape(CLOSE);
-  }
-  pop();
-}
 
-function applyGlitch() {
-  for (let i = 0; i < 10; i++) {
-    let x = random(width);
-    let y = random(height);
-    let w = random(100, 300);
-    let h = random(5, 20);
-    let section = get(x, y, w, h);
-    image(section, x + random(-20, 20), y);
-    fill(255, 0, 255, 50);
-    rect(x, y, w, h);
-  }
-}
+    function draw() {
+      background(5, 5, 15, 40);
 
-class BitParticle {
-  constructor() {
-    this.init();
-  }
+      // Draw Digital Grid
+      drawGrid();
 
-  init() {
-    this.x = random(width);
-    this.y = random(height);
-    this.speed = random(1, 4);
-    this.char = char(random(33, 126));
-    this.color = random([color(0, 255, 200), color(255, 0, 150), color(255, 255, 255)]);
-    this.size = random(10, 24);
-  }
+      // Update and show particles
+      for (let p of particles) {
+        p.update();
+        p.display();
+      }
 
-  update() {
-    this.y += this.speed;
-    if (this.y > height) {
-      this.y = -20;
-      this.x = random(width);
+      // Central Glitch Entity
+      drawDeconstructedCore();
+
+      // Random Glitch Effect
+      if (random(1) > 0.97) {
+        glitchTimer = 5;
+      }
+
+      if (glitchTimer > 0) {
+        applyGlitch();
+        glitchTimer--;
+      }
     }
-    if (random(1) > 0.98) this.char = char(random(33, 126));
-  }
 
-  display() {
-    fill(this.color);
-    noStroke();
-    textSize(this.size);
-    text(this.char, this.x, this.y);
-    // Add a square block trail
-    fill(red(this.color), green(this.color), blue(this.color), 50);
-    rect(this.x - 2, this.y - 20, this.size, 5);
-  }
-}
+    function drawGrid() {
+      stroke(0, 255, 150, 20);
+      strokeWeight(1);
+      for (let i = 0; i <= cols; i++) {
+        line(i * spacing, 0, i * spacing, height);
+      }
+      for (let j = 0; j <= rows; j++) {
+        line(0, j * spacing, width, j * spacing);
+      }
+    }
 
-function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
-  cols = floor(width / spacing);
-  rows = floor(height / spacing);
-}
+    function drawDeconstructedCore() {
+      push();
+      translate(width / 2, height / 2);
+      let size = 200 + sin(frameCount * 0.05) * 20;
+      noFill();
+
+      // Pixelated circles
+      for (let i = 0; i < 5; i++) {
+        let r = size - i * 30;
+        stroke(i % 2 === 0 ? color(0, 255, 255) : color(255, 0, 255));
+        strokeWeight(2);
+        beginShape();
+        for (let a = 0; a < TWO_PI; a += PI / 8) {
+          let x = cos(a + frameCount * 0.01 * (i + 1)) * r;
+          let y = sin(a + frameCount * 0.01 * (i + 1)) * r;
+          rect(x - 5, y - 5, 10, 10); // Pixelated points
+        }
+        endShape(CLOSE);
+      }
+      pop();
+    }
+
+    function applyGlitch() {
+      for (let i = 0; i < 10; i++) {
+        let x = random(width);
+        let y = random(height);
+        let w = random(100, 300);
+        let h = random(5, 20);
+        let section = get(x, y, w, h);
+        image(section, x + random(-20, 20), y);
+        fill(255, 0, 255, 50);
+        rect(x, y, w, h);
+      }
+    }
+
+    class BitParticle {
+      constructor() {
+        this.init();
+      }
+
+      init() {
+        this.x = random(width);
+        this.y = random(height);
+        this.speed = random(1, 4);
+        this.char = char(random(33, 126));
+        this.color = random([color(0, 255, 200), color(255, 0, 150), color(255, 255, 255)]);
+        this.size = random(10, 24);
+      }
+
+      update() {
+        this.y += this.speed;
+        if (this.y > height) {
+          this.y = -20;
+          this.x = random(width);
+        }
+        if (random(1) > 0.98) this.char = char(random(33, 126));
+      }
+
+      display() {
+        fill(this.color);
+        noStroke();
+        textSize(this.size);
+        text(this.char, this.x, this.y);
+        // Add a square block trail
+        fill(red(this.color), green(this.color), blue(this.color), 50);
+        rect(this.x - 2, this.y - 20, this.size, 5);
+      }
+    }
+
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight);
+      cols = floor(width / spacing);
+      rows = floor(height / spacing);
+    }
   </script>
 </body>
+
 </html>

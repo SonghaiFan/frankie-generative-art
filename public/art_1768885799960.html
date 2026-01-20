@@ -1,171 +1,207 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
   <meta charset="UTF-8">
   <title>崇高之伤 (Sublime Scarring) - Art Archive Oracle</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;400;700&display=swap');
-    body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Noto Serif SC', serif; }
-    canvas { display: block; }
-    #overlay {
-        position: absolute;
-        bottom: 40px;
-        left: 40px;
-        max-width: 600px;
-        color: white;
-        mix-blend-mode: difference;
-        pointer-events: none;
-        z-index: 100;
+
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #000;
+      font-family: 'Noto Serif SC', serif;
     }
-    h1 { font-size: 3rem; margin: 0 0 1rem 0; font-weight: 200; letter-spacing: 0.05em; }
-    p { font-size: 1rem; line-height: 1.6; opacity: 0.9; margin: 0; padding-left: 1rem; border-left: 1px solid rgba(255,255,255,0.5); }
-    .meta { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.3em; margin-bottom: 0.5rem; opacity: 0.7; }
+
+    canvas {
+      display: block;
+    }
+
+    #overlay {
+      position: absolute;
+      bottom: 40px;
+      left: 40px;
+      max-width: 600px;
+      color: white;
+      mix-blend-mode: difference;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin: 0 0 1rem 0;
+      font-weight: 200;
+      letter-spacing: 0.05em;
+    }
+
+    p {
+      font-size: 1rem;
+      line-height: 1.6;
+      opacity: 0.9;
+      margin: 0;
+      padding-left: 1rem;
+      border-left: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .meta {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      margin-bottom: 0.5rem;
+      opacity: 0.7;
+    }
   </style>
 </head>
+
 <body>
   <div id="overlay">
     <div class="meta">Aesthetic Signature</div>
     <h1>崇高之伤 (Sublime Scarring)</h1>
-    <p>该艺术风格通过将“崇高”的广袤尺度与“新丑风”的视觉破坏力相结合，构建出一种属于现代人的精神伤痕美学。其视觉语言以深邃的虚无黑为底色，模拟传统浮世绘的山岳构图，却使用扭曲、粗糙且未经修饰的笔触（新丑风）进行解构。金色的裂痕与鲜红的流向线在画面中如同伤口般缓缓绽放，象征着从苦痛中升华出的美。光影的剧烈波动模仿宏大叙事的崩坏，在每一次画面的“撕裂”与“重组”中，寻找个体在破碎现实与永恒宁静之间的心理平衡。</p>
+    <p>
+      该艺术风格通过将“崇高”的广袤尺度与“新丑风”的视觉破坏力相结合，构建出一种属于现代人的精神伤痕美学。其视觉语言以深邃的虚无黑为底色，模拟传统浮世绘的山岳构图，却使用扭曲、粗糙且未经修饰的笔触（新丑风）进行解构。金色的裂痕与鲜红的流向线在画面中如同伤口般缓缓绽放，象征着从苦痛中升华出的美。光影的剧烈波动模仿宏大叙事的崩坏，在每一次画面的“撕裂”与“重组”中，寻找个体在破碎现实与永恒宁静之间的心理平衡。
+    </p>
   </div>
   <script>
     let particles = [];
-let scars = [];
-let noiseScale = 0.005;
+    let scars = [];
+    let noiseScale = 0.005;
 
-function setup() {
-  createCanvas(windowWidth, windowHeight);
-  background(10);
-  for (let i = 0; i < 5; i++) {
-    scars.push(new Scar());
-  }
-}
-
-function draw() {
-  // Semi-transparent background for trailing effect
-  fill(10, 10, 15, 25);
-  noStroke();
-  rect(0, 0, width, height);
-
-  // Draw 'Sublime' background noise mountains (Ukiyo-e influence)
-  drawMountain(height * 0.4, '#1a1a1a', 0.002);
-  drawMountain(height * 0.6, '#0f0f0f', 0.005);
-
-  // Update and display scars (The 'Wound' and 'New Ugly' elements)
-  for (let s of scars) {
-    s.update();
-    s.display();
-  }
-
-  // Floating particles (ashes/snow)
-  if (random(1) > 0.85) {
-    particles.push(new Particle(random(width), -10));
-  }
-
-  for (let i = particles.length - 1; i >= 0; i--) {
-    particles[i].update();
-    particles[i].display();
-    if (particles[i].offScreen()) {
-      particles.splice(i, 1);
+    function setup() {
+      createCanvas(windowWidth, windowHeight);
+      background(10);
+      for (let i = 0; i < 5; i++) {
+        scars.push(new Scar());
+      }
     }
-  }
 
-  // Subtle glitch overlay
-  if (frameCount % 60 === 0 && random(1) > 0.5) {
-    stroke(255, 30);
-    line(0, random(height), width, random(height));
-  }
-}
+    function draw() {
+      // Semi-transparent background for trailing effect
+      fill(10, 10, 15, 25);
+      noStroke();
+      rect(0, 0, width, height);
 
-function drawMountain(baseY, col, scale) {
-  fill(col);
-  noStroke();
-  beginShape();
-  vertex(0, height);
-  for (let x = 0; x <= width; x += 10) {
-    let y = baseY + noise(x * scale, frameCount * 0.002) * 300 - 150;
-    vertex(x, y);
-  }
-  vertex(width, height);
-  endShape(CLOSE);
-}
+      // Draw 'Sublime' background noise mountains (Ukiyo-e influence)
+      drawMountain(height * 0.4, '#1a1a1a', 0.002);
+      drawMountain(height * 0.6, '#0f0f0f', 0.005);
 
-class Scar {
-  constructor() {
-    this.reset();
-  }
+      // Update and display scars (The 'Wound' and 'New Ugly' elements)
+      for (let s of scars) {
+        s.update();
+        s.display();
+      }
 
-  reset() {
-    this.points = [];
-    this.x = random(width);
-    this.y = random(height);
-    this.len = random(20, 50);
-    this.color = random([color(255, 0, 50, 150), color(255, 200, 0, 150)]);
-    this.angle = random(TWO_PI);
-    this.age = 0;
-    this.maxAge = random(100, 300);
-  }
+      // Floating particles (ashes/snow)
+      if (random(1) > 0.85) {
+        particles.push(new Particle(random(width), -10));
+      }
 
-  update() {
-    let nx = this.x + cos(this.angle) * 2 + (noise(this.x * 0.01) - 0.5) * 10;
-    let ny = this.y + sin(this.angle) * 2 + (noise(this.y * 0.01) - 0.5) * 10;
-    this.points.push({x: nx, y: ny});
-    this.x = nx;
-    this.y = ny;
-    this.age++;
+      for (let i = particles.length - 1; i >= 0; i--) {
+        particles[i].update();
+        particles[i].display();
+        if (particles[i].offScreen()) {
+          particles.splice(i, 1);
+        }
+      }
 
-    if (this.age > this.maxAge || this.x < 0 || this.x > width || this.y < 0 || this.y > height) {
-      this.reset();
+      // Subtle glitch overlay
+      if (frameCount % 60 === 0 && random(1) > 0.5) {
+        stroke(255, 30);
+        line(0, random(height), width, random(height));
+      }
     }
-    if (this.points.length > 50) this.points.shift();
-  }
 
-  display() {
-    noFill();
-    strokeWeight(random(1, 4));
-    stroke(this.color);
-    beginShape();
-    for (let p of this.points) {
-      vertex(p.x, p.y);
+    function drawMountain(baseY, col, scale) {
+      fill(col);
+      noStroke();
+      beginShape();
+      vertex(0, height);
+      for (let x = 0; x <= width; x += 10) {
+        let y = baseY + noise(x * scale, frameCount * 0.002) * 300 - 150;
+        vertex(x, y);
+      }
+      vertex(width, height);
+      endShape(CLOSE);
     }
-    endShape();
-    
-    // Add 'New Ugly' raw artifacts at the tip
-    if (random(1) > 0.9) {
-      fill(this.color);
-      rect(this.x, this.y, random(5, 15), random(2, 5));
+
+    class Scar {
+      constructor() {
+        this.reset();
+      }
+
+      reset() {
+        this.points = [];
+        this.x = random(width);
+        this.y = random(height);
+        this.len = random(20, 50);
+        this.color = random([color(255, 0, 50, 150), color(255, 200, 0, 150)]);
+        this.angle = random(TWO_PI);
+        this.age = 0;
+        this.maxAge = random(100, 300);
+      }
+
+      update() {
+        let nx = this.x + cos(this.angle) * 2 + (noise(this.x * 0.01) - 0.5) * 10;
+        let ny = this.y + sin(this.angle) * 2 + (noise(this.y * 0.01) - 0.5) * 10;
+        this.points.push({ x: nx, y: ny });
+        this.x = nx;
+        this.y = ny;
+        this.age++;
+
+        if (this.age > this.maxAge || this.x < 0 || this.x > width || this.y < 0 || this.y > height) {
+          this.reset();
+        }
+        if (this.points.length > 50) this.points.shift();
+      }
+
+      display() {
+        noFill();
+        strokeWeight(random(1, 4));
+        stroke(this.color);
+        beginShape();
+        for (let p of this.points) {
+          vertex(p.x, p.y);
+        }
+        endShape();
+
+        // Add 'New Ugly' raw artifacts at the tip
+        if (random(1) > 0.9) {
+          fill(this.color);
+          rect(this.x, this.y, random(5, 15), random(2, 5));
+        }
+      }
     }
-  }
-}
 
-class Particle {
-  constructor(x, y) {
-    this.pos = createVector(x, y);
-    this.vel = createVector(random(-1, 1), random(1, 3));
-    this.size = random(1, 4);
-  }
+    class Particle {
+      constructor(x, y) {
+        this.pos = createVector(x, y);
+        this.vel = createVector(random(-1, 1), random(1, 3));
+        this.size = random(1, 4);
+      }
 
-  update() {
-    this.pos.add(this.vel);
-  }
+      update() {
+        this.pos.add(this.vel);
+      }
 
-  display() {
-    noStroke();
-    fill(200, 150);
-    ellipse(this.pos.x, this.pos.y, this.size);
-  }
+      display() {
+        noStroke();
+        fill(200, 150);
+        ellipse(this.pos.x, this.pos.y, this.size);
+      }
 
-  offScreen() {
-    return this.pos.y > height;
-  }
-}
+      offScreen() {
+        return this.pos.y > height;
+      }
+    }
 
-function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
-  background(10);
-}
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight);
+      background(10);
+    }
   </script>
 </body>
+
 </html>

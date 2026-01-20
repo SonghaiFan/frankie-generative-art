@@ -1,37 +1,73 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
   <meta charset="UTF-8">
   <title>Symmetric Void Expressionism (对等虚空表现主义) - Art Archive Oracle</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;400;700&display=swap');
-    body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Noto Serif SC', serif; }
-    canvas { display: block; }
-    #overlay {
-        position: absolute;
-        bottom: 40px;
-        left: 40px;
-        max-width: 600px;
-        color: white;
-        mix-blend-mode: difference;
-        pointer-events: none;
-        z-index: 100;
+
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #000;
+      font-family: 'Noto Serif SC', serif;
     }
-    h1 { font-size: 3rem; margin: 0 0 1rem 0; font-weight: 200; letter-spacing: 0.05em; }
-    p { font-size: 1rem; line-height: 1.6; opacity: 0.9; margin: 0; padding-left: 1rem; border-left: 1px solid rgba(255,255,255,0.5); }
-    .meta { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.3em; margin-bottom: 0.5rem; opacity: 0.7; }
+
+    canvas {
+      display: block;
+    }
+
+    #overlay {
+      position: absolute;
+      bottom: 40px;
+      left: 40px;
+      max-width: 600px;
+      color: white;
+      mix-blend-mode: difference;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin: 0 0 1rem 0;
+      font-weight: 200;
+      letter-spacing: 0.05em;
+    }
+
+    p {
+      font-size: 1rem;
+      line-height: 1.6;
+      opacity: 0.9;
+      margin: 0;
+      padding-left: 1rem;
+      border-left: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .meta {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      margin-bottom: 0.5rem;
+      opacity: 0.7;
+    }
   </style>
 </head>
+
 <body>
   <div id="overlay">
     <div class="meta">Aesthetic Signature</div>
     <h1>Symmetric Void Expressionism (对等虚空表现主义)</h1>
-    <p>这是一种融合了极端秩序与精神叛逆的视觉流派。它以Art Deco的对称几何与黄金比例为骨架，构建出理性的神殿；随后，水墨画的随机性与新表现主义的狂暴笔触如同黑洞般从几何缝隙中喷涌而出。这种风格利用‘轴对称’来模拟心理防御机制，而内部流动的、不可控的墨色与暗红线条则象征着在‘no way’这一决绝态度下释放的原始生命力。视觉上表现为严丝合缝的金属结构在液态黑暗中不断瓦解又重组，呈现出一种在文明崩塌边缘起舞的秩序美学。</p>
+    <p>这是一种融合了极端秩序与精神叛逆的视觉流派。它以Art
+      Deco的对称几何与黄金比例为骨架，构建出理性的神殿；随后，水墨画的随机性与新表现主义的狂暴笔触如同黑洞般从几何缝隙中喷涌而出。这种风格利用‘轴对称’来模拟心理防御机制，而内部流动的、不可控的墨色与暗红线条则象征着在‘no
+      way’这一决绝态度下释放的原始生命力。视觉上表现为严丝合缝的金属结构在液态黑暗中不断瓦解又重组，呈现出一种在文明崩塌边缘起舞的秩序美学。</p>
   </div>
   <script>
-    let particles = [];let symmetry = 2;let angle = 0;function setup() {createCanvas(windowWidth, windowHeight);background(10, 10, 12);colorMode(HSB, 360, 100, 100, 100);}function draw() {fill(10, 10, 12, 15);noStroke();rect(0, 0, width, height);translate(width / 2, height / 2);drawArtDecoFrame();if (mouseIsPressed || frameCount % 5 === 0) {let p = new InkParticle(mouseX - width / 2, mouseY - height / 2);particles.push(p);}for (let i = particles.length - 1; i >= 0; i--) {particles[i].update();for (let s = 0; s < symmetry; s++) {rotate(TWO_PI / symmetry);particles[i].display();push();scale(1, -1);particles[i].display();pop();}if (particles[i].isDead()) {particles.splice(i, 1);}}angle += 0.01;}function drawArtDecoFrame() {noFill();strokeWeight(0.5);stroke(45, 60, 80, 20);for (let i = 0; i < 4; i++) {let size = (frameCount + i * 100) % 800;rectMode(CENTER);rect(0, 0, size, size);ellipse(0, 0, size * 0.7, size * 0.7);}stroke(0, 80, 90, 40);strokeWeight(2);line(-width / 2, 0, width / 2, 0);line(0, -height / 2, 0, height / 2);}class InkParticle {constructor(x, y) {this.pos = createVector(x, y);this.vel = p5.Vector.random2D().mult(random(1, 4));this.acc = createVector(0, 0);this.lifespan = 255;this.size = random(5, 15);this.c = random() > 0.8 ? color(0, 90, 80, 80) : color(0, 0, 100, 50);this.noiseOffset = random(1000);}update() {let n = noise(this.pos.x * 0.005, this.pos.y * 0.005, frameCount * 0.01);let a = n * TWO_PI * 2;this.acc = p5.Vector.fromAngle(a).mult(0.1);this.vel.add(this.acc);this.pos.add(this.vel);this.lifespan -= 2.5;this.size *= 0.98;}display() {noStroke();fill(hue(this.c), saturation(this.c), brightness(this.c), this.lifespan / 2.5);ellipse(this.pos.x, this.pos.y, this.size, this.size);if (this.lifespan > 150) {stroke(hue(this.c), saturation(this.c), brightness(this.c), 30);strokeWeight(0.5);line(this.pos.x, this.pos.y, 0, 0);}}isDead() {return this.lifespan < 0;}}function windowResized() {resizeCanvas(windowWidth, windowHeight);background(10, 10, 12);}
+    let particles = []; let symmetry = 2; let angle = 0; function setup() { createCanvas(windowWidth, windowHeight); background(10, 10, 12); colorMode(HSB, 360, 100, 100, 100); } function draw() { fill(10, 10, 12, 15); noStroke(); rect(0, 0, width, height); translate(width / 2, height / 2); drawArtDecoFrame(); if (mouseIsPressed || frameCount % 5 === 0) { let p = new InkParticle(mouseX - width / 2, mouseY - height / 2); particles.push(p); } for (let i = particles.length - 1; i >= 0; i--) { particles[i].update(); for (let s = 0; s < symmetry; s++) { rotate(TWO_PI / symmetry); particles[i].display(); push(); scale(1, -1); particles[i].display(); pop(); } if (particles[i].isDead()) { particles.splice(i, 1); } } angle += 0.01; } function drawArtDecoFrame() { noFill(); strokeWeight(0.5); stroke(45, 60, 80, 20); for (let i = 0; i < 4; i++) { let size = (frameCount + i * 100) % 800; rectMode(CENTER); rect(0, 0, size, size); ellipse(0, 0, size * 0.7, size * 0.7); } stroke(0, 80, 90, 40); strokeWeight(2); line(-width / 2, 0, width / 2, 0); line(0, -height / 2, 0, height / 2); } class InkParticle { constructor(x, y) { this.pos = createVector(x, y); this.vel = p5.Vector.random2D().mult(random(1, 4)); this.acc = createVector(0, 0); this.lifespan = 255; this.size = random(5, 15); this.c = random() > 0.8 ? color(0, 90, 80, 80) : color(0, 0, 100, 50); this.noiseOffset = random(1000); } update() { let n = noise(this.pos.x * 0.005, this.pos.y * 0.005, frameCount * 0.01); let a = n * TWO_PI * 2; this.acc = p5.Vector.fromAngle(a).mult(0.1); this.vel.add(this.acc); this.pos.add(this.vel); this.lifespan -= 2.5; this.size *= 0.98; } display() { noStroke(); fill(hue(this.c), saturation(this.c), brightness(this.c), this.lifespan / 2.5); ellipse(this.pos.x, this.pos.y, this.size, this.size); if (this.lifespan > 150) { stroke(hue(this.c), saturation(this.c), brightness(this.c), 30); strokeWeight(0.5); line(this.pos.x, this.pos.y, 0, 0); } } isDead() { return this.lifespan < 0; } } function windowResized() { resizeCanvas(windowWidth, windowHeight); background(10, 10, 12); }
   </script>
 </body>
+
 </html>

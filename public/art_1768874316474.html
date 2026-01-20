@@ -1,135 +1,170 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
   <meta charset="UTF-8">
   <title>Digital Sutra-Stream (数字经流派) - Art Archive Oracle</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;400;700&display=swap');
-    body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Noto Serif SC', serif; }
-    canvas { display: block; }
-    #overlay {
-        position: absolute;
-        bottom: 40px;
-        left: 40px;
-        max-width: 600px;
-        color: white;
-        mix-blend-mode: difference;
-        pointer-events: none;
-        z-index: 100;
+
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #000;
+      font-family: 'Noto Serif SC', serif;
     }
-    h1 { font-size: 3rem; margin: 0 0 1rem 0; font-weight: 200; letter-spacing: 0.05em; }
-    p { font-size: 1rem; line-height: 1.6; opacity: 0.9; margin: 0; padding-left: 1rem; border-left: 1px solid rgba(255,255,255,0.5); }
-    .meta { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.3em; margin-bottom: 0.5rem; opacity: 0.7; }
+
+    canvas {
+      display: block;
+    }
+
+    #overlay {
+      position: absolute;
+      bottom: 40px;
+      left: 40px;
+      max-width: 600px;
+      color: white;
+      mix-blend-mode: difference;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin: 0 0 1rem 0;
+      font-weight: 200;
+      letter-spacing: 0.05em;
+    }
+
+    p {
+      font-size: 1rem;
+      line-height: 1.6;
+      opacity: 0.9;
+      margin: 0;
+      padding-left: 1rem;
+      border-left: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .meta {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      margin-bottom: 0.5rem;
+      opacity: 0.7;
+    }
   </style>
 </head>
+
 <body>
   <div id="overlay">
     <div class="meta">Aesthetic Signature</div>
     <h1>Digital Sutra-Stream (数字经流派)</h1>
-    <p>这种艺术风格名为‘数字经流派’。它将敦煌石窟中跨越千年的矿物色彩（如朱砂、石青、土黄）与‘行动绘画’的即时性能量流相结合。其视觉核心是‘纯粹意志’的数字化身：无数细小的ASCII字符构成的流场（Flow Field），如同流动的经卷。这些字符在画布上自由穿梭，模拟出如波洛克般的喷溅感，却又在算法的约束下隐约显现出曼陀罗或壁画残片的秩序。它象征着在数字时代的荒原中，通过个体意志的不断书写，重构出古老精神的永恒回响。</p>
+    <p>这种艺术风格名为‘数字经流派’。它将敦煌石窟中跨越千年的矿物色彩（如朱砂、石青、土黄）与‘行动绘画’的即时性能量流相结合。其视觉核心是‘纯粹意志’的数字化身：无数细小的ASCII字符构成的流场（Flow
+      Field），如同流动的经卷。这些字符在画布上自由穿梭，模拟出如波洛克般的喷溅感，却又在算法的约束下隐约显现出曼陀罗或壁画残片的秩序。它象征着在数字时代的荒原中，通过个体意志的不断书写，重构出古老精神的永恒回响。</p>
   </div>
   <script>
     let particles = [];
-let numParticles = 120;
-let chars = '天地玄黄宇宙洪荒意志光影';
-let colors = [];
+    let numParticles = 120;
+    let chars = '天地玄黄宇宙洪荒意志光影';
+    let colors = [];
 
-function setup() {
-  createCanvas(windowWidth, windowHeight);
-  background(15, 10, 10);
-  colors = [
-    color(180, 60, 50, 150),  // 敦煌红
-    color(40, 100, 100, 150), // 石绿
-    color(190, 160, 100, 150), // 土黄
-    color(50, 80, 140, 150)   // 石青
-  ];
-  for (let i = 0; i < numParticles; i++) {
-    particles.push(new Streamer());
-  }
-}
-
-function draw() {
-  // 模拟行动绘画的堆叠感，背景不完全刷新
-  fill(15, 10, 10, 15);
-  rect(0, 0, width, height);
-  
-  for (let p of particles) {
-    p.update();
-    p.display();
-  }
-
-  if (frameCount % 100 == 0) {
-    // 随机爆发感，体现纯粹意志的冲动
-    for(let i=0; i<5; i++) {
-      particles.push(new Streamer(mouseX, mouseY));
-      if(particles.length > 200) particles.shift();
+    function setup() {
+      createCanvas(windowWidth, windowHeight);
+      background(15, 10, 10);
+      colors = [
+        color(180, 60, 50, 150),  // 敦煌红
+        color(40, 100, 100, 150), // 石绿
+        color(190, 160, 100, 150), // 土黄
+        color(50, 80, 140, 150)   // 石青
+      ];
+      for (let i = 0; i < numParticles; i++) {
+        particles.push(new Streamer());
+      }
     }
-  }
-}
 
-class Streamer {
-  constructor(x, y) {
-    this.pos = createVector(x || random(width), y || random(height));
-    this.vel = createVector(random(-1, 1), random(-1, 1));
-    this.acc = createVector(0, 0);
-    this.maxSpeed = random(2, 5);
-    this.col = random(colors);
-    this.char = chars.charAt(floor(random(chars.length)));
-    this.history = [];
-    this.size = random(12, 28);
-  }
+    function draw() {
+      // 模拟行动绘画的堆叠感，背景不完全刷新
+      fill(15, 10, 10, 15);
+      rect(0, 0, width, height);
 
-  update() {
-    let angle = noise(this.pos.x * 0.005, this.pos.y * 0.005, frameCount * 0.005) * TWO_PI * 4;
-    this.acc = p5.Vector.fromAngle(angle).mult(0.5);
-    this.vel.add(this.acc);
-    this.vel.limit(this.maxSpeed);
-    this.pos.add(this.vel);
-    
-    if (this.pos.x < 0) this.pos.x = width;
-    if (this.pos.x > width) this.pos.x = 0;
-    if (this.pos.y < 0) this.pos.y = height;
-    if (this.pos.y > height) this.pos.y = 0;
+      for (let p of particles) {
+        p.update();
+        p.display();
+      }
 
-    this.history.push(this.pos.copy());
-    if (this.history.length > 15) this.history.shift();
-  }
-
-  display() {
-    noStroke();
-    fill(this.col);
-    textFont('monospace');
-    textSize(this.size);
-    textAlign(CENTER, CENTER);
-    
-    // 绘制字符
-    text(this.char, this.pos.x, this.pos.y);
-    
-    // 绘制意志流向线条（行动绘画元素）
-    stroke(this.col);
-    strokeWeight(1);
-    noFill();
-    beginShape();
-    for (let i = 0; i < this.history.length; i++) {
-      let p = this.history[i];
-      vertex(p.x, p.y);
+      if (frameCount % 100 == 0) {
+        // 随机爆发感，体现纯粹意志的冲动
+        for (let i = 0; i < 5; i++) {
+          particles.push(new Streamer(mouseX, mouseY));
+          if (particles.length > 200) particles.shift();
+        }
+      }
     }
-    endShape();
-  }
-}
 
-function mousePressed() {
-  for (let i = 0; i < 10; i++) {
-    particles.push(new Streamer(mouseX, mouseY));
-  }
-}
+    class Streamer {
+      constructor(x, y) {
+        this.pos = createVector(x || random(width), y || random(height));
+        this.vel = createVector(random(-1, 1), random(-1, 1));
+        this.acc = createVector(0, 0);
+        this.maxSpeed = random(2, 5);
+        this.col = random(colors);
+        this.char = chars.charAt(floor(random(chars.length)));
+        this.history = [];
+        this.size = random(12, 28);
+      }
 
-function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
-  background(15, 10, 10);
-}
+      update() {
+        let angle = noise(this.pos.x * 0.005, this.pos.y * 0.005, frameCount * 0.005) * TWO_PI * 4;
+        this.acc = p5.Vector.fromAngle(angle).mult(0.5);
+        this.vel.add(this.acc);
+        this.vel.limit(this.maxSpeed);
+        this.pos.add(this.vel);
+
+        if (this.pos.x < 0) this.pos.x = width;
+        if (this.pos.x > width) this.pos.x = 0;
+        if (this.pos.y < 0) this.pos.y = height;
+        if (this.pos.y > height) this.pos.y = 0;
+
+        this.history.push(this.pos.copy());
+        if (this.history.length > 15) this.history.shift();
+      }
+
+      display() {
+        noStroke();
+        fill(this.col);
+        textFont('monospace');
+        textSize(this.size);
+        textAlign(CENTER, CENTER);
+
+        // 绘制字符
+        text(this.char, this.pos.x, this.pos.y);
+
+        // 绘制意志流向线条（行动绘画元素）
+        stroke(this.col);
+        strokeWeight(1);
+        noFill();
+        beginShape();
+        for (let i = 0; i < this.history.length; i++) {
+          let p = this.history[i];
+          vertex(p.x, p.y);
+        }
+        endShape();
+      }
+    }
+
+    function mousePressed() {
+      for (let i = 0; i < 10; i++) {
+        particles.push(new Streamer(mouseX, mouseY));
+      }
+    }
+
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight);
+      background(15, 10, 10);
+    }
   </script>
 </body>
+
 </html>

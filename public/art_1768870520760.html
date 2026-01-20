@@ -1,104 +1,140 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
   <meta charset="UTF-8">
   <title>超镀金字符崇高主义 (Hyper-Gilded ASCII Sublime) - Art Archive Oracle</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;400;700&display=swap');
-    body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Noto Serif SC', serif; }
-    canvas { display: block; }
-    #overlay {
-        position: absolute;
-        bottom: 40px;
-        left: 40px;
-        max-width: 600px;
-        color: white;
-        mix-blend-mode: difference;
-        pointer-events: none;
-        z-index: 100;
+
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #000;
+      font-family: 'Noto Serif SC', serif;
     }
-    h1 { font-size: 3rem; margin: 0 0 1rem 0; font-weight: 200; letter-spacing: 0.05em; }
-    p { font-size: 1rem; line-height: 1.6; opacity: 0.9; margin: 0; padding-left: 1rem; border-left: 1px solid rgba(255,255,255,0.5); }
-    .meta { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.3em; margin-bottom: 0.5rem; opacity: 0.7; }
+
+    canvas {
+      display: block;
+    }
+
+    #overlay {
+      position: absolute;
+      bottom: 40px;
+      left: 40px;
+      max-width: 600px;
+      color: white;
+      mix-blend-mode: difference;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin: 0 0 1rem 0;
+      font-weight: 200;
+      letter-spacing: 0.05em;
+    }
+
+    p {
+      font-size: 1rem;
+      line-height: 1.6;
+      opacity: 0.9;
+      margin: 0;
+      padding-left: 1rem;
+      border-left: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .meta {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      margin-bottom: 0.5rem;
+      opacity: 0.7;
+    }
   </style>
 </head>
+
 <body>
   <div id="overlay">
     <div class="meta">Aesthetic Signature</div>
     <h1>超镀金字符崇高主义 (Hyper-Gilded ASCII Sublime)</h1>
-    <p>这一风格是“坎普”的过度装饰、“崇高”的视觉压迫感与“字符艺术”的结构逻辑的深度融合。它利用数字时代的底层语言（ASCII码）重构了某种象征权力的宏大奇观。视觉特征包括：占据主导地位的深黑色背景，其上浮现出由金、铜、以及具有政治隐喻色彩的霓虹紫构成的流体网格。这种风格通过不断流动的字符矩阵表达了一种“数字化的权力剧场”：它既是神圣不可侵犯的宏大叙事，也是荒诞、脆弱且易被解构的代码堆砌，精准地捕捉了当代大众媒体塑造下的英雄主义及其背后的虚无感。</p>
+    <p>
+      这一风格是“坎普”的过度装饰、“崇高”的视觉压迫感与“字符艺术”的结构逻辑的深度融合。它利用数字时代的底层语言（ASCII码）重构了某种象征权力的宏大奇观。视觉特征包括：占据主导地位的深黑色背景，其上浮现出由金、铜、以及具有政治隐喻色彩的霓虹紫构成的流体网格。这种风格通过不断流动的字符矩阵表达了一种“数字化的权力剧场”：它既是神圣不可侵犯的宏大叙事，也是荒诞、脆弱且易被解构的代码堆砌，精准地捕捉了当代大众媒体塑造下的英雄主义及其背后的虚无感。
+    </p>
   </div>
   <script>
     let chars = ['$', '#', '@', 'W', 'M', '8', '0', 'O', 'L', 'I', ':', '.', ' '];
-let cols, rows;
-let cellSize = 15;
-let t = 0;
-function setup() {
-  createCanvas(windowWidth, windowHeight);
-  textAlign(CENTER, CENTER);
-  textSize(cellSize);
-  cols = floor(width / cellSize);
-  rows = floor(height / cellSize);
-}
-function draw() {
-  background(0, 15, 2);
-  t += 0.01;
-  for (let i = 0; i < cols; i++) {
-    for (let j = 0; j < rows; j++) {
-      let x = i * cellSize + cellSize / 2;
-      let y = j * cellSize + cellSize / 2;
-      let nx = i * 0.05;
-      let ny = j * 0.05;
-      let n = noise(nx + cos(t), ny + sin(t), t * 0.5);
-      let distToMouse = dist(mouseX, mouseY, x, y);
-      let mouseEffect = map(distToMouse, 0, 400, 1.5, 0, true);
-      n = (n + mouseEffect) % 1.0;
-      let charIndex = floor(map(n, 0, 1, 0, chars.length));
-      let c = chars[charIndex];
-      let hueVal = map(n, 0, 1, 30, 60);
-      let satVal = map(n, 0, 1, 80, 100);
-      let briVal = map(n, 0, 1, 50, 255);
-      if (n > 0.8) {
-        fill(255, 215, 0, briVal);
-      } else if (n > 0.6) {
-        fill(255, 100, 255, briVal);
-      } else {
-        fill(150, 120, 50, briVal * 0.5);
-      }
-      push();
-      translate(x, y);
-      if (n > 0.7) {
-        rotate(sin(t + n * PI) * 0.2);
-        scale(1.2);
-      }
-      text(c, 0, 0);
-      pop();
+    let cols, rows;
+    let cellSize = 15;
+    let t = 0;
+    function setup() {
+      createCanvas(windowWidth, windowHeight);
+      textAlign(CENTER, CENTER);
+      textSize(cellSize);
+      cols = floor(width / cellSize);
+      rows = floor(height / cellSize);
     }
-  }
-  drawGildedOverlay();
-}
-function drawGildedOverlay() {
-  noFill();
-  strokeWeight(2);
-  for (let i = 0; i < 3; i++) {
-    let alpha = map(i, 0, 3, 50, 10);
-    stroke(255, 215, 0, alpha);
-    let offset = sin(t * 0.5 + i) * 100;
-    beginShape();
-    for (let x = 0; x <= width; x += 50) {
-      let y = height / 2 + sin(x * 0.002 + t + i) * 200 + offset;
-      vertex(x, y);
+    function draw() {
+      background(0, 15, 2);
+      t += 0.01;
+      for (let i = 0; i < cols; i++) {
+        for (let j = 0; j < rows; j++) {
+          let x = i * cellSize + cellSize / 2;
+          let y = j * cellSize + cellSize / 2;
+          let nx = i * 0.05;
+          let ny = j * 0.05;
+          let n = noise(nx + cos(t), ny + sin(t), t * 0.5);
+          let distToMouse = dist(mouseX, mouseY, x, y);
+          let mouseEffect = map(distToMouse, 0, 400, 1.5, 0, true);
+          n = (n + mouseEffect) % 1.0;
+          let charIndex = floor(map(n, 0, 1, 0, chars.length));
+          let c = chars[charIndex];
+          let hueVal = map(n, 0, 1, 30, 60);
+          let satVal = map(n, 0, 1, 80, 100);
+          let briVal = map(n, 0, 1, 50, 255);
+          if (n > 0.8) {
+            fill(255, 215, 0, briVal);
+          } else if (n > 0.6) {
+            fill(255, 100, 255, briVal);
+          } else {
+            fill(150, 120, 50, briVal * 0.5);
+          }
+          push();
+          translate(x, y);
+          if (n > 0.7) {
+            rotate(sin(t + n * PI) * 0.2);
+            scale(1.2);
+          }
+          text(c, 0, 0);
+          pop();
+        }
+      }
+      drawGildedOverlay();
     }
-    endShape();
-  }
-}
-function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
-  cols = floor(width / cellSize);
-  rows = floor(height / cellSize);
-}
+    function drawGildedOverlay() {
+      noFill();
+      strokeWeight(2);
+      for (let i = 0; i < 3; i++) {
+        let alpha = map(i, 0, 3, 50, 10);
+        stroke(255, 215, 0, alpha);
+        let offset = sin(t * 0.5 + i) * 100;
+        beginShape();
+        for (let x = 0; x <= width; x += 50) {
+          let y = height / 2 + sin(x * 0.002 + t + i) * 200 + offset;
+          vertex(x, y);
+        }
+        endShape();
+      }
+    }
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight);
+      cols = floor(width / cellSize);
+      rows = floor(height / cellSize);
+    }
   </script>
 </body>
+
 </html>

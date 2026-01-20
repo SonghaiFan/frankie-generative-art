@@ -1,157 +1,193 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
   <meta charset="UTF-8">
   <title>FSH: Flux-Stitched Hyper-Vandalism - Art Archive Oracle</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;400;700&display=swap');
-    body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Noto Serif SC', serif; }
-    canvas { display: block; }
-    #overlay {
-        position: absolute;
-        bottom: 40px;
-        left: 40px;
-        max-width: 600px;
-        color: white;
-        mix-blend-mode: difference;
-        pointer-events: none;
-        z-index: 100;
+
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #000;
+      font-family: 'Noto Serif SC', serif;
     }
-    h1 { font-size: 3rem; margin: 0 0 1rem 0; font-weight: 200; letter-spacing: 0.05em; }
-    p { font-size: 1rem; line-height: 1.6; opacity: 0.9; margin: 0; padding-left: 1rem; border-left: 1px solid rgba(255,255,255,0.5); }
-    .meta { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.3em; margin-bottom: 0.5rem; opacity: 0.7; }
+
+    canvas {
+      display: block;
+    }
+
+    #overlay {
+      position: absolute;
+      bottom: 40px;
+      left: 40px;
+      max-width: 600px;
+      color: white;
+      mix-blend-mode: difference;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin: 0 0 1rem 0;
+      font-weight: 200;
+      letter-spacing: 0.05em;
+    }
+
+    p {
+      font-size: 1rem;
+      line-height: 1.6;
+      opacity: 0.9;
+      margin: 0;
+      padding-left: 1rem;
+      border-left: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .meta {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      margin-bottom: 0.5rem;
+      opacity: 0.7;
+    }
   </style>
 </head>
+
 <body>
   <div id="overlay">
     <div class="meta">Aesthetic Signature</div>
     <h1>FSH: Flux-Stitched Hyper-Vandalism</h1>
-    <p>这种风格融合了街头涂鸦的粗犷生命力与数字时代的碎片化美学。'FSH' 代表了流动 (Flux)、缝合 (Stitched) 与超动力 (Hyper-Dynamics)。它利用高饱和度的喷漆色彩、模拟流淌的液滴效果以及数字故障感的错位，重构了一个充满对抗性且不断变迁的视觉空间。视觉语言强调未经驯化的‘原始’感——尖锐的几何折线、喷溅的细密粒子以及因重力感应而下滴的墨迹。代码模拟了喷漆的物理感与即时性，通过交互，你可以在画布上‘占领’公共领域。请移动鼠标进行喷绘，点击屏幕以产生视觉冲击波。</p>
+    <p>这种风格融合了街头涂鸦的粗犷生命力与数字时代的碎片化美学。'FSH' 代表了流动 (Flux)、缝合 (Stitched) 与超动力
+      (Hyper-Dynamics)。它利用高饱和度的喷漆色彩、模拟流淌的液滴效果以及数字故障感的错位，重构了一个充满对抗性且不断变迁的视觉空间。视觉语言强调未经驯化的‘原始’感——尖锐的几何折线、喷溅的细密粒子以及因重力感应而下滴的墨迹。代码模拟了喷漆的物理感与即时性，通过交互，你可以在画布上‘占领’公共领域。请移动鼠标进行喷绘，点击屏幕以产生视觉冲击波。
+    </p>
   </div>
   <script>
     let fragments = [];
-let drips = [];
-let particles = [];
-let colors = ['#FF0055', '#00FF99', '#FFFF00', '#0099FF', '#FF00FF'];
+    let drips = [];
+    let particles = [];
+    let colors = ['#FF0055', '#00FF99', '#FFFF00', '#0099FF', '#FF00FF'];
 
-function setup() {
-  createCanvas(windowWidth, windowHeight);
-  background(15, 15, 18);
-  noStroke();
-}
+    function setup() {
+      createCanvas(windowWidth, windowHeight);
+      background(15, 15, 18);
+      noStroke();
+    }
 
-function draw() {
-  // Slight trail decay for organic feel
-  fill(15, 15, 18, 5);
-  rect(0, 0, width, height);
+    function draw() {
+      // Slight trail decay for organic feel
+      fill(15, 15, 18, 5);
+      rect(0, 0, width, height);
 
-  // Handle drips
-  for (let i = drips.length - 1; i >= 0; i--) {
-    drips[i].update();
-    drips[i].display();
-    if (drips[i].y > height || drips[i].life <= 0) drips.splice(i, 1);
-  }
+      // Handle drips
+      for (let i = drips.length - 1; i >= 0; i--) {
+        drips[i].update();
+        drips[i].display();
+        if (drips[i].y > height || drips[i].life <= 0) drips.splice(i, 1);
+      }
 
-  // Handle spray particles
-  for (let i = particles.length - 1; i >= 0; i--) {
-    particles[i].update();
-    particles[i].display();
-    if (particles[i].life <= 0) particles.splice(i, 1);
-  }
+      // Handle spray particles
+      for (let i = particles.length - 1; i >= 0; i--) {
+        particles[i].update();
+        particles[i].display();
+        if (particles[i].life <= 0) particles.splice(i, 1);
+      }
 
-  // Glitch effect: random horizontal displacement
-  if (frameCount % 60 === 0) {
-    let sliceY = random(height);
-    let sliceH = random(20, 100);
-    let offset = random(-20, 20);
-    copy(0, sliceY, width, sliceH, offset, sliceY, width, sliceH);
-  }
+      // Glitch effect: random horizontal displacement
+      if (frameCount % 60 === 0) {
+        let sliceY = random(height);
+        let sliceH = random(20, 100);
+        let offset = random(-20, 20);
+        copy(0, sliceY, width, sliceH, offset, sliceY, width, sliceH);
+      }
 
-  if (mouseIsPressed) {
-    createSpray(mouseX, mouseY);
-  }
-}
+      if (mouseIsPressed) {
+        createSpray(mouseX, mouseY);
+      }
+    }
 
-function mouseMoved() {
-  if (random() > 0.7) {
-    createSpray(mouseX, mouseY);
-  }
-  if (random() > 0.95) {
-    drips.push(new Drip(mouseX, mouseY, random(colors)));
-  }
-}
+    function mouseMoved() {
+      if (random() > 0.7) {
+        createSpray(mouseX, mouseY);
+      }
+      if (random() > 0.95) {
+        drips.push(new Drip(mouseX, mouseY, random(colors)));
+      }
+    }
 
-function mousePressed() {
-  // Shockwave effect
-  let c = random(colors);
-  for (let i = 0; i < 50; i++) {
-    particles.push(new Particle(mouseX, mouseY, c, true));
-  }
-}
+    function mousePressed() {
+      // Shockwave effect
+      let c = random(colors);
+      for (let i = 0; i < 50; i++) {
+        particles.push(new Particle(mouseX, mouseY, c, true));
+      }
+    }
 
-function createSpray(x, y) {
-  let c = random(colors);
-  for (let i = 0; i < 8; i++) {
-    let angle = random(TWO_PI);
-    let r = random(5, 25);
-    particles.push(new Particle(x + cos(angle) * r, y + sin(angle) * r, c, false));
-  }
-}
+    function createSpray(x, y) {
+      let c = random(colors);
+      for (let i = 0; i < 8; i++) {
+        let angle = random(TWO_PI);
+        let r = random(5, 25);
+        particles.push(new Particle(x + cos(angle) * r, y + sin(angle) * r, c, false));
+      }
+    }
 
-class Particle {
-  constructor(x, y, col, explosive) {
-    this.x = x;
-    this.y = y;
-    this.col = col;
-    this.life = random(50, 150);
-    this.size = random(1, 4);
-    this.vel = explosive ? p5.Vector.random2D().mult(random(2, 8)) : createVector(random(-1, 1), random(-1, 1));
-  }
+    class Particle {
+      constructor(x, y, col, explosive) {
+        this.x = x;
+        this.y = y;
+        this.col = col;
+        this.life = random(50, 150);
+        this.size = random(1, 4);
+        this.vel = explosive ? p5.Vector.random2D().mult(random(2, 8)) : createVector(random(-1, 1), random(-1, 1));
+      }
 
-  update() {
-    this.x += this.vel.x;
-    this.y += this.vel.y;
-    this.life -= 2;
-    this.vel.mult(0.96); // air resistance
-  }
+      update() {
+        this.x += this.vel.x;
+        this.y += this.vel.y;
+        this.life -= 2;
+        this.vel.mult(0.96); // air resistance
+      }
 
-  display() {
-    fill(this.col + hex(floor(map(this.life, 0, 150, 0, 255)), 2));
-    noStroke();
-    circle(this.x, this.y, this.size);
-  }
-}
+      display() {
+        fill(this.col + hex(floor(map(this.life, 0, 150, 0, 255)), 2));
+        noStroke();
+        circle(this.x, this.y, this.size);
+      }
+    }
 
-class Drip {
-  constructor(x, y, col) {
-    this.x = x;
-    this.y = y;
-    this.col = col;
-    this.speed = random(1, 4);
-    this.life = 255;
-    this.w = random(2, 5);
-  }
+    class Drip {
+      constructor(x, y, col) {
+        this.x = x;
+        this.y = y;
+        this.col = col;
+        this.speed = random(1, 4);
+        this.life = 255;
+        this.w = random(2, 5);
+      }
 
-  update() {
-    this.y += this.speed;
-    this.life -= 0.5;
-    this.speed *= 0.99; // gravity slowing down
-    if(random() > 0.9) this.w *= 0.98;
-  }
+      update() {
+        this.y += this.speed;
+        this.life -= 0.5;
+        this.speed *= 0.99; // gravity slowing down
+        if (random() > 0.9) this.w *= 0.98;
+      }
 
-  display() {
-    fill(this.col + hex(floor(this.life), 2));
-    noStroke();
-    rect(this.x, this.y, this.w, this.speed * 2);
-  }
-}
+      display() {
+        fill(this.col + hex(floor(this.life), 2));
+        noStroke();
+        rect(this.x, this.y, this.w, this.speed * 2);
+      }
+    }
 
-function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
-  background(15, 15, 18);
-}
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight);
+      background(15, 15, 18);
+    }
   </script>
 </body>
+
 </html>

@@ -1,138 +1,174 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
   <meta charset="UTF-8">
   <title>律动原质逻辑主义 (Logos-Materialism Kineticism) - Art Archive Oracle</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;400;700&display=swap');
-    body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Noto Serif SC', serif; }
-    canvas { display: block; }
-    #overlay {
-        position: absolute;
-        bottom: 40px;
-        left: 40px;
-        max-width: 600px;
-        color: white;
-        mix-blend-mode: difference;
-        pointer-events: none;
-        z-index: 100;
+
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #000;
+      font-family: 'Noto Serif SC', serif;
     }
-    h1 { font-size: 3rem; margin: 0 0 1rem 0; font-weight: 200; letter-spacing: 0.05em; }
-    p { font-size: 1rem; line-height: 1.6; opacity: 0.9; margin: 0; padding-left: 1rem; border-left: 1px solid rgba(255,255,255,0.5); }
-    .meta { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.3em; margin-bottom: 0.5rem; opacity: 0.7; }
+
+    canvas {
+      display: block;
+    }
+
+    #overlay {
+      position: absolute;
+      bottom: 40px;
+      left: 40px;
+      max-width: 600px;
+      color: white;
+      mix-blend-mode: difference;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin: 0 0 1rem 0;
+      font-weight: 200;
+      letter-spacing: 0.05em;
+    }
+
+    p {
+      font-size: 1rem;
+      line-height: 1.6;
+      opacity: 0.9;
+      margin: 0;
+      padding-left: 1rem;
+      border-left: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .meta {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      margin-bottom: 0.5rem;
+      opacity: 0.7;
+    }
   </style>
 </head>
+
 <body>
   <div id="overlay">
     <div class="meta">Aesthetic Signature</div>
     <h1>律动原质逻辑主义 (Logos-Materialism Kineticism)</h1>
-    <p>这种艺术风格是‘物派’对物质本质的追求与‘逻辑’严密性的数字化交响。它将ASCII字符视为构成现实的基础‘原子’，不再是简单的文字符号，而是具备质量、引力与惯性的物理存在。视觉上，它舍弃了浮夸的色彩，采用极简的单色调（深灰、岩白与逻辑蓝），模拟自然界中重力与杠杆的相互作用。作品通过严密的数学公式驱动字符粒子的位移，在虚无的数字空间中重构出类似石头、铁板与虚空之间的张力。这是一种对‘系统即美’的崇拜，每一个动效都遵循因果律，让观者在逻辑的确定性中感受到生命的律动。</p>
+    <p>
+      这种艺术风格是‘物派’对物质本质的追求与‘逻辑’严密性的数字化交响。它将ASCII字符视为构成现实的基础‘原子’，不再是简单的文字符号，而是具备质量、引力与惯性的物理存在。视觉上，它舍弃了浮夸的色彩，采用极简的单色调（深灰、岩白与逻辑蓝），模拟自然界中重力与杠杆的相互作用。作品通过严密的数学公式驱动字符粒子的位移，在虚无的数字空间中重构出类似石头、铁板与虚空之间的张力。这是一种对‘系统即美’的崇拜，每一个动效都遵循因果律，让观者在逻辑的确定性中感受到生命的律动。
+    </p>
   </div>
   <script>
     let particles = [];
-let charSet = ['|', '-', '+', '.', '0', '1', '·', '∫', 'Δ'];
-let cols, rows;
-let spacing = 18;
+    let charSet = ['|', '-', '+', '.', '0', '1', '·', '∫', 'Δ'];
+    let cols, rows;
+    let spacing = 18;
 
-function setup() {
-  createCanvas(windowWidth, windowHeight);
-  textAlign(CENTER, CENTER);
-  textFont('monospace');
-  rectMode(CENTER);
-  initSystem();
-}
-
-function initSystem() {
-  particles = [];
-  cols = floor(width / spacing);
-  rows = floor(height / spacing);
-  for (let i = 0; i < cols; i++) {
-    for (let j = 0; j < rows; j++) {
-      particles.push({
-        originX: i * spacing + spacing / 2,
-        originY: j * spacing + spacing / 2,
-        x: i * spacing + spacing / 2,
-        y: j * spacing + spacing / 2,
-        char: charSet[floor(random(charSet.length))],
-        phase: random(TWO_PI),
-        size: 10
-      });
-    }
-  }
-}
-
-function draw() {
-  background(15, 15, 18);
-  
-  let time = millis() * 0.001;
-  let mouseDistThreshold = 180;
-
-  for (let p of particles) {
-    // 逻辑动力学：基于正弦波动与鼠标交互的位移
-    let waveX = sin(time + p.originY * 0.01) * 15;
-    let waveY = cos(time + p.originX * 0.01) * 15;
-    
-    let dx = mouseX - p.originX;
-    let dy = mouseY - p.originY;
-    let d = sqrt(dx * dx + dy * dy);
-    
-    let offsetX = 0;
-    let offsetY = 0;
-
-    if (d < mouseDistThreshold) {
-      let force = map(d, 0, mouseDistThreshold, 1.5, 0);
-      offsetX = -dx * force * 0.5;
-      offsetY = -dy * force * 0.5;
-      p.active = true;
-    } else {
-      p.active = false;
+    function setup() {
+      createCanvas(windowWidth, windowHeight);
+      textAlign(CENTER, CENTER);
+      textFont('monospace');
+      rectMode(CENTER);
+      initSystem();
     }
 
-    p.x = p.originX + waveX + offsetX;
-    p.y = p.originY + waveY + offsetY;
-
-    // 渲染逻辑：根据位置深度改变颜色与透明度
-    let alpha = map(sin(time + p.phase), -1, 1, 100, 255);
-    let logicColor = p.active ? color(0, 255, 204) : color(200, 200, 210);
-    
-    fill(red(logicColor), green(logicColor), blue(logicColor), alpha);
-    textSize(p.active ? 14 : 10);
-    
-    // 绘制字符“原质”
-    text(p.char, p.x, p.y);
-
-    // 弱线条连接，体现系统逻辑结构
-    if (p.active) {
-       stroke(0, 255, 204, 50);
-       noFill();
-       ellipse(p.x, p.y, spacing * 1.5);
-       noStroke();
+    function initSystem() {
+      particles = [];
+      cols = floor(width / spacing);
+      rows = floor(height / spacing);
+      for (let i = 0; i < cols; i++) {
+        for (let j = 0; j < rows; j++) {
+          particles.push({
+            originX: i * spacing + spacing / 2,
+            originY: j * spacing + spacing / 2,
+            x: i * spacing + spacing / 2,
+            y: j * spacing + spacing / 2,
+            char: charSet[floor(random(charSet.length))],
+            phase: random(TWO_PI),
+            size: 10
+          });
+        }
+      }
     }
-  }
 
-  // 绘制中心逻辑核
-  drawCore(time);
-}
+    function draw() {
+      background(15, 15, 18);
 
-function drawCore(t) {
-  push();
-  translate(width / 2, height / 2);
-  rotate(t * 0.2);
-  stroke(255, 40);
-  noFill();
-  for (let i = 0; i < 3; i++) {
-    rect(0, 0, 300 + i * 20, 300 + i * 20);
-    rotate(QUARTER_PI / 2);
-  }
-  pop();
-}
+      let time = millis() * 0.001;
+      let mouseDistThreshold = 180;
 
-function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
-  initSystem();
-}
+      for (let p of particles) {
+        // 逻辑动力学：基于正弦波动与鼠标交互的位移
+        let waveX = sin(time + p.originY * 0.01) * 15;
+        let waveY = cos(time + p.originX * 0.01) * 15;
+
+        let dx = mouseX - p.originX;
+        let dy = mouseY - p.originY;
+        let d = sqrt(dx * dx + dy * dy);
+
+        let offsetX = 0;
+        let offsetY = 0;
+
+        if (d < mouseDistThreshold) {
+          let force = map(d, 0, mouseDistThreshold, 1.5, 0);
+          offsetX = -dx * force * 0.5;
+          offsetY = -dy * force * 0.5;
+          p.active = true;
+        } else {
+          p.active = false;
+        }
+
+        p.x = p.originX + waveX + offsetX;
+        p.y = p.originY + waveY + offsetY;
+
+        // 渲染逻辑：根据位置深度改变颜色与透明度
+        let alpha = map(sin(time + p.phase), -1, 1, 100, 255);
+        let logicColor = p.active ? color(0, 255, 204) : color(200, 200, 210);
+
+        fill(red(logicColor), green(logicColor), blue(logicColor), alpha);
+        textSize(p.active ? 14 : 10);
+
+        // 绘制字符“原质”
+        text(p.char, p.x, p.y);
+
+        // 弱线条连接，体现系统逻辑结构
+        if (p.active) {
+          stroke(0, 255, 204, 50);
+          noFill();
+          ellipse(p.x, p.y, spacing * 1.5);
+          noStroke();
+        }
+      }
+
+      // 绘制中心逻辑核
+      drawCore(time);
+    }
+
+    function drawCore(t) {
+      push();
+      translate(width / 2, height / 2);
+      rotate(t * 0.2);
+      stroke(255, 40);
+      noFill();
+      for (let i = 0; i < 3; i++) {
+        rect(0, 0, 300 + i * 20, 300 + i * 20);
+        rotate(QUARTER_PI / 2);
+      }
+      pop();
+    }
+
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight);
+      initSystem();
+    }
   </script>
 </body>
+
 </html>

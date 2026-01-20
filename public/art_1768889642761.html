@@ -1,119 +1,155 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
   <meta charset="UTF-8">
   <title>光影构筑解构主义 (Opto-Constructive Deconstructivism) - Art Archive Oracle</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;400;700&display=swap');
-    body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Noto Serif SC', serif; }
-    canvas { display: block; }
-    #overlay {
-        position: absolute;
-        bottom: 40px;
-        left: 40px;
-        max-width: 600px;
-        color: white;
-        mix-blend-mode: difference;
-        pointer-events: none;
-        z-index: 100;
+
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #000;
+      font-family: 'Noto Serif SC', serif;
     }
-    h1 { font-size: 3rem; margin: 0 0 1rem 0; font-weight: 200; letter-spacing: 0.05em; }
-    p { font-size: 1rem; line-height: 1.6; opacity: 0.9; margin: 0; padding-left: 1rem; border-left: 1px solid rgba(255,255,255,0.5); }
-    .meta { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.3em; margin-bottom: 0.5rem; opacity: 0.7; }
+
+    canvas {
+      display: block;
+    }
+
+    #overlay {
+      position: absolute;
+      bottom: 40px;
+      left: 40px;
+      max-width: 600px;
+      color: white;
+      mix-blend-mode: difference;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin: 0 0 1rem 0;
+      font-weight: 200;
+      letter-spacing: 0.05em;
+    }
+
+    p {
+      font-size: 1rem;
+      line-height: 1.6;
+      opacity: 0.9;
+      margin: 0;
+      padding-left: 1rem;
+      border-left: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .meta {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      margin-bottom: 0.5rem;
+      opacity: 0.7;
+    }
   </style>
 </head>
+
 <body>
   <div id="overlay">
     <div class="meta">Aesthetic Signature</div>
     <h1>光影构筑解构主义 (Opto-Constructive Deconstructivism)</h1>
-    <p>这种风格是您对‘明确表达’追求的数字化呈现。它结合了构成主义的严谨结构与明暗对照法的戏剧性光影，通过摄像头实时捕捉现实世界的轮廓。每一帧画面都是一次对空间的重新建模：系统通过亮度阈值将环境切分为坚实的几何块面，同时利用晕涂法（Sfumato）在边缘处营造出呼吸般的明灭感。点击屏幕激活摄像头，您将看到您的动作如何被解构为一种充满秩序感的、在秩序与混沌之间流动的视觉建筑。</p>
+    <p>
+      这种风格是您对‘明确表达’追求的数字化呈现。它结合了构成主义的严谨结构与明暗对照法的戏剧性光影，通过摄像头实时捕捉现实世界的轮廓。每一帧画面都是一次对空间的重新建模：系统通过亮度阈值将环境切分为坚实的几何块面，同时利用晕涂法（Sfumato）在边缘处营造出呼吸般的明灭感。点击屏幕激活摄像头，您将看到您的动作如何被解构为一种充满秩序感的、在秩序与混沌之间流动的视觉建筑。
+    </p>
   </div>
   <script>
     let capture;
-let gridSize = 12;
-let particles = [];
+    let gridSize = 12;
+    let particles = [];
 
-function setup() {
-  createCanvas(windowWidth, windowHeight);
-  capture = createCapture(VIDEO);
-  capture.size(windowWidth / gridSize, windowHeight / gridSize);
-  capture.hide();
-  background(0);
-  noStroke();
-}
+    function setup() {
+      createCanvas(windowWidth, windowHeight);
+      capture = createCapture(VIDEO);
+      capture.size(windowWidth / gridSize, windowHeight / gridSize);
+      capture.hide();
+      background(0);
+      noStroke();
+    }
 
-function draw() {
-  background(0, 40); // Sfumato trail effect
-  
-  if (capture.loadedmetadata) {
-    capture.loadPixels();
-    
-    for (let y = 0; y < capture.height; y++) {
-      for (let x = 0; x < capture.width; x++) {
-        let index = (x + y * capture.width) * 4;
-        let r = capture.pixels[index];
-        let g = capture.pixels[index + 1];
-        let b = capture.pixels[index + 2];
-        let bright = (r + g + b) / 3;
-        
-        // Chiaroscuro: High contrast thresholding
-        if (bright > 120) {
-          push();
-          translate(x * gridSize, y * gridSize);
-          
-          // Constructivist Geometric Language
-          let size = map(bright, 120, 255, 2, gridSize * 1.5);
-          
-          if (bright > 200) {
-            fill(255, 45, 45, 180); // Red accents (Constructivism)
-            rect(0, 0, size, size / 4);
-          } else {
-            fill(bright, bright, bright * 1.2, 150);
-            rect(0, 0, size * 0.8, size * 0.8);
+    function draw() {
+      background(0, 40); // Sfumato trail effect
+
+      if (capture.loadedmetadata) {
+        capture.loadPixels();
+
+        for (let y = 0; y < capture.height; y++) {
+          for (let x = 0; x < capture.width; x++) {
+            let index = (x + y * capture.width) * 4;
+            let r = capture.pixels[index];
+            let g = capture.pixels[index + 1];
+            let b = capture.pixels[index + 2];
+            let bright = (r + g + b) / 3;
+
+            // Chiaroscuro: High contrast thresholding
+            if (bright > 120) {
+              push();
+              translate(x * gridSize, y * gridSize);
+
+              // Constructivist Geometric Language
+              let size = map(bright, 120, 255, 2, gridSize * 1.5);
+
+              if (bright > 200) {
+                fill(255, 45, 45, 180); // Red accents (Constructivism)
+                rect(0, 0, size, size / 4);
+              } else {
+                fill(bright, bright, bright * 1.2, 150);
+                rect(0, 0, size * 0.8, size * 0.8);
+              }
+
+              // Adding structural lines
+              if (x % 5 === 0) {
+                stroke(255, 50);
+                line(0, 0, gridSize * 2, gridSize * 2);
+              }
+              pop();
+            } else if (bright > 60) {
+              // Subtle Sfumato particles for low light areas
+              fill(bright * 0.5, 80);
+              ellipse(x * gridSize, y * gridSize, 2, 2);
+            }
           }
-          
-          // Adding structural lines
-          if (x % 5 === 0) {
-             stroke(255, 50);
-             line(0, 0, gridSize * 2, gridSize * 2);
-          }
-          pop();
-        } else if (bright > 60) {
-          // Subtle Sfumato particles for low light areas
-          fill(bright * 0.5, 80);
-          ellipse(x * gridSize, y * gridSize, 2, 2);
         }
       }
+
+      drawUI();
     }
-  }
-  
-  drawUI();
-}
 
-function drawUI() {
-  fill(255);
-  textSize(12);
-  textAlign(LEFT);
-  text("MODE: OPTO-CONSTRUCTIVE REALTIME CAPTURE", 30, 40);
-  text("LIGHT THRESHOLD: ACTIVE", 30, 60);
-  
-  stroke(255, 100);
-  line(30, 70, 200, 70);
-}
+    function drawUI() {
+      fill(255);
+      textSize(12);
+      textAlign(LEFT);
+      text("MODE: OPTO-CONSTRUCTIVE REALTIME CAPTURE", 30, 40);
+      text("LIGHT THRESHOLD: ACTIVE", 30, 60);
 
-function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
-  capture.size(windowWidth / gridSize, windowHeight / gridSize);
-}
+      stroke(255, 100);
+      line(30, 70, 200, 70);
+    }
 
-function mousePressed() {
-  // User gesture to ensure video/audio context is active
-  if (getAudioContext().state !== 'running') {
-    getAudioContext().resume();
-  }
-}
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight);
+      capture.size(windowWidth / gridSize, windowHeight / gridSize);
+    }
+
+    function mousePressed() {
+      // User gesture to ensure video/audio context is active
+      if (getAudioContext().state !== 'running') {
+        getAudioContext().resume();
+      }
+    }
   </script>
 </body>
+
 </html>
