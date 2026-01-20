@@ -406,78 +406,109 @@ export const popStyles: ArtStyle[] = [
     prompt: "如果艺术不依赖形象，它能否仅凭一段关系或一个尺度而存在？",
     styleTags: ["Logic", "Measurement", "Minimal"],
     sketch: (p: p5, seed: string) => {
-      // Improved Conceptual Art: No text.
-      // Visualizing measurements and spatial logic (Measuring the invisible)
-      let points: { x: number; y: number }[] = [];
+      // Improved Conceptual Art: System-driven logic, Blueprint aesthetic.
+      const getSeedNum = (s: string) => {
+        let h = 0;
+        for (let i = 0; i < s.length; i++) h = Math.imul(31, h) + s.charCodeAt(i) | 0;
+        return Math.abs(h);
+      };
+
+      let points: { x: number; y: number; label: string }[] = [];
 
       p.setup = () => {
         p.createCanvas(p.windowWidth, p.windowHeight);
         p.colorMode(p.HSB, 360, 100, 100, 100);
-        initPoints();
+        p.noLoop();
       };
 
-      const initPoints = () => {
+      const initSystem = () => {
+        p.randomSeed(getSeedNum(seed));
         points = [];
-        for (let i = 0; i < 15; i++) {
+        const count = p.floor(p.random(6, 12));
+        for (let i = 0; i < count; i++) {
           points.push({
-            x: p.random(p.width * 0.2, p.width * 0.8),
-            y: p.random(p.height * 0.2, p.height * 0.8),
+            x: p.random(p.width * 0.15, p.width * 0.85),
+            y: p.random(p.height * 0.15, p.height * 0.85),
+            label: `P-${i}`
           });
         }
       };
 
       p.draw = () => {
+        initSystem();
         p.background(0, 0, 98); // Gallery white
 
-        // Fine grid
-        p.stroke(0, 0, 90);
+        // 1. Technical Grid
+        p.stroke(0, 0, 92);
         p.strokeWeight(1);
-        for (let x = 0; x < p.width; x += 50) p.line(x, 0, x, p.height);
-        for (let y = 0; y < p.height; y += 50) p.line(0, y, p.width, y);
+        for (let x = 0; x <= p.width; x += 40) p.line(x, 0, x, p.height);
+        for (let y = 0; y <= p.height; y += 40) p.line(0, y, p.width, y);
 
-        // Logical lines connecting points
+        // 2. Logical Framework
         p.noFill();
-        p.stroke(0, 0, 30, 40);
+        
+        // Primary Axis
+        p.stroke(200, 70, 60, 30); // Technical Blue
+        p.line(p.width * 0.1, p.height * 0.1, p.width * 0.9, p.height * 0.1);
+        p.line(p.width * 0.1, p.height * 0.1, p.width * 0.1, p.height * 0.9);
 
-        // Measuring lines
+        // 3. Relationships (Geometric Logic)
         points.forEach((pt, i) => {
-          // Draw coordinate lines to edges
-          p.strokeWeight(0.5);
-          p.stroke(200, 50, 70, 20); // Blueish "blueprint" line
-          p.line(pt.x, 0, pt.x, p.height);
-          p.line(0, pt.y, p.width, pt.y);
+          // Extension lines to axes
+          p.stroke(0, 0, 80);
+          p.setLineDash([5, 5]);
+          p.line(pt.x, pt.y, pt.x, p.height * 0.1);
+          p.line(pt.x, pt.y, p.width * 0.1, pt.y);
+          p.setLineDash([]);
 
-          // Marks
-          p.fill(0);
-          p.noStroke();
-          p.rect(pt.x - 2, pt.y - 2, 4, 4);
-
-          // Connect to next
+          // Connection to next point (The Path)
           if (i < points.length - 1) {
             let next = points[i + 1];
-            p.stroke(0, 0, 10, 60);
-            p.strokeWeight(1);
+            p.stroke(0, 0, 20, 60);
+            p.strokeWeight(1.5);
             p.line(pt.x, pt.y, next.x, next.y);
-
-            // Draw middle crosshair
+            
+            // Midpoint marker
             let midX = (pt.x + next.x) / 2;
             let midY = (pt.y + next.y) / 2;
-            p.stroke(0, 80, 80, 50);
-            p.line(midX - 10, midY, midX + 10, midY);
-            p.line(midX, midY - 10, midX, midY + 10);
+            p.stroke(0, 80, 80, 80); // Red logic mark
+            p.line(midX - 8, midY - 8, midX + 8, midY + 8);
+            p.line(midX + 8, midY - 8, midX - 8, midY + 8);
           }
+
+          // Point Marker
+          p.fill(0);
+          p.noStroke();
+          p.rectMode(p.CENTER);
+          p.rect(pt.x, pt.y, 6, 6);
+          
+          // Geometric Radius (Invisible influence)
+          p.noFill();
+          p.stroke(200, 50, 80, 15);
+          p.circle(pt.x, pt.y, p.dist(pt.x, pt.y, p.width/2, p.height/2) * 0.5);
         });
 
-        // Corner labels (Visual only, no meaningful text)
+        // 4. Abstract "Dimensions" (No text, just indicators)
+        p.stroke(0, 0, 40);
+        p.strokeWeight(1);
+        const margin = 50;
+        p.line(margin, p.height - margin, p.width - margin, p.height - margin); // Bottom scale
+        for(let i=0; i<10; i++) {
+          let x = p.map(i, 0, 9, margin, p.width-margin);
+          p.line(x, p.height-margin-5, x, p.height-margin+5);
+        }
+
+        // 5. Focal "Logic Block"
         p.noStroke();
-        p.fill(0, 0, 60);
-        p.rect(50, 50, 100, 1);
-        p.rect(50, 60, 60, 1);
+        p.fill(0, 0, 20, 10);
+        p.rect(p.width * 0.8, p.height * 0.2, 100, 100);
+        p.stroke(0, 0, 0, 50);
+        p.line(p.width * 0.8 - 40, p.height * 0.2, p.width * 0.8 + 40, p.height * 0.2);
       };
 
       (p as any).customResize = (w: number, h: number) => {
         p.resizeCanvas(w, h);
-        initPoints();
+        p.redraw();
       };
     },
   },
