@@ -303,4 +303,92 @@ export const atmosphereStyles: ArtStyle[] = [
       (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
     },
   },
+  {
+    id: "dreamcore",
+    name: "Dreamcore (梦核)",
+    era: "Internet Era (Late 2010s)",
+    driver: "p5",
+    description:
+      "模糊的怀旧感、非线性的空间与超现实的符号，构建出一个既熟悉又令人不安的梦境。",
+    prompt: "你曾在这个地方待过，或者这只是你从未醒来的那个午后？",
+    styleTags: ["Nostalgia", "Surreal", "Liminal", "Hazy"],
+    sketch: (p: p5, seed: string) => {
+      // Dreamcore: Liminal spaces and Surreal Symbols
+      const getSeedNum = (s: string) => {
+        let h = 0;
+        for (let i = 0; i < s.length; i++)
+          h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+        return Math.abs(h);
+      };
+
+      p.setup = () => {
+        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.colorMode(p.HSB, 360, 100, 100, 100);
+      };
+
+      p.draw = () => {
+        p.randomSeed(getSeedNum(seed));
+        const time = p.frameCount * 0.01;
+
+        // 1. Hazy Background (Overexposed / Low contrast)
+        p.background(200, 5, 90);
+
+        // Soft focus light gradients
+        for (let i = 0; i < 3; i++) {
+          const x = p.noise(time * 0.2, i) * p.width;
+          const y = p.noise(i, time * 0.1) * p.height;
+          p.noStroke();
+          for (let r = 400; r > 0; r -= 40) {
+            p.fill(20, 20, 100, 2);
+            p.circle(x, y, r);
+          }
+        }
+
+        // 2. Liminal Architecture (Simplified hallway/doorway)
+        p.push();
+        p.translate(p.width / 2, p.height / 2);
+        p.noStroke();
+
+        // Infinite hallway effect
+        for (let i = 5; i > 0; i--) {
+          const s = i * 0.2;
+          p.fill(200, 10, 80 - i * 10);
+          p.rectMode(p.CENTER);
+          p.rect(0, 0, p.width * s, p.height * s);
+          // Dark "End" of the hall
+          if (i === 1) {
+            p.fill(0, 0, 10);
+            p.rect(0, 0, p.width * 0.2, p.height * 0.2);
+          }
+        }
+        p.pop();
+
+        // 3. Surreal Floating Elements (The "Eye")
+        const eyeX = p.width * 0.7 + p.sin(time) * 50;
+        const eyeY = p.height * 0.3 + p.cos(time * 0.5) * 30;
+
+        // Eye White
+        p.fill(0, 0, 100);
+        p.ellipse(eyeX, eyeY, 80, 50);
+        // Pupil
+        p.fill(0);
+        p.circle(eyeX + p.sin(time * 2) * 10, eyeY, 30);
+
+        // 4. VHS Grain & Scanlines
+        p.strokeWeight(1);
+        for (let i = 0; i < 300; i++) {
+          p.stroke(0, 0, 0, 10);
+          p.point(p.random(p.width), p.random(p.height));
+        }
+
+        // Scanlines
+        for (let y = 0; y < p.height; y += 4) {
+          p.stroke(0, 0, 0, 4);
+          p.line(0, y, p.width, y);
+        }
+      };
+
+      (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
+    },
+  },
 ];

@@ -339,7 +339,6 @@ export const geometryStyles: ArtStyle[] = [
       p.setup = () => {
         p.createCanvas(p.windowWidth, p.windowHeight);
         p.colorMode(p.HSB, 360, 100, 100, 100);
-        p.noLoop();
       };
 
       const drawDeconstructedEye = (
@@ -352,26 +351,51 @@ export const geometryStyles: ArtStyle[] = [
         p.translate(x, y);
         p.rotate(p.random(-0.2, 0.2));
 
+        // Blink logic: happens roughly every 2-4 seconds
+        const blinkCycle = (p.frameCount + getSeedNum(seed)) % 150;
+        const isBlinking = blinkCycle < 10;
+        const blinkFactor = isBlinking
+          ? p.map(p.sin(p.map(blinkCycle, 0, 10, 0, p.PI)), 0, 1, 1, 0)
+          : 1;
+
         // Sclera/Socket
         p.fill(0, 0, 95);
         p.stroke(0);
         p.strokeWeight(3);
         if (isProfile) {
-          p.triangle(0, -w / 3, 0, w / 3, w, 0);
+          p.triangle(0, (-w / 3) * blinkFactor, 0, (w / 3) * blinkFactor, w, 0);
         } else {
           p.beginShape();
           p.vertex(-w, 0);
-          p.bezierVertex(-w / 2, -w / 2, w / 2, -w / 2, w, 0);
-          p.bezierVertex(w / 2, w / 2, -w / 2, w / 2, -w, 0);
+          p.bezierVertex(
+            -w / 2,
+            (-w / 2) * blinkFactor,
+            w / 2,
+            (-w / 2) * blinkFactor,
+            w,
+            0,
+          );
+          p.bezierVertex(
+            w / 2,
+            (w / 2) * blinkFactor,
+            -w / 2,
+            (w / 2) * blinkFactor,
+            -w,
+            0,
+          );
           p.endShape(p.CLOSE);
         }
 
-        // Pupil
-        p.fill(0);
-        const px = isProfile ? w * 0.3 : 0;
-        p.circle(px, 0, w * 0.4);
-        p.fill(0, 0, 100);
-        p.circle(px - w * 0.05, -w * 0.05, w * 0.1);
+        // Pupil (hides when fully closed)
+        if (blinkFactor > 0.1) {
+          p.fill(0);
+          const px = isProfile ? w * 0.3 : 0;
+          p.circle(px, 0, w * 0.4 * blinkFactor);
+          // Glint
+          p.fill(0, 0, 100);
+          p.circle(px - w * 0.05, -w * 0.05, w * 0.1 * blinkFactor);
+        }
+
         p.pop();
       };
 
@@ -729,6 +753,101 @@ export const geometryStyles: ArtStyle[] = [
         }
       };
       (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
+    },
+  },
+  {
+    id: "low_poly",
+    name: "Low Poly (低多边形)",
+    era: "Early 3D Graphics / Digital Modernism",
+    driver: "p5",
+    description:
+      "通过稀疏的三角形面片概括世界，在降低分辨率的同时，反而凸显出物体的本质结构与棱角。",
+    prompt: "当细节被剥离，只剩下冰冷的几何逻辑，你是否反而看清了真相？",
+    styleTags: ["Geometric", "Digital", "Structure", "Minimalist"],
+    sketch: (p: p5, seed: string) => {
+      // Low Poly: Jittered Grid Triangulation
+      const getSeedNum = (s: string) => {
+        let h = 0;
+        for (let i = 0; i < s.length; i++)
+          h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+        return Math.abs(h);
+      };
+
+      p.setup = () => {
+        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.colorMode(p.HSB, 360, 100, 100, 100);
+        p.noLoop();
+      };
+
+      p.draw = () => {
+        p.randomSeed(getSeedNum(seed));
+        p.background(220, 10, 95);
+
+        const res = 40; // Resolution of the grid
+        const cols = p.floor(p.width / res) + 2;
+        const rows = p.floor(p.height / res) + 2;
+        const points: { x: number; y: number }[][] = [];
+
+        // 1. Generate jittered grid points
+        for (let j = 0; j < rows; j++) {
+          points[j] = [];
+          for (let i = 0; i < cols; i++) {
+            const x = i * res + p.random(-res * 0.4, res * 0.4);
+            const y = j * res + p.random(-res * 0.4, res * 0.4);
+            points[j][i] = { x, y };
+          }
+        }
+
+        // 2. Draw triangles based on the grid
+        p.noStroke();
+        for (let j = 0; j < rows - 1; j++) {
+          for (let i = 0; i < cols - 1; i++) {
+            const p1 = points[j][i];
+            const p2 = points[j][i + 1];
+            const p3 = points[j + 1][i];
+            const p4 = points[j + 1][i + 1];
+
+            // Use noise to determine "lighting" and color
+            const nx = (p1.x + p4.x) / 2;
+            const ny = (p1.y + p4.y) / 2;
+            const n = p.noise(nx * 0.005, ny * 0.005);
+
+            // Base hue with some variation
+            const h = (200 + n * 40) % 360;
+            const s = 30 + n * 20;
+            const b = 60 + n * 30;
+
+            // Two triangles per grid cell
+            // Triangle 1
+            p.fill(h, s, b);
+            p.beginShape();
+            p.vertex(p1.x, p1.y);
+            p.vertex(p2.x, p2.y);
+            p.vertex(p3.x, p3.y);
+            p.endShape(p.CLOSE);
+
+            // Triangle 2 (slightly different shade to create "facets")
+            p.fill(h, s, b - 10);
+            p.beginShape();
+            p.vertex(p2.x, p2.y);
+            p.vertex(p4.x, p4.y);
+            p.vertex(p3.x, p3.y);
+            p.endShape(p.CLOSE);
+
+            // Occasional "wireframe" line for texture
+            if (p.random() > 0.95) {
+              p.stroke(0, 0, 100, 20);
+              p.line(p1.x, p1.y, p4.x, p4.y);
+              p.noStroke();
+            }
+          }
+        }
+      };
+
+      (p as any).customResize = (w: number, h: number) => {
+        p.resizeCanvas(w, h);
+        p.redraw();
+      };
     },
   },
 ];

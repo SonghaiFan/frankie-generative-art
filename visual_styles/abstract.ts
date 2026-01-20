@@ -503,4 +503,83 @@ export const abstractStyles: ArtStyle[] = [
       };
     },
   },
+  {
+    id: "color_field",
+    name: "Color Field (色域绘画)",
+    era: "Mid-20th Century / Rothko Style",
+    driver: "p5",
+    description:
+      "通过巨大的、边缘模糊的色块叠加，创造出一个纯粹的色彩精神空间，旨在引发冥想与‘崇高’的生理共鸣。",
+    prompt: "在巨大的、沉默的色彩面前，你是否听到了某种回响？",
+    styleTags: ["Minimalist", "Emotional", "Atmospheric", "Sublime"],
+    sketch: (p: p5, seed: string) => {
+      // Color Field: Layered rectangles with blurred edges (Rothko-esque)
+      const getSeedNum = (s: string) => {
+        let h = 0;
+        for (let i = 0; i < s.length; i++)
+          h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+        return Math.abs(h);
+      };
+
+      p.setup = () => {
+        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.colorMode(p.HSB, 360, 100, 100, 100);
+        p.noLoop();
+      };
+
+      const drawBlurredRect = (
+        x: number,
+        y: number,
+        w: number,
+        h: number,
+        col: any,
+      ) => {
+        p.push();
+        p.noStroke();
+        // Layer hundreds of low-alpha rects to create a "vibrant" soft edge
+        for (let r = 0; r < 100; r++) {
+          const margin = p.map(r, 0, 100, 40, 0);
+          const alpha = p.map(r, 0, 100, 0.1, 2);
+          p.fill(p.hue(col), p.saturation(col), p.brightness(col), alpha);
+          p.rect(x + margin, y + margin, w - margin * 2, h - margin * 2);
+        }
+        p.pop();
+      };
+
+      p.draw = () => {
+        p.randomSeed(getSeedNum(seed));
+        const baseHue = p.random(360);
+        p.background(baseHue, 40, 20); // Deep brooding base
+
+        const w = p.width * 0.7;
+        const h1 = p.height * 0.35;
+        const h2 = p.height * 0.4;
+        const x = (p.width - w) / 2;
+
+        // Draw two or three floating "fields"
+        // Field 1 (Top)
+        drawBlurredRect(x, p.height * 0.1, w, h1, p.color(baseHue, 80, 60));
+
+        // Field 2 (Center/Bottom)
+        drawBlurredRect(
+          x,
+          p.height * 0.5,
+          w,
+          h2,
+          p.color((baseHue + 20) % 360, 90, 40),
+        );
+
+        // Subtle texture overlap
+        for (let i = 0; i < 500; i++) {
+          p.stroke(0, 0, 100, 1);
+          p.point(p.random(p.width), p.random(p.height));
+        }
+      };
+
+      (p as any).customResize = (w: number, h: number) => {
+        p.resizeCanvas(w, h);
+        p.redraw();
+      };
+    },
+  },
 ];

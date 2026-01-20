@@ -667,4 +667,202 @@ export const popStyles: ArtStyle[] = [
       };
     },
   },
+  {
+    id: "new_ugly",
+    name: "New Ugly (新丑风)",
+    era: "Post-Internet Era",
+    driver: "p5",
+    description:
+      "拒绝传统的精致与比例，通过故意而为的笨拙、刺眼的撞色和扭曲的布局，解构刻板的视觉秩序。",
+    prompt: "当‘丑’变得如此理直气壮，它是否比‘美’更真实？",
+    styleTags: ["Anti-Design", "Distorted", "Clashing", "Raw"],
+    sketch: (p: p5, seed: string) => {
+      // New Ugly: Anti-Design and Harsh Contrast
+      const getSeedNum = (s: string) => {
+        let h = 0;
+        for (let i = 0; i < s.length; i++)
+          h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+        return Math.abs(h);
+      };
+
+      p.setup = () => {
+        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.colorMode(p.HSB, 360, 100, 100, 100);
+      };
+
+      p.draw = () => {
+        p.randomSeed(getSeedNum(seed));
+        const time = p.frameCount * 0.05;
+
+        // 1. Clashing Background
+        const bgHue = p.random() > 0.5 ? 120 : 300; // Harsh Lime or Harsh Pink
+        p.background(bgHue, 100, 100);
+
+        // 2. Distorted Shapes (Anti-Design Layout)
+        for (let i = 0; i < 6; i++) {
+          const x = p.random(p.width);
+          const y = p.random(p.height);
+          const w = p.random(100, 400);
+          const h = p.random(50, 150);
+
+          p.push();
+          p.translate(x, y);
+          // Deliberately awkward rotation
+          p.rotate(p.random(-0.5, 0.5) + p.sin(time + i) * 0.1);
+
+          // Harsh clashing colors
+          p.fill(p.random(360), 100, 100, 80);
+          p.stroke(0, 0, 0);
+          p.strokeWeight(p.random(5, 15));
+
+          const shapeType = p.floor(p.random(3));
+          if (shapeType === 0) {
+            p.rect(0, 0, w, h);
+          } else if (shapeType === 1) {
+            p.ellipse(0, 0, w, h); // Squashed ellipse
+          } else {
+            // Primitive polygon
+            p.beginShape();
+            for (let j = 0; j < 4; j++) {
+              p.vertex(p.random(w), p.random(h));
+            }
+            p.endShape(p.CLOSE);
+          }
+          p.pop();
+        }
+
+        // 3. "Digital Garbage" - Brutalist blobs
+        for (let i = 0; i < 3; i++) {
+          const x = p.noise(time, i) * p.width;
+          const y = p.noise(i, time) * p.height;
+          p.fill(200, 100, 100); // Harsh blue
+          p.noStroke();
+          p.circle(x, y, 150);
+
+          p.fill(0, 0, 100);
+          p.textSize(40);
+          p.text("ERROR", x - 60, y + 10);
+        }
+
+        // 4. Broken Lines
+        p.stroke(0, 100, 100);
+        p.strokeWeight(10);
+        for (let i = 0; i < 5; i++) {
+          p.line(0, p.random(p.height), p.width, p.random(p.height));
+        }
+      };
+
+      (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
+    },
+  },
+  {
+    id: "memphis",
+    name: "Memphis Design (孟菲斯设计)",
+    era: "1980s Postmodernism",
+    driver: "p5",
+    description:
+      "通过鲜艳的撞色、琐碎的几何与波浪线条，在1980年代发起了一场对精英品味的彩色叛乱。",
+    prompt: "当有序的混乱与极具廉价感的活泼相结合，是否能更彻底地解构严肃？",
+    styleTags: ["Postmodern", "Vibrant", "Pattern", "Playful"],
+    sketch: (p: p5, seed: string) => {
+      // Memphis Design: 1980s Chaos and Geometry
+      const getSeedNum = (s: string) => {
+        let h = 0;
+        for (let i = 0; i < s.length; i++)
+          h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+        return Math.abs(h);
+      };
+
+      p.setup = () => {
+        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.colorMode(p.HSB, 360, 100, 100, 100);
+        p.noLoop();
+      };
+
+      const drawWavyLine = (
+        x: number,
+        y: number,
+        len: number,
+        amp: number,
+        freq: number,
+      ) => {
+        p.noFill();
+        p.beginShape();
+        for (let i = 0; i < len; i++) {
+          p.vertex(x + i, y + p.sin(i * freq) * amp);
+        }
+        p.endShape();
+      };
+
+      p.draw = () => {
+        p.randomSeed(getSeedNum(seed));
+        p.background(0, 0, 100); // Clean white base
+
+        // 1. Background Pattern (Technical dots or grid)
+        p.stroke(0, 0, 80);
+        p.strokeWeight(2);
+        for (let x = 0; x < p.width; x += 40) {
+          for (let y = 0; y < p.height; y += 40) {
+            p.point(x, y);
+          }
+        }
+
+        // 2. Large Bold Geometry
+        const shapes = 10;
+        const colors = [
+          [330, 80, 100], // Memphis Pink
+          [180, 100, 100], // Cyan
+          [60, 100, 100], // Yellow
+          [280, 70, 90], // Purple
+        ];
+
+        for (let i = 0; i < shapes; i++) {
+          const col = p.random(colors);
+          p.fill(col[0], col[1], col[2]);
+          p.stroke(0);
+          p.strokeWeight(4);
+
+          const x = p.random(p.width);
+          const y = p.random(p.height);
+          const sz = p.random(100, 300);
+
+          p.push();
+          p.translate(x, y);
+          p.rotate(p.random(p.TWO_PI));
+
+          const type = p.floor(p.random(3));
+          if (type === 0)
+            p.triangle(0, -sz / 2, -sz / 2, sz / 2, sz / 2, sz / 2);
+          else if (type === 1) p.circle(0, 0, sz);
+          else p.rect(-sz / 2, -sz / 2, sz, sz);
+          p.pop();
+        }
+
+        // 3. Wavy "Bacteria" Patterns
+        p.stroke(0);
+        p.strokeWeight(6);
+        for (let i = 0; i < 8; i++) {
+          const x = p.random(p.width * 0.2, p.width * 0.8);
+          const y = p.random(p.height * 0.2, p.height * 0.8);
+          p.push();
+          p.translate(x, y);
+          p.rotate(p.random(p.TWO_PI));
+          drawWavyLine(0, 0, 150, 20, 0.1);
+          p.pop();
+        }
+
+        // 4. Confetti (Squiggles and small bits)
+        p.noStroke();
+        for (let i = 0; i < 30; i++) {
+          p.fill(p.random(colors)[0], 80, 100);
+          p.rect(p.random(p.width), p.random(p.height), 15, 5);
+        }
+      };
+
+      (p as any).customResize = (w: number, h: number) => {
+        p.resizeCanvas(w, h);
+        p.redraw();
+      };
+    },
+  },
 ];

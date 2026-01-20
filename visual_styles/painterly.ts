@@ -483,4 +483,70 @@ export const painterlyStyles: ArtStyle[] = [
       };
     },
   },
+  {
+    id: "mosaic",
+    name: "Mosaic (马赛克/拜占庭)",
+    era: "Byzantine / Antiquity",
+    driver: "p5",
+    description:
+      "由无数个细小的彩色瓷块拼凑而成的视觉意蕴，通过个体碎片的并置，构建出一种神圣而永恒的整体感。",
+    prompt:
+      "当每一个破碎的个体都理直气壮地存在，它们将如何汇聚成一种神圣的沉默？",
+    styleTags: ["Byzantine", "Geometric", "Fragmented", "Ritual"],
+    sketch: (p: p5, seed: string) => {
+      // Mosaic: Tiled fragments with interstitial spaces
+      const getSeedNum = (s: string) => {
+        let h = 0;
+        for (let i = 0; i < s.length; i++)
+          h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+        return Math.abs(h);
+      };
+
+      p.setup = () => {
+        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.colorMode(p.HSB, 360, 100, 100, 100);
+        p.noLoop();
+      };
+
+      p.draw = () => {
+        p.randomSeed(getSeedNum(seed));
+        p.background(0, 0, 10); // Dark cement/mortar base
+
+        const tileSize = 20;
+        const gap = 3;
+
+        for (let x = gap; x < p.width; x += tileSize + gap) {
+          for (let y = gap; y < p.height; y += tileSize + gap) {
+            // Variation in color based on position and noise
+            const n = p.noise(x * 0.01, y * 0.01);
+            const h = (45 + n * 40) % 360; // Terracotta to Gold range
+            const s = p.random(40, 80);
+            const b = p.random(60, 90);
+
+            p.push();
+            p.translate(x + tileSize / 2, y + tileSize / 2);
+            // Slight rotation for "hand-placed" feel
+            p.rotate(p.random(-0.1, 0.1));
+
+            p.noStroke();
+            p.fill(h, s, b);
+            p.rectMode(p.CENTER);
+            p.rect(0, 0, tileSize, tileSize, 2);
+
+            // Shimmer/Glint on some tiles (Gold leaf feel)
+            if (p.random() > 0.9) {
+              p.fill(50, 40, 100, 50);
+              p.rect(0, 0, tileSize * 0.9, tileSize * 0.9);
+            }
+            p.pop();
+          }
+        }
+      };
+
+      (p as any).customResize = (w: number, h: number) => {
+        p.resizeCanvas(w, h);
+        p.redraw();
+      };
+    },
+  },
 ];
