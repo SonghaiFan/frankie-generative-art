@@ -1,65 +1,72 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta name="description" content="Explore generative digital art through P5.js. Transform your aesthetic preferences into unique visual expressions." />
-    <meta name="keywords" content="P5.js, generative art, digital art, art archive, creative coding, visual art" />
-    <meta name="author" content="P5 Art Archive" />
-    <meta property="og:title" content="P5 Generative Digital Art Archive" />
-    <meta property="og:description" content="Explore generative digital art through P5.js. Transform your aesthetic preferences into unique visual expressions." />
-    <meta property="og:type" content="website" />
-    <title>P5 生成艺术档案 | P5 Generative Digital Art Archive</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600&family=Noto+Serif+SC:wght@200;400;700&family=Cinzel:wght@400;700&display=swap');
-      
-      :root {
-        /* Void theme variables can be added here if needed, but we mostly use Tailwind classes now */
-      }
 
-      body {
-        font-family: 'Noto Serif SC', serif;
-        background-color: #000000;
-        color: #e5e5e5;
-        overflow: hidden; /* Prevent scroll for the immersive feel */
-      }
-      
-      .font-ui {
-        font-family: 'Inter', sans-serif;
-      }
-      
-      .font-display {
-        font-family: 'Cinzel', serif;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description"
+    content="Explore generative digital art through P5.js. Transform your aesthetic preferences into unique visual expressions." />
+  <meta name="keywords" content="P5.js, generative art, digital art, art archive, creative coding, visual art" />
+  <meta name="author" content="P5 Art Archive" />
+  <meta property="og:title" content="P5 Generative Digital Art Archive" />
+  <meta property="og:description"
+    content="Explore generative digital art through P5.js. Transform your aesthetic preferences into unique visual expressions." />
+  <meta property="og:type" content="website" />
+  <title>P5 生成艺术档案 | P5 Generative Digital Art Archive</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600&family=Noto+Serif+SC:wght@200;400;700&family=Cinzel:wght@400;700&display=swap');
 
-      /* Custom scrollbar - Pure White for high visibility against darkness */
-      ::-webkit-scrollbar {
-        width: 10px;
-        background: #000;
-      }
-      ::-webkit-scrollbar-track {
-        background: #000000;
-        border-left: 1px solid #333;
-      }
-      ::-webkit-scrollbar-thumb {
-        background-color: #ffffff;
-        border-radius: 0px;
-        border: 2px solid #000000; /* Padding effect */
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background-color: #dddddd;
-      }
-      
-      .preserve-3d {
-        transform-style: preserve-3d;
-      }
-      
-      .perspective-container {
-        perspective: 1200px;
-      }
-    </style>
+    :root {
+      /* Void theme variables can be added here if needed, but we mostly use Tailwind classes now */
+    }
+
+    body {
+      font-family: 'Noto Serif SC', serif;
+      background-color: #000000;
+      color: #e5e5e5;
+      overflow: hidden;
+      /* Prevent scroll for the immersive feel */
+    }
+
+    .font-ui {
+      font-family: 'Inter', sans-serif;
+    }
+
+    .font-display {
+      font-family: 'Cinzel', serif;
+    }
+
+    /* Custom scrollbar - Pure White for high visibility against darkness */
+    ::-webkit-scrollbar {
+      width: 10px;
+      background: #000;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #000000;
+      border-left: 1px solid #333;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: #ffffff;
+      border-radius: 0px;
+      border: 2px solid #000000;
+      /* Padding effect */
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: #dddddd;
+    }
+
+    .preserve-3d {
+      transform-style: preserve-3d;
+    }
+
+    .perspective-container {
+      perspective: 1200px;
+    }
+  </style>
   <script type="importmap">
 {
   "imports": {
@@ -73,10 +80,12 @@
   }
 }
 </script>
-<link rel="stylesheet" href="/index.css">
+  <link rel="stylesheet" href="/index.css">
 </head>
-  <body>
-    <div id="root"></div>
+
+<body>
+  <div id="root"></div>
   <script type="module" src="/index.tsx"></script>
 </body>
+
 </html>

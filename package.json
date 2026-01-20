@@ -4,7 +4,14 @@
   "version": "1.0.0",
   "type": "module",
   "description": "P5.js generative digital art archive - explore and create unique visual expressions",
-  "keywords": ["p5js", "generative-art", "digital-art", "creative-coding", "react", "typescript"],
+  "keywords": [
+    "p5js",
+    "generative-art",
+    "digital-art",
+    "creative-coding",
+    "react",
+    "typescript"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vite build",
