@@ -12,8 +12,10 @@ export const painterlyStyles: ArtStyle[] = [
     styleTags: ["Chaos", "Fluid", "Scribble"],
     sketch: (p: p5, seed: string) => {
       // Automatism: Subconscious Scribble (Improved Version)
-      let x = 0, y = 0;
-      let tx = 0, ty = 1000;
+      let x = 0,
+        y = 0;
+      let tx = 0,
+        ty = 1000;
 
       const getSeedNum = (s: string) => {
         let h = 0;
@@ -41,8 +43,13 @@ export const painterlyStyles: ArtStyle[] = [
         for (let i = 0; i < 50; i++) {
           const nX = (p.noise(tx) - 0.5) * 4;
           const nY = (p.noise(ty) - 0.5) * 4;
-          
-          if (x + nX > 0 && x + nX < p.width && y + nY > 0 && y + nY < p.height) {
+
+          if (
+            x + nX > 0 &&
+            x + nX < p.width &&
+            y + nY > 0 &&
+            y + nY < p.height
+          ) {
             p.line(x, y, x + nX, y + nY);
             x += nX;
             y += nY;
@@ -72,7 +79,8 @@ export const painterlyStyles: ArtStyle[] = [
     era: "Impressionism",
     name: "Impressionism (印象派)",
     driver: "p5",
-    description: "通过破碎的碎点笔触和互补色的微妙并置，捕捉光线随时间流逝而产生的颤动感。",
+    description:
+      "通过破碎的碎点笔触和互补色的微妙并置，捕捉光线随时间流逝而产生的颤动感。",
     prompt: "你是在看风景，还是在看光本身？",
     styleTags: ["Light", "Vibrant", "Broken Strokes", "Atmosphere"],
     sketch: (p: p5, seed: string) => {
@@ -94,37 +102,37 @@ export const painterlyStyles: ArtStyle[] = [
       p.draw = () => {
         p.randomSeed(getSeedNum(seed));
         const time = p.frameCount * 0.005;
-        
+
         // Dynamic layered building
         for (let i = 0; i < 200; i++) {
           const x = p.random(p.width);
           const y = p.random(p.height);
-          
+
           // Use noise to determine "Light zones" vs "Shadow zones"
           const lightNoise = p.noise(x * 0.003, y * 0.003, time);
           const colorNoise = p.noise(x * 0.005, y * 0.005, time * 0.5);
-          
+
           let h, s, b, alpha;
 
           if (lightNoise > 0.6) {
-             // Sunlit area (Gold/Warm White/Lilac)
-             h = p.map(colorNoise, 0, 1, 35, 65); // Warm yellows to golds
-             if (colorNoise > 0.8) h = 280; // Occasional lilac glints in sun
-             s = p.random(30, 60);
-             b = p.random(85, 100);
-             alpha = p.random(2, 8); // Very thin layers
+            // Sunlit area (Gold/Warm White/Lilac)
+            h = p.map(colorNoise, 0, 1, 35, 65); // Warm yellows to golds
+            if (colorNoise > 0.8) h = 280; // Occasional lilac glints in sun
+            s = p.random(30, 60);
+            b = p.random(85, 100);
+            alpha = p.random(2, 8); // Very thin layers
           } else if (lightNoise < 0.4) {
-             // Shadow area (Deep Blue/Turquoise/Violet)
-             h = p.map(colorNoise, 0, 1, 200, 260); 
-             s = p.random(40, 70);
-             b = p.random(30, 60);
-             alpha = p.random(5, 15);
+            // Shadow area (Deep Blue/Turquoise/Violet)
+            h = p.map(colorNoise, 0, 1, 200, 260);
+            s = p.random(40, 70);
+            b = p.random(30, 60);
+            alpha = p.random(5, 15);
           } else {
-             // Mid-tones (Greenery/Earth/Transition)
-             h = p.map(colorNoise, 0, 1, 80, 160); // Greens and cyans
-             s = p.random(20, 50);
-             b = p.random(60, 85);
-             alpha = p.random(3, 10);
+            // Mid-tones (Greenery/Earth/Transition)
+            h = p.map(colorNoise, 0, 1, 80, 160); // Greens and cyans
+            s = p.random(20, 50);
+            b = p.random(60, 85);
+            alpha = p.random(3, 10);
           }
 
           // Optical mixing: Place complementaries occasionally
@@ -142,12 +150,12 @@ export const painterlyStyles: ArtStyle[] = [
           // Brush angle follows the atmospheric flow (noise)
           const angle = p.noise(x * 0.01, y * 0.01) * p.TWO_PI;
           p.rotate(angle);
-          
+
           // Vary brush shape: sometimes thin dash, sometimes small dot
           const brushW = p.random(12, 35);
           const brushH = p.random(3, 6);
           p.ellipse(0, 0, brushW, brushH);
-          
+
           // Subtle highlight on top of brushstroke
           p.fill(h, s * 0.5, p.min(b + 20, 100), alpha * 1.5);
           p.ellipse(brushW * 0.2, -brushH * 0.2, brushW * 0.3, brushH * 0.3);
@@ -156,8 +164,8 @@ export const painterlyStyles: ArtStyle[] = [
 
         // Texture overlay (simulate canvas grain)
         if (p.frameCount % 120 === 0) {
-           p.fill(0, 0, 100, 1);
-           p.rect(0,0, p.width, p.height);
+          p.fill(0, 0, 100, 1);
+          p.rect(0, 0, p.width, p.height);
         }
       };
 

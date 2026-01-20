@@ -83,11 +83,11 @@ export const popStyles: ArtStyle[] = [
           [320, 90, 90], // Hot Pink
           [190, 90, 90], // Cyan
           [50, 90, 100], // Yellow
-          [100, 80, 80]  // Green
+          [100, 80, 80], // Green
         ];
 
         // Draw four panels
-        [0, 1, 2, 3].forEach(i => {
+        [0, 1, 2, 3].forEach((i) => {
           const cx = (i % 2) * w;
           const cy = Math.floor(i / 2) * h;
           const bg = colors[i];
@@ -125,7 +125,8 @@ export const popStyles: ArtStyle[] = [
     name: "Appropriation (挪用艺术)",
     era: "1970s-Present",
     driver: "p5",
-    description: "利用剪贴报纸、手稿和历史图像，在重叠的语境中剥离原创的权威性。",
+    description:
+      "利用剪贴报纸、手稿和历史图像，在重叠的语境中剥离原创的权威性。",
     prompt: "当文字被剪碎，意义是否也在拼贴中获得了新生？",
     styleTags: ["Collage", "Typography", "Historical"],
     sketch: (p: p5, seed: string) => {
@@ -137,21 +138,36 @@ export const popStyles: ArtStyle[] = [
         return Math.abs(h);
       };
 
-      const tornPaper = (x: number, y: number, w: number, h: number, col: any) => {
+      const tornPaper = (
+        x: number,
+        y: number,
+        w: number,
+        h: number,
+        col: any,
+      ) => {
         p.push();
         p.fill(col);
         p.noStroke();
         p.beginShape();
         const steps = 15;
-        for (let i = 0; i <= steps; i++) p.vertex(x + (w / steps) * i, y + p.random(-3, 3));
-        for (let i = 0; i <= steps; i++) p.vertex(x + w + p.random(-3, 3), y + (h / steps) * i);
-        for (let i = steps; i >= 0; i--) p.vertex(x + (w / steps) * i, y + h + p.random(-3, 3));
-        for (let i = steps; i >= 0; i--) p.vertex(x + p.random(-3, 3), y + (h / steps) * i);
+        for (let i = 0; i <= steps; i++)
+          p.vertex(x + (w / steps) * i, y + p.random(-3, 3));
+        for (let i = 0; i <= steps; i++)
+          p.vertex(x + w + p.random(-3, 3), y + (h / steps) * i);
+        for (let i = steps; i >= 0; i--)
+          p.vertex(x + (w / steps) * i, y + h + p.random(-3, 3));
+        for (let i = steps; i >= 0; i--)
+          p.vertex(x + p.random(-3, 3), y + (h / steps) * i);
         p.endShape(p.CLOSE);
         p.pop();
       };
 
-      const drawTextLines = (x: number, y: number, w: number, lines: number) => {
+      const drawTextLines = (
+        x: number,
+        y: number,
+        w: number,
+        lines: number,
+      ) => {
         p.stroke(0, 0, 10, 50);
         p.strokeWeight(1.2);
         for (let i = 0; i < lines; i++) {
@@ -190,14 +206,32 @@ export const popStyles: ArtStyle[] = [
           const type = p.floor(p.random(4));
           if (type === 0) {
             // Newspaper clipping
-            tornPaper(0, 0, p.random(120, 200), p.random(150, 300), p.color(45, 10, 85));
+            tornPaper(
+              0,
+              0,
+              p.random(120, 200),
+              p.random(150, 300),
+              p.color(45, 10, 85),
+            );
             drawTextLines(15, 20, 100, 22);
           } else if (type === 1) {
             // Wood/Charcoal block
-            tornPaper(0, 0, p.random(60, 100), p.random(200, 450), p.color(30, 30, 30));
+            tornPaper(
+              0,
+              0,
+              p.random(60, 100),
+              p.random(200, 450),
+              p.color(30, 30, 30),
+            );
           } else if (type === 2) {
             // Sheet music / Grid
-            tornPaper(0, 0, p.random(150, 250), p.random(100, 180), p.color(0, 0, 95));
+            tornPaper(
+              0,
+              0,
+              p.random(150, 250),
+              p.random(100, 180),
+              p.color(0, 0, 95),
+            );
             for (let j = 0; j < 6; j++) {
               p.stroke(0, 0, 0, 30);
               p.line(10, 15 + j * 12, 130, 15 + j * 12);
@@ -205,7 +239,13 @@ export const popStyles: ArtStyle[] = [
           } else {
             // Muted Color accent
             const hue = p.random() > 0.5 ? 100 : 20;
-            tornPaper(0, 0, p.random(80, 120), p.random(100, 250), p.color(hue, 40, 45));
+            tornPaper(
+              0,
+              0,
+              p.random(80, 120),
+              p.random(100, 250),
+              p.color(hue, 40, 45),
+            );
           }
           p.pop();
         }

@@ -7,7 +7,8 @@ export const abstractStyles: ArtStyle[] = [
     name: "Rhizome (块茎)",
     era: "Post-Structuralism",
     driver: "p5",
-    description: "无限生长的去中心化网络，没有起点，也没有终点，只有中介和连接。",
+    description:
+      "无限生长的去中心化网络，没有起点，也没有终点，只有中介和连接。",
     prompt: "如果生命不是一棵树，而是一片草坪，你会如何延伸？",
     styleTags: ["Decentralized", "Organic", "Flow"],
     sketch: (p: p5, seed: string) => {
@@ -26,14 +27,14 @@ export const abstractStyles: ArtStyle[] = [
         p.colorMode(p.HSB, 360, 100, 100, 100);
         p.background(20, 10, 5); // Earthy dark background
         p.randomSeed(getSeedNum(seed));
-        
+
         // Initial sprouts
-        for(let i=0; i<3; i++) {
+        for (let i = 0; i < 3; i++) {
           roots.push({
             x: p.random(p.width),
             y: p.random(p.height),
             angle: p.random(p.TWO_PI),
-            weight: 5
+            weight: 5,
           });
         }
       };
@@ -42,35 +43,35 @@ export const abstractStyles: ArtStyle[] = [
         // Subtle fade for growth trail
         p.noStroke();
         p.fill(20, 10, 5, 1);
-        p.rect(0,0, p.width, p.height);
+        p.rect(0, 0, p.width, p.height);
 
         const nextRoots: typeof roots = [];
-        
-        roots.forEach(r => {
+
+        roots.forEach((r) => {
           p.stroke(25, 40, 80, 40);
           p.strokeWeight(r.weight);
-          
+
           let nx = r.x + p.cos(r.angle) * 3;
           let ny = r.y + p.sin(r.angle) * 3;
-          
+
           p.line(r.x, r.y, nx, ny);
-          
+
           // Wander
           let nAngle = r.angle + p.random(-0.2, 0.2);
-          
+
           // Chance to split
           if (p.random() < 0.02 && roots.length < 150) {
             nextRoots.push({
               x: nx,
               y: ny,
-              angle: nAngle + p.PI/4,
-              weight: r.weight * 0.8
+              angle: nAngle + p.PI / 4,
+              weight: r.weight * 0.8,
             });
             nextRoots.push({
               x: nx,
               y: ny,
-              angle: nAngle - p.PI/4,
-              weight: r.weight * 0.8
+              angle: nAngle - p.PI / 4,
+              weight: r.weight * 0.8,
             });
           } else {
             // Chance to die or continue
@@ -79,22 +80,22 @@ export const abstractStyles: ArtStyle[] = [
                 x: nx,
                 y: ny,
                 angle: nAngle,
-                weight: r.weight
+                weight: r.weight,
               });
             }
           }
 
           // Boundary check
           if (nx < 0 || nx > p.width || ny < 0 || ny > p.height) {
-             // Re-sprout elsewhere
-             if (p.random() < 0.1) {
-                nextRoots.push({
-                  x: p.random(p.width),
-                  y: p.random(p.height),
-                  angle: p.random(p.TWO_PI),
-                  weight: 2
-                });
-             }
+            // Re-sprout elsewhere
+            if (p.random() < 0.1) {
+              nextRoots.push({
+                x: p.random(p.width),
+                y: p.random(p.height),
+                angle: p.random(p.TWO_PI),
+                weight: 2,
+              });
+            }
           }
         });
 
@@ -102,11 +103,11 @@ export const abstractStyles: ArtStyle[] = [
 
         // Periodic random connections (Rhizome characteristic)
         if (p.frameCount % 30 === 0 && roots.length > 2) {
-           const a = p.random(roots);
-           const b = p.random(roots);
-           p.stroke(40, 60, 90, 20);
-           p.strokeWeight(1);
-           p.line(a.x, a.y, b.x, b.y);
+          const a = p.random(roots);
+          const b = p.random(roots);
+          p.stroke(40, 60, 90, 20);
+          p.strokeWeight(1);
+          p.line(a.x, a.y, b.x, b.y);
         }
       };
 
