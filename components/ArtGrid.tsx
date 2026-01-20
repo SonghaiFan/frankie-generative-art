@@ -46,11 +46,6 @@ const CabinetGrid: React.FC<CabinetGridProps> = ({ cards, onSelectionComplete })
           <div className="absolute inset-0 pointer-events-none opacity-[0.02]"
             style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
 
-          {/* Technical Corner Markers */}
-          <div className="absolute top-0 left-0 border-r border-b border-white/10 px-3 py-1.5 font-ui text-[8px] tracking-[0.2em] uppercase text-white/20">A-101 // {t('hero.coreLabel')}</div>
-          <div className="absolute top-0 right-0 border-l border-b border-white/10 px-3 py-1.5 font-ui text-[8px] tracking-[0.2em] uppercase text-white/20">{t('hero.phase')}</div>
-          <div className="absolute bottom-0 left-0 border-r border-t border-white/10 px-3 py-1.5 font-ui text-[8px] tracking-[0.2em] uppercase text-white/20">LAT: 40.7128 N</div>
-          <div className="absolute bottom-0 right-0 border-l border-t border-white/10 px-3 py-1.5 font-ui text-[8px] tracking-[0.2em] uppercase text-white/20">LNG: 74.0060 W</div>
 
           {/* Main Title Block */}
           <div className="relative z-10">
