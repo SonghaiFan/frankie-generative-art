@@ -80,22 +80,26 @@ export const minimalismStyles: ArtStyle[] = [
         p.fill(0, 0, 10);
         p.rect(margin + cellW * 7, margin + cellH * 6, cellW * 3, cellH * 3);
 
-        // 文字
+        // Abstract Information Blocks (Simulating Typography)
         p.fill(0, 0, 10);
-        p.textAlign(p.LEFT, p.TOP);
-        p.textSize(cellH * 1.4);
-        p.text("ZURICH", margin + cellW * 0.2, margin + cellH * 0.1);
+        // "Title" block
+        p.rect(margin + cellW * 0.2, margin + cellH * 0.5, cellW * 4, cellH * 0.4);
+        // "Date" block
+        p.rect(margin + cellW * 0.2, margin + cellH * 1.5, cellW * 1.5, cellH * 0.2);
 
-        p.textSize(cellH * 0.9);
-        p.text("1959", margin + cellW * 0.2, margin + cellH * 1.4);
-
+        // "Subheader" white block inside black rect
         p.fill(0, 0, 100);
-        p.textAlign(p.LEFT, p.TOP);
-        p.textSize(cellH * 0.8);
-        p.text(
-          "INTERNATIONALE GRAFIK",
+        p.rect(
           margin + cellW * 7.2,
           margin + cellH * 6.2,
+          cellW * 2,
+          cellH * 0.15,
+        );
+        p.rect(
+          margin + cellW * 7.2,
+          margin + cellH * 6.6,
+          cellW * 1.5,
+          cellH * 0.15,
         );
       };
       (p as any).customResize = (w: number, h: number) => {
@@ -205,10 +209,37 @@ export const minimalismStyles: ArtStyle[] = [
           );
         }
 
-        // 3. The Aperture Surfaces (Flat, loss of depth)
         p.fill(lightHue, 60, 95);
         p.rect(leftX, yPos, apertureW, apertureH);
         p.rect(rightX, yPos, apertureW, apertureH);
+      };
+      (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
+    },
+  },
+  {
+    id: "negative_space",
+    name: "Negative Space (负空间)",
+    era: "Minimalism",
+    driver: "p5",
+    description: "通过‘擦除’来寻找形式。在密集的物质中挖掘出虚空，让视觉在缺席中停留。",
+    prompt: "如果艺术是减法，你会选择留下哪一部分？",
+    styleTags: ["Minimalist", "Space", "Inverse"],
+    sketch: (p: p5, seed: string) => {
+      // 12. Negative Space: Inverse Drawing
+      p.setup = () => {
+        p.createCanvas(p.windowWidth, p.windowHeight);
+      };
+      p.draw = () => {
+        p.background(20);
+        p.fill(220);
+        p.noStroke();
+        p.circle(p.width / 2, p.height / 2, 300);
+
+        p.erase();
+        let t = p.frameCount * 0.02;
+        p.circle(p.width / 2 + Math.sin(t) * 100, p.height / 2, 100);
+        p.rect(p.width / 2 - 150, p.height / 2 + Math.cos(t) * 50, 300, 40);
+        p.noErase();
       };
       (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
     },

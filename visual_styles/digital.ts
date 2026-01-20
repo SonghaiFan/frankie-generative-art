@@ -157,56 +157,38 @@ export const digitalStyles: ArtStyle[] = [
     },
   },
   {
-    era: "Early Computing",
-    id: "ascii_art",
-    name: "ASCII Art (字符艺术)",
+    era: "Digital Era",
+    id: "topology",
+    name: "Topology (拓扑点云)",
     driver: "p5",
-    description: "在受限的字符网格中，用字母和符号的密度来模拟图像的灰度。",
-    prompt: "在这个高分辨率的世界里，你是否怀念低保真的想象力？",
-    styleTags: ["Grid", "Digital", "Text"],
+    description: "数学的纯粹逻辑在三维空间中折叠，将维度转化为可见的几何秩序。",
+    prompt: "当形式被剥离到只剩下坐标，你是否能看到算法跳动的脉搏？",
+    styleTags: ["Grid", "Digital", "Geometry"],
     sketch: (p: p5, seed: string) => {
-      // Classic Rotating Donut (Torus) in ASCII
-      // Ported simplified logic
-      const chars = ".,-~:;=!*#$@";
-
+      // 3D Donut (Torus) Point Cloud
       let A = 0;
       let B = 0;
 
       p.setup = () => {
         p.createCanvas(p.windowWidth, p.windowHeight);
-        p.textFont("Courier New");
-        p.textSize(12);
-        p.textAlign(p.CENTER, p.CENTER);
-        p.noStroke();
-        p.fill(120, 255, 100); // Green
+        p.colorMode(p.HSB, 360, 100, 100, 100);
       };
 
       p.draw = () => {
         p.background(0);
-        p.fill(120, 255, 150); // Light Green Terminal
+        
+        A += 0.02;
+        B += 0.01;
 
-        A += 0.04;
-        B += 0.02;
+        const R1 = p.height * 0.15; // inner radius
+        const R2 = p.height * 0.3; // outer radius
+        const K2 = 500; // distance
+        const K1 = p.width * 0.8; // scale factor
 
-        const cols = Math.floor(p.width / 12);
-        const rows = Math.floor(p.height / 14);
+        p.translate(p.width / 2, p.height / 2);
 
-        // Z-buffer and output buffer not strictly needed if we just draw points,
-        // but for true ASCII we usually compute per character cell.
-        // Let's do a point-cloud projection approach for performance/simplicity in p5
-
-        // Actually, let's just stick to a sampling approach which is cheaper for JS
-
-        const R1 = 1; // inner radius
-        const R2 = 2; // outer radius
-        const K2 = 5; // distance from cam
-        const K1 = (p.width * K2 * 3) / (8 * (R1 + R2)); // scale
-
-        // We will compute points on surface and map to grid
-        // 2000 points?
-
-        for (let theta = 0; theta < 6.28; theta += 0.1) {
-          for (let phi = 0; phi < 6.28; phi += 0.05) {
+        for (let theta = 0; theta < 6.28; theta += 0.2) {
+          for (let phi = 0; phi < 6.28; phi += 0.1) {
             const costheta = Math.cos(theta);
             const sintheta = Math.sin(theta);
             const cosphi = Math.cos(phi);
@@ -227,10 +209,10 @@ export const digitalStyles: ArtStyle[] = [
               K2 + Math.cos(A) * circlex * sinphi + circley * Math.sin(A);
             const ooz = 1 / z;
 
-            const xp = Math.floor(p.width / 2 + K1 * ooz * x);
-            const yp = Math.floor(p.height / 2 - K1 * ooz * y);
+            const xp = x * ooz * K1;
+            const yp = -y * ooz * K1;
 
-            // Luminance
+            // Simple luminance based on simple normal
             const L =
               Math.cos(phi) * costheta * Math.sin(B) -
               Math.cos(A) * costheta * sinphi -
@@ -239,13 +221,9 @@ export const digitalStyles: ArtStyle[] = [
                 (Math.cos(A) * sintheta - costheta * Math.sin(A) * sinphi);
 
             if (L > 0) {
-              if (xp > 0 && xp < p.width && yp > 0 && yp < p.height) {
-                const charIdx = Math.floor(L * 8);
-                const c =
-                  chars[Math.max(0, Math.min(charIdx, chars.length - 1))];
-                // Only draw if we haven't drawn here? Nah, just overdraw
-                p.text(c, xp, yp);
-              }
+                p.noStroke();
+                p.fill(160, 80, 100 * L, 100); // Pulse of light
+                p.rect(xp, yp, 2, 2);
             }
           }
         }
@@ -402,6 +380,39 @@ export const digitalStyles: ArtStyle[] = [
         p.resizeCanvas(w, h);
         initStreams();
       };
+    },
+  },
+  {
+    id: "character_matrix",
+    name: "Character Matrix (字符矩阵)",
+    era: "Digital Era",
+    driver: "p5",
+    description: "万物皆可被流动的字符所转译，在单色光辉中重现数字世界的本质。",
+    prompt: "如果现实是由代码构成的，你是否能看穿这层字符的表面？",
+    styleTags: ["Matrix", "Grid", "Monochrome"],
+    sketch: (p: p5, seed: string) => {
+      // 28. ASCII Art: Character Matrix
+      const chars = " .:;+=xX$";
+      p.setup = () => {
+        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.textFont("monospace");
+        p.textSize(12);
+        p.fill(120, 100, 100); // Using HSB: Green
+        p.colorMode(p.HSB, 360, 100, 100, 100);
+      };
+      p.draw = () => {
+        p.background(0);
+        p.fill(120, 100, 100); // Matrix Green
+        let t = p.frameCount * 0.05;
+        for (let y = 12; y < p.height; y += 12) {
+          for (let x = 0; x < p.width; x += 8) {
+            let n = p.noise(x * 0.01, y * 0.01, t);
+            let index = Math.floor(n * chars.length);
+            p.text(chars[index], x, y);
+          }
+        }
+      };
+      (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
     },
   },
 ];

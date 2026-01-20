@@ -140,35 +140,51 @@ export const popStyles: ArtStyle[] = [
     prompt: "此时此刻你的呼吸，算不算一件艺术品？",
     styleTags: ["Fluid", "Chaos", "Simple"],
     sketch: (p: p5, seed: string) => {
-      const words = ["BREATHE", "WALK", "LISTEN", "DROP", "NOTHING", "REPEAT"];
-      let currentWord = "FLUX";
+      // Fluxus: Art as Event, Life as Breath
+      let phase = 0;
+      let elements: any[] = [];
+
       p.setup = () => {
         p.createCanvas(p.windowWidth, p.windowHeight);
         p.colorMode(p.HSB, 360, 100, 100, 100);
-        p.textSize(40);
-        p.textAlign(p.CENTER, p.CENTER);
-        p.textFont("Courier New"); // 打印机字体
       };
-      p.draw = () => {
-        p.background(0, 0, 100, 10); // 缓慢淡出
 
-        if (p.frameCount % 120 === 0) {
-          currentWord = p.random(words);
+      p.draw = () => {
+        p.background(0, 0, 95, 8); // Deep fades for temporal feel
+
+        phase += 0.05;
+        const breath = (Math.sin(phase) + 1) / 2;
+        const size = p.map(breath, 0, 1, 50, 200);
+
+        // The "Breathing" Core
+        p.noFill();
+        p.stroke(0, 0, 20);
+        p.strokeWeight(2);
+        p.ellipse(p.width / 2, p.height / 2, size, size);
+
+        // Temporal "events" (lines that appear and disappear)
+        if (p.frameCount % 20 === 0) {
+          elements.push({
+            x1: p.random(p.width),
+            y1: p.random(p.height),
+            x2: p.random(p.width),
+            y2: p.random(p.height),
+            life: 100,
+          });
         }
 
-        p.fill(0);
-        p.text(currentWord, p.width / 2, p.height / 2);
+        elements.forEach((el, i) => {
+          p.stroke(0, 0, 40, el.life / 2);
+          p.line(el.x1, el.y1, el.x2, el.y2);
+          el.life -= 1;
+        });
+        elements = elements.filter(el => el.life > 0);
 
-        // 偶尔画一条无意义的线
-        if (p.random() > 0.98) {
-          p.stroke(0);
-          p.line(
-            p.random(p.width),
-            p.random(p.height),
-            p.random(p.width),
-            p.random(p.height),
-          );
+        // Occasional "Anti-Art" mark
+        if (p.random() > 0.99) {
+          p.fill(0);
           p.noStroke();
+          p.rect(p.random(p.width), p.random(p.height), p.random(5, 50), 2);
         }
       };
       (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);

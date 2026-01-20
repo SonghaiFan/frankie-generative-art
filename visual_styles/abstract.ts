@@ -333,120 +333,84 @@ export const abstractStyles: ArtStyle[] = [
     era: "Contemporary",
     driver: "p5",
     description:
-      "观众不再是旁观者，而是作品的一部分。你的存在扰动了光的流向，混沌在触碰中产生秩序。",
-    prompt: "当由于你的介入，作品才变得完整，你是作者还是观众？",
-    styleTags: ["Immersive", "Interactive", "Particles", "Generative"],
+      "在绝对的黑暗中，光成为了唯一的实体。通过几何的切割与空间的留白，观众在纯净的体验中重构自我。",
+    prompt: "如果空间可以被‘切割’，剩下的虚无是否也是一种物质？",
+    styleTags: ["Minimalist", "Spatial", "Light", "Monolithic"],
     sketch: (p: p5, seed: string) => {
-      // 粒子类定义
-      class Particle {
-        pos: p5.Vector;
-        vel: p5.Vector;
-        acc: p5.Vector;
-        maxSpeed: number;
-        colorHue: number;
-        life: number;
-
-        constructor() {
-          this.pos = p.createVector(p.random(p.width), p.random(p.height));
-          this.vel = p.createVector(0, 0);
-          this.acc = p.createVector(0, 0);
-          this.maxSpeed = p.random(2, 5);
-          this.colorHue = p.random(180, 260); // 蓝紫色调 (Blue/Purple/Cyan)
-          this.life = p.random(100, 255);
-        }
-
-        update(mouseX: number, mouseY: number, isInteracting: boolean) {
-          // 1. 基础噪声场 (Perlin Noise Field) - 让粒子自然流动
-          const noiseScale = 0.005;
-          const n = p.noise(
-            this.pos.x * noiseScale,
-            this.pos.y * noiseScale,
-            p.frameCount * 0.005,
-          );
-          const angle = n * p.TWO_PI * 4;
-
-          // 基础流动力
-          const flowForce = p
-            .createVector(Math.cos(angle), Math.sin(angle))
-            .mult(0.5);
-          this.applyForce(flowForce);
-
-          // 2. 交互力 (Interaction)
-          if (isInteracting) {
-            const mouse = p.createVector(mouseX, mouseY);
-            const dir = p5.Vector.sub(mouse, this.pos);
-            const dist = dir.mag();
-
-            if (dist < 300) {
-              dir.normalize();
-              // 吸引力
-              const attraction = dir.copy().mult(1.5);
-              // 旋转力
-              const rotation = p.createVector(-dir.y, dir.x).mult(2);
-
-              this.applyForce(attraction);
-              this.applyForce(rotation);
-
-              this.colorHue = (this.colorHue + 2) % 360;
-              this.maxSpeed = 8;
-            } else {
-              this.maxSpeed = 3;
-            }
-          }
-
-          this.vel.add(this.acc);
-          this.vel.limit(this.maxSpeed);
-          this.pos.add(this.vel);
-          this.acc.mult(0);
-
-          if (this.pos.x > p.width) this.pos.x = 0;
-          if (this.pos.x < 0) this.pos.x = p.width;
-          if (this.pos.y > p.height) this.pos.y = 0;
-          if (this.pos.y < 0) this.pos.y = p.height;
-        }
-
-        applyForce(force: p5.Vector) {
-          this.acc.add(force);
-        }
-
-        show() {
-          const speed = this.vel.mag();
-          const alpha = p.map(speed, 0, 8, 20, 100);
-          const weight = p.map(speed, 0, 8, 1, 3);
-
-          p.strokeWeight(weight);
-          p.stroke(this.colorHue, 80, 100, alpha);
-          p.point(this.pos.x, this.pos.y);
-        }
-      }
-
-      const particles: Particle[] = [];
-      const numParticles = 800;
+      // Minimalist Installation: Spatial Light & Void
+      let lightPhase = 0;
 
       p.setup = () => {
         p.createCanvas(p.windowWidth, p.windowHeight);
         p.colorMode(p.HSB, 360, 100, 100, 100);
-        for (let i = 0; i < numParticles; i++) {
-          particles.push(new Particle());
-        }
       };
 
       p.draw = () => {
+        p.background(0); // The Void
+
+        const cx = p.width / 2;
+        const cy = p.height / 2;
+        const mx = p.mouseX / p.width; // Normalized mouse X
+
+        // 1. Perspective Room (Defining the gallery space)
+        p.stroke(0, 0, 15); // Very subtle dark grey lines
+        p.strokeWeight(1);
+        p.noFill();
+
+        // Floor/Ceiling converging lines
+        p.line(0, 0, p.width * 0.2, p.height * 0.2);
+        p.line(p.width, 0, p.width * 0.8, p.height * 0.2);
+        p.line(0, p.height, p.width * 0.2, p.height * 0.8);
+        p.line(p.width, p.height, p.width * 0.8, p.height * 0.8);
+        
+        // Inner wall rectangle
+        p.rectMode(p.CENTER);
+        p.rect(cx, cy, p.width * 0.6, p.height * 0.6);
+
+        // 2. The Monolith: A central vertical slice of light
+        lightPhase += 0.01;
+        const pulse = Math.sin(lightPhase) * 10 + 25; // Subtle breathing
+        const hoverGlow = p.map(p.dist(p.mouseX, p.mouseY, cx, cy), 0, 400, 40, 0, true);
+        
         p.noStroke();
-        p.fill(0, 0, 0, 10);
-        p.rect(0, 0, p.width, p.height);
+        // Inner Glow (Heart of the monolith)
+        p.fill(190, 80, pulse + 60 + hoverGlow, 80); 
+        p.rect(cx, cy, p.width * 0.05, p.height * 0.5);
 
-        p.blendMode(p.ADD);
-
-        const isMouseActive = p.mouseX !== 0 && p.mouseY !== 0;
-
-        for (let pt of particles) {
-          pt.update(p.mouseX, p.mouseY, isMouseActive);
-          pt.show();
+        // Outer blurring glow (Aura)
+        for(let i=1; i<10; i++) {
+           p.fill(190, 80, 50, 5/i);
+           p.rect(cx, cy, p.width * 0.05 + i*15, p.height * 0.5 + i*5);
         }
 
-        p.blendMode(p.BLEND);
-        // Hint text removed as per "Avoid text" request
+        // 3. Laser Intersections: Minimalism cutting the void
+        p.strokeWeight(1.5);
+        // Vertical sharp beam reacting to mouse
+        p.stroke(190, 40, 100, 60);
+        const lX = p.lerp(cx - 100, cx + 100, mx);
+        p.line(lX, 0, lX, p.height);
+
+        // Horizontal baseline (Horizon/Floor edge)
+        p.stroke(0, 0, 40, 30);
+        p.line(0, p.height * 0.8, p.width, p.height * 0.8);
+
+        // 4. Atmosphere: Subtle "floating dust" in the light beam
+        p.randomSeed(42); // Stable dust positions
+        for(let i=0; i<35; i++) {
+            let px = p.random(cx - 150, cx + 150);
+            let py = p.random(cy - 250, cy + 250);
+            
+            // Subtle upward drift
+            let offsetY = (p.frameCount * 0.2 + p.random(1000)) % 500 - 250;
+            let finalPy = cy + offsetY;
+
+            let distFromCenter = Math.abs(px - cx);
+            let dAlpha = p.map(distFromCenter, 0, 150, 50, 0);
+            
+            p.fill(0, 0, 100, dAlpha);
+            p.noStroke();
+            p.circle(px, finalPy, 1.2);
+        }
       };
 
       (p as any).customResize = (w: number, h: number) => {
