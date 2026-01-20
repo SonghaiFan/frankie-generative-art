@@ -37,7 +37,7 @@ const Spotlight: React.FC<SpotlightProps> = ({ isActive }) => {
          remains visible and "above" the darkness.
       */}
       <motion.div
-        className="pointer-events-none fixed top-0 left-0 bottom-0 z-40 will-change-transform"
+        className="pointer-events-none fixed top-0 left-0 bottom-0 z-[90] will-change-transform"
         style={{
           width: 'calc(100% - 10px)',
           background: "radial-gradient(circle 2000px at var(--x) var(--y), transparent 5%, rgba(0,0,0,0.4) 30%, rgba(0,0,0,0.95) 60%, #000 90%)",

@@ -137,12 +137,6 @@ const App: React.FC = () => {
       {/* Language Switcher */}
       <LanguageSwitcher />
 
-      {/* 
-         Global Spotlight:
-         Provides the "Stage Light" / "Flashlight" effect. 
-      */}
-      <Spotlight isActive={true} />
-
       {/* LAYER 1: The Cabinet Grid (Idle State) */}
       <AnimatePresence>
         {gameState === GameState.IDLE && (
@@ -223,6 +217,13 @@ const App: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* 
+         Global Spotlight:
+         Provides the "Stage Light" / "Flashlight" effect. 
+         Rendered at the bottom with high z-index to act on both UI and Background.
+      */}
+      <Spotlight isActive={true} />
 
     </main>
   );
