@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArtCardData } from '../types';
 import GenerativeArt from './GenerativeArt';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Sparkles } from 'lucide-react';
 
 interface CabinetGridProps {
   cards: ArtCardData[];
@@ -76,7 +76,7 @@ const CabinetGrid: React.FC<CabinetGridProps> = ({ cards, onSelectionComplete })
               >
                 <div className="font-ui text-[7px] tracking-[0.4em] mb-4 text-white/20 uppercase">SYSTEM_STATE</div>
                 <div className="flex items-center gap-3">
-                  <div className="w-1.5 h-1.5 bg-white/20 rounded-full animate-pulse" />
+                  <div className="w-1.5 h-1.5 bg-white/20 animate-pulse" />
                   <span className="font-ui text-[9px] tracking-[0.4em] uppercase text-white/40">Waiting for Input</span>
                 </div>
               </div>
@@ -125,7 +125,7 @@ const CabinetGrid: React.FC<CabinetGridProps> = ({ cards, onSelectionComplete })
                           <span className="text-white tracking-[0.2em] text-[11px] uppercase font-ui font-medium">
                             {card.term}
                           </span>
-                          <div className="w-1.5 h-1.5 rounded-full bg-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                          <div className="w-1.5 h-1.5 bg-white opacity-0 group-hover:opacity-100 transition-opacity" />
                         </motion.div>
                       ) : (
                         <span className="text-white/10 tracking-widest text-[9px]">—</span>
@@ -232,18 +232,18 @@ const CabinetGrid: React.FC<CabinetGridProps> = ({ cards, onSelectionComplete })
                   document.getElementById('grid-start')?.scrollIntoView({ behavior: 'smooth' });
                 }
               }}
-              className="pointer-events-auto group relative flex items-center gap-6 px-12 py-5 bg-white text-black overflow-hidden rounded-full hover:scale-105 transition-all shadow-[0_0_50px_rgba(255,255,255,0.4)]"
+              className="pointer-events-auto group relative flex items-center justify-center w-16 h-16 bg-white text-black overflow-hidden hover:scale-110 transition-all shadow-[0_0_50px_rgba(255,255,255,0.4)]"
+              title={isComplete ? "Synthesize Oracle" : "Explore Archive"}
             >
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-black/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-              <div className="relative flex items-center gap-4">
-                <span className="font-ui text-[11px] font-bold tracking-[0.3em] uppercase transition-all duration-300">
-                  {isComplete ? "Synthesize Oracle" : "Explore Archive"}
-                </span>
+              <div className="relative flex items-center justify-center">
                 <motion.div
-                  animate={isComplete ? { rotate: 0 } : { rotate: 90 }}
-                  transition={{ type: "spring", stiffness: 200 }}
+                  key={isComplete ? 'complete' : 'scroll'}
+                  initial={{ opacity: 0, scale: 0.5, rotate: isComplete ? 0 : 90 }}
+                  animate={{ opacity: 1, scale: 1, rotate: isComplete ? 0 : 90 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 >
-                  <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                  {isComplete ? <Sparkles size={20} /> : <ArrowRight size={20} />}
                 </motion.div>
               </div>
             </button>

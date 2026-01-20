@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Download } from 'lucide-react';
+import { Download, RotateCcw } from 'lucide-react';
 
 import CabinetGrid from './components/CabinetGrid';
 import AnalysisView from './components/AnalysisView';
@@ -50,9 +50,9 @@ const App: React.FC = () => {
       setAnalysis(result);
     } catch (e) {
       setAnalysis({
-        archetype: "Void Walker",
-        philosophy: "You seek structure within chaos.",
-        followUpQuestion: "Is your order internal or external?"
+        archetype: "虚空行者",
+        philosophy: "在数据的海洋中，你正在寻找那些被遗忘的意义锚点。",
+        followUpQuestion: "在这种永恒的寻找中，你更期待终点还是过程？"
       });
     }
   };
@@ -184,28 +184,29 @@ const App: React.FC = () => {
 
                 {/* React-side Buttons Layer (Overlaying iframe) */}
                 <div className="absolute bottom-10 left-0 right-0 z-20 pointer-events-none flex justify-center">
-                  <div className="flex items-center gap-4 pointer-events-auto bg-black/40 backdrop-blur-sm p-1.5 rounded-full border border-white/10">
+                  <div className="flex items-center gap-4 pointer-events-auto bg-black/40 backdrop-blur-sm p-1.5 border border-white/10">
                     <motion.button
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
                       onClick={handleDownload}
-                      className="flex items-center gap-2 group px-6 py-2 bg-white text-black rounded-full"
+                      className="flex items-center justify-center w-10 h-10 bg-white text-black shadow-lg transition-transform"
+                      title="Export Archive"
                     >
-                      <Download size={12} />
-                      <span className="text-[10px] font-ui font-bold uppercase tracking-[0.2em]">Export Archive</span>
+                      <Download size={18} />
                     </motion.button>
 
                     <motion.button
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      whileHover={{ scale: 1.05, border: "1px solid rgba(255,255,255,0.4)" }}
-                      whileTap={{ scale: 0.95 }}
+                      whileHover={{ scale: 1.1, backgroundColor: "rgba(255,255,255,0.1)" }}
+                      whileTap={{ scale: 0.9 }}
                       onClick={resetGame}
-                      className="px-6 py-2 text-[10px] text-white font-ui font-medium uppercase tracking-[0.2em] border border-white/10 rounded-full transition-colors"
+                      className="flex items-center justify-center w-10 h-10 text-white border border-white/20 transition-all"
+                      title="Initialize New"
                     >
-                      Initialize New
+                      <RotateCcw size={18} />
                     </motion.button>
                   </div>
                 </div>

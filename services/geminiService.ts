@@ -8,44 +8,49 @@ const apiKey =
     : "";
 const ai = new GoogleGenAI({ apiKey });
 
-// Analyze user preferences
+/**
+ * Analyze user preferences
+ */
 export const analyzeUserStyle = async (
   history: UserInteraction[],
 ): Promise<AnalysisResult> => {
-  console.log("Analyzing style with architecture history...");
-
   // If no API key, return a poetic fallback
-  if (!apiKey || apiKey === "undefined") {
-    console.warn("API Key is missing or undefined string. Using fallback.");
+  if (!apiKey)
     return {
-      archetype: "神秘主义漫游者",
+      archetype: "无名观察者",
       philosophy: "你似乎在寻找一种超越形式的秩序，在混乱与结构之间游走。",
       followUpQuestion: "当混乱降临时，你会试图整理它，还是加入它？",
     };
-  }
-  const interactionsText = history
-    .map((h) => `User ${h.action} the concept "${h.term}".`)
-    .join("\n");
+
+  const interactionsText =
+    history.length > 0
+      ? history
+          .map((h) => `User ${h.action} the concept "${h.term}".`)
+          .join("\n")
+      : "The user has just started browsing.";
 
   const prompt = `
-    Act as an art historian and psychologist. 
-    Analyze the following user interactions with art history cards:
+    Role: Senior Art Historian & Jungian Psychologist.
+    Task: Analyze the user's aesthetic preferences based on their interactions.
+    
+    Interactions:
     ${interactionsText}
 
-    1. Identify a "Style Archetype" (a poetic title in Chinese, e.g. "Structural Poet", "Chaos Navigator").
-    2. Write a brief psychological analysis of their aesthetic tendencies (in Chinese, max 100 words).
-    3. Ask a probing, philosophical question about society or culture related to these tendencies (in Chinese, max 50 words).
+    Requirements:
+    1. Identify a "Style Archetype" (poetic title in Chinese).
+    2. Provide a 2-3 sentence psychological analysis of their aesthetic tendencies (in Chinese).
+    3. Ask one deep, philosophical question about art/society related to their choices (in Chinese).
 
-    Return JSON.
+    Output Format:
+    Strictly JSON with keys: "archetype", "philosophy", "followUpQuestion".
   `;
-
-  console.log("Starting style analysis...");
 
   try {
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: prompt,
       config: {
+        temperature: 0.1,
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.OBJECT,
@@ -54,14 +59,22 @@ export const analyzeUserStyle = async (
             philosophy: { type: Type.STRING },
             followUpQuestion: { type: Type.STRING },
           },
+          required: ["archetype", "philosophy", "followUpQuestion"],
         },
       },
     });
-    return JSON.parse(response.text!) as AnalysisResult;
+
+    const text = response.text || "{}";
+    // Remove potential markdown clutter just in case
+    const jsonString = text
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
+      .trim();
+    return JSON.parse(jsonString) as AnalysisResult;
   } catch (error) {
-    console.error("Analysis Error", error);
+    console.error("Analysis Error:", error);
     return {
-      archetype: "观察者",
+      archetype: "虚空行者",
       philosophy: "你的选择充满了矛盾与张力，显示出一种不被定义的自由。",
       followUpQuestion: "你拒绝定义，是为了保护自己，还是为了保持可能？",
     };
@@ -84,24 +97,28 @@ export const generateCreativeArt = async (
       3. Write a complete, functional p5.js sketch that visually represents this style.
          - The sketch MUST be in GLOBAL mode (define function setup() and function draw() at top level).
          - Use 'windowWidth' and 'windowHeight' for full screen.
-         - RENDER MODE: You may use default 2D or WEBGL. If using 3D primitives or texture(), MUST use createCanvas(windowWidth, windowHeight, WEBGL).
          - Handle window resizing in 'windowResized()' if possible.
          - Do NOT use external images or fonts, only p5 drawing primitives.
          - Make it animated or interactive or both.
-         - MODERN CAPABILITIES: You may also use 'Audio-Reactive' elements (using p5.FFT for real-time sound analysis) or 'Neural Stylization' (using ml5.js for real-time webcam tracking/object detection). 
-         - IMPORTANT: If using audio or camera, remind the user to 'Click the screen to activate sensor' in the 'explanation' text, as browsers require a user gesture. Initialize AudioIn or Capture inside setup().
          - It should be visually impressive and immersive.
-      
+      4. P5.js GUIDELINES(v1.9.0):
+         - If using default 2D or WEBGL: Heavily utilize techniques like Perlin Noise (noise()), coordinate transformations (push/pop/translate/rotate), trigonometry (sin/cos) for periodic motion/polar coordinates, particle systems, recursive fractals, vertex shapes (beginShape/curveVertex), and Blend Modes (ADD, MULTIPLY, DIFFERENCE, etc.). 
+         - If using 3D primitives or texture(), MUST use createCanvas(windowWidth, windowHeight, WEBGL)
+         - COLOR: Prefer HSB colorMode for more natural color transitions and harmonic palettes.
+         - MODERN CAPABILITIES: You may also use 'Audio-Reactive' elements (using p5.FFT for real-time sound analysis) or 'Neural Stylization' (using ml5.js for real-time webcam tracking/object detection). 
+         - SENSORS: If using audio or camera, remind the user to 'Click the screen to activate sensor' in the 'explanation' text, as browsers require a user gesture. Initialize AudioIn or Capture inside setup().
       Return JSON.
     `;
 
   console.log("Generating creative art...");
+  console.log(prompt);
 
   try {
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: prompt,
       config: {
+        temperature: 0.9,
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.OBJECT,
@@ -118,7 +135,12 @@ export const generateCreativeArt = async (
         },
       },
     });
-    return JSON.parse(response.text!) as CreativeArtResult;
+    const text = response.text || "{}";
+    const jsonString = text
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
+      .trim();
+    return JSON.parse(jsonString) as CreativeArtResult;
   } catch (e) {
     console.error(e);
     return FALLBACK_CREATIVE_RESULT;
