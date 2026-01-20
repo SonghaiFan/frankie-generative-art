@@ -85,60 +85,6 @@ const CabinetGrid: React.FC<CabinetGridProps> = ({ cards, onSelectionComplete })
         </div>
       </section>
 
-      {/* Manifest / Selection Header (Architectural Sidebar) */}
-      <div className="fixed top-24 right-8 z-50 hidden md:block w-72">
-        <div className="border border-white/20 bg-black/60 backdrop-blur-xl p-6 flex flex-col items-end">
-          {/* Integrated Protocol Text */}
-          <div className="w-full mb-8 border-b border-white/10 pb-6 text-right">
-            <div className="font-ui text-[8px] tracking-[0.4em] uppercase text-white/20 mb-3 flex items-center justify-end gap-2">
-              <span className="w-8 h-px bg-white/10" />
-              PROTOCOL V.4.0
-            </div>
-            <p className="font-serif text-[11px] text-white/40 italic leading-relaxed">
-              Observe the archetypes. Calibrate your vision by selecting up to three frequencies below.
-            </p>
-          </div>
-
-          <div className="font-ui text-[8px] tracking-[0.4em] uppercase text-white/20 mb-6 border-b border-white/10 pb-2 w-full text-right flex justify-between items-center">
-            <span className="w-2 h-2 border border-white/20 inline-block" />
-            MANIFEST : {selectedIds.length} / 03
-          </div>
-          <div className="flex flex-col items-end space-y-4 w-full">
-            {[0, 1, 2].map((i) => {
-              const id = selectedIds[i];
-              const card = id ? cards.find(c => c.id === id) : null;
-              return (
-                <div key={i} className="flex flex-col items-end w-full group">
-                  <div
-                    className={`h-8 flex items-center justify-end w-full border-b border-white/10 relative transition-colors ${card ? 'cursor-pointer hover:border-white/40' : ''}`}
-                    onClick={() => card && handleToggle(card.id)}
-                  >
-                    <AnimatePresence mode="wait">
-                      {card ? (
-                        <motion.div
-                          initial={{ opacity: 0, x: 10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: -10 }}
-                          key={card.id}
-                          className="flex items-center gap-3"
-                        >
-                          <span className="text-white tracking-[0.2em] text-[11px] uppercase font-ui font-medium">
-                            {card.term}
-                          </span>
-                          <div className="w-1.5 h-1.5 bg-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </motion.div>
-                      ) : (
-                        <span className="text-white/10 tracking-widest text-[9px]">—</span>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      </div>
-
       {/* Full Screen Grid - Architectural Cells */}
       <div id="grid-start" className="w-full z-10 snap-start bg-black">
         <div className="border-t border-l border-white/20 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5">
@@ -215,7 +161,7 @@ const CabinetGrid: React.FC<CabinetGridProps> = ({ cards, onSelectionComplete })
       {/* Visual Scroll Hint (Gradient Fade at bottom) */}
       <div className="fixed bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black via-black/50 to-transparent pointer-events-none z-20" />
 
-      {/* Floating Action Button (Unified Action/Scroll) */}
+      {/* Integrated Floating Action & Manifest */}
       <AnimatePresence>
         {(isComplete || isAtTop) && (
           <motion.div
@@ -224,29 +170,70 @@ const CabinetGrid: React.FC<CabinetGridProps> = ({ cards, onSelectionComplete })
             exit={{ opacity: 0, y: 20 }}
             className="fixed bottom-12 left-0 right-0 flex justify-center z-[60] pointer-events-none"
           >
-            <button
-              onClick={() => {
-                if (isComplete) {
-                  onSelectionComplete(selectedIds);
-                } else {
-                  document.getElementById('grid-start')?.scrollIntoView({ behavior: 'smooth' });
-                }
-              }}
-              className="pointer-events-auto group relative flex items-center justify-center w-16 h-16 bg-white text-black overflow-hidden hover:scale-110 transition-all shadow-[0_0_50px_rgba(255,255,255,0.4)]"
-              title={isComplete ? "Synthesize Oracle" : "Explore Archive"}
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-black/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-              <div className="relative flex items-center justify-center">
+            <div className="flex items-stretch pointer-events-auto bg-black border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+
+              {/* Manifest Slots (Architectural) */}
+              <div className="flex items-center gap-6 px-6 border-r border-white/10">
+                <div className="flex items-center gap-5">
+                  {[0, 1, 2].map((i) => {
+                    const id = selectedIds[i];
+                    const card = id ? cards.find(c => c.id === id) : null;
+                    return (
+                      <div key={i} className="flex items-center gap-2 group/item">
+                        <div
+                          className={`w-2 h-2 border transition-all duration-500 ${card ? 'bg-white border-white rotate-45' : 'border-white/20'}`}
+                        />
+                        <AnimatePresence>
+                          {card && (
+                            <motion.button
+                              initial={{ opacity: 0, width: 0 }}
+                              animate={{ opacity: 1, width: 'auto' }}
+                              exit={{ opacity: 0, width: 0 }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleToggle(card.id);
+                              }}
+                              className="overflow-hidden whitespace-nowrap"
+                            >
+                              <span className="font-ui text-[9px] tracking-[0.2em] uppercase text-white/60 group-hover/item:text-white transition-colors">
+                                {card.term}
+                              </span>
+                            </motion.button>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="h-4 w-px bg-white/10" />
+                <span className="font-ui text-[9px] tracking-[0.4em] uppercase text-white/20">
+                  {selectedIds.length}/03
+                </span>
+              </div>
+
+              {/* Action Button */}
+              <button
+                onClick={() => {
+                  if (isComplete) {
+                    onSelectionComplete(selectedIds);
+                  } else {
+                    document.getElementById('grid-start')?.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
+                className={`group relative flex items-center justify-center w-20 h-14 transition-all duration-500 ${isComplete ? 'bg-white text-black' : 'bg-transparent text-white/40'}`}
+                title={isComplete ? "Synthesize Oracle" : "Explore Archive"}
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-black/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                 <motion.div
                   key={isComplete ? 'complete' : 'scroll'}
-                  initial={{ opacity: 0, scale: 0.5, rotate: isComplete ? 0 : 90 }}
+                  initial={{ opacity: 0, scale: 0.8, rotate: isComplete ? 0 : 90 }}
                   animate={{ opacity: 1, scale: 1, rotate: isComplete ? 0 : 90 }}
                   transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 >
-                  {isComplete ? <Sparkles size={20} /> : <ArrowRight size={20} />}
+                  {isComplete ? <Sparkles size={18} /> : <ArrowRight size={18} />}
                 </motion.div>
-              </div>
-            </button>
+              </button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

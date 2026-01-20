@@ -100,7 +100,7 @@ export const generateCreativeArt = async (
          - Handle window resizing in 'windowResized()' if possible.
          - Do NOT use external images or fonts, only p5 drawing primitives.
          - Make it animated or interactive or both.
-         - It should be visually impressive and immersive.
+         - It should be visually impressive and immersive. Dark background preferred.
       4. P5.js GUIDELINES(v1.9.0):
          - If using default 2D or WEBGL: Heavily utilize techniques like Perlin Noise (noise()), coordinate transformations (push/pop/translate/rotate), trigonometry (sin/cos) for periodic motion/polar coordinates, particle systems, recursive fractals, vertex shapes (beginShape/curveVertex), and Blend Modes (ADD, MULTIPLY, DIFFERENCE, etc.). 
          - If using 3D primitives or texture(), MUST use createCanvas(windowWidth, windowHeight, WEBGL)

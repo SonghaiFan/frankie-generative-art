@@ -129,7 +129,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <main className="fixed inset-0 w-full h-full bg-black overflow-hidden text-[#d4d4d4] font-serif cursor-none">
+    <main className="fixed inset-0 w-full h-full bg-black overflow-hidden text-[#d4d4d4] font-serif">
 
       {/* 
          Global Spotlight:
