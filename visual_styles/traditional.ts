@@ -419,27 +419,99 @@ export const traditionalStyles: ArtStyle[] = [
     prompt: "如果要画出大地的梦，你会从哪里开始落点？",
     styleTags: ["Dots", "Earth Pigments", "Dreamtime"],
     sketch: (p: p5, seed: string) => {
+      // Improved Dot Painting: Dreaming Tracks + Earth Palette
+      const getSeedNum = (s: string) => {
+        let h = 0;
+        for (let i = 0; i < s.length; i++) h = Math.imul(31, h) + s.charCodeAt(i) | 0;
+        return Math.abs(h);
+      };
+
       p.setup = () => {
         p.createCanvas(p.windowWidth, p.windowHeight);
-        p.noStroke();
+        p.colorMode(p.HSB, 360, 100, 100, 100);
+        p.noLoop();
       };
-      p.draw = () => {
-        p.background(30, 10, 10);
-        const t = p.frameCount * 0.05;
-        const cx = p.width / 2;
-        const cy = p.height / 2;
-        for (let r = 20; r < 300; r += 20) {
-          const dots = Math.floor(r * 0.5);
-          const hue = (p.frameCount + r) % 255;
-          p.fill(hue, 100, 200);
-          const offset = r % 40 === 0 ? t : -t;
-          for (let i = 0; i < dots; i++) {
-            const a = (i / dots) * p.TWO_PI + offset;
-            p.circle(cx + Math.cos(a) * r, cy + Math.sin(a) * r, 5);
-          }
+
+      const drawTrack = (x1: number, y1: number, x2: number, y2: number, col: number[]) => {
+        const d = p.dist(x1, y1, x2, y2);
+        const steps = d / 8;
+        for (let i = 0; i <= steps; i++) {
+          const t = i / steps;
+          const x = p.lerp(x1, x2, t) + p.random(-5, 5);
+          const y = p.lerp(y1, y2, t) + p.random(-5, 5);
+          const dotSize = p.random(6, 12);
+          
+          // Outer glow for the dot
+          p.fill(col[0], col[1], col[2], 30);
+          p.circle(x, y, dotSize * 1.5);
+          
+          // Core dot
+          p.fill(col[0], col[1], col[2]);
+          p.circle(x, y, dotSize);
         }
       };
-      (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
+
+      const drawSymbol = (cx: number, cy: number, r: number, col: number[]) => {
+        const dots = p.floor(r * 0.8);
+        for (let i = 0; i < dots; i++) {
+          const a = (p.TWO_PI / dots) * i;
+          const x = cx + Math.cos(a) * r;
+          const y = cy + Math.sin(a) * r;
+          p.fill(col[0], col[1], col[2]);
+          p.circle(x, y, p.random(5, 8));
+        }
+      };
+
+      p.draw = () => {
+        p.randomSeed(getSeedNum(seed));
+        p.background(20, 40, 15); // Deep charcoal/earth background
+
+        const palette = [
+          [25, 80, 80],  // Ochre Red
+          [40, 70, 90],  // Desert Yellow
+          [30, 20, 95],  // White Clay
+          [10, 80, 40],  // Deep Brown
+        ];
+
+        // 1. Dreaming Tracks (Wandering lines)
+        for (let i = 0; i < 5; i++) {
+          let x = p.random(p.width);
+          let y = p.random(p.height);
+          const col = p.random(palette);
+          for (let j = 0; j < 6; j++) {
+            let nx = x + p.random(-200, 200);
+            let ny = y + p.random(-200, 200);
+            drawTrack(x, y, nx, ny, col);
+            x = nx;
+            y = ny;
+          }
+        }
+
+        // 2. Sacred Sites (Concentric symbols)
+        for (let i = 0; i < 4; i++) {
+          const cx = p.random(p.width * 0.2, p.width * 0.8);
+          const cy = p.random(p.height * 0.2, p.height * 0.8);
+          const rings = p.floor(p.random(3, 6));
+          const col = p.random(palette);
+          for (let r = 0; r < rings; r++) {
+            drawSymbol(cx, cy, (r + 1) * 20, col);
+          }
+        }
+
+        // 3. Fill / Background Texture (Fine dots)
+        for (let i = 0; i < 3000; i++) {
+          const x = p.random(p.width);
+          const y = p.random(p.height);
+          const col = p.random(palette);
+          p.fill(col[0], col[1], p.random(20, 60), 40);
+          p.circle(x, y, p.random(2, 5));
+        }
+      };
+
+      (p as any).customResize = (w: number, h: number) => {
+        p.resizeCanvas(w, h);
+        p.redraw();
+      };
     },
   },
 ];
