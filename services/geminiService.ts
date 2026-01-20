@@ -33,7 +33,7 @@ export const analyzeUserStyle = async (
     ${interactionsText}
 
     1. Identify a "Style Archetype" (a poetic title in Chinese, e.g. "Structural Poet", "Chaos Navigator").
-    2. Write a brief psychological analysis of their aesthetic tendencies (in Chinese, 100 words).
+    2. Write a brief psychological analysis of their aesthetic tendencies (in Chinese, max 100 words).
     3. Ask a probing, philosophical question about society or culture related to these tendencies (in Chinese, max 50 words).
 
     Return JSON.
@@ -87,10 +87,9 @@ export const generateCreativeArt = async (
          - Handle window resizing in 'windowResized()' if possible.
          - Do NOT use external images or fonts, only p5 drawing primitives.
          - Make it animated or interactive or both.
-         - TECHNICAL SUGGESTION: Consider using advanced generative techniques like Flow Fields (Perlin noise networks), Recursive Fractals, Reaction-Diffusion simulations, or Harmonograph oscillators.
          - MODERN CAPABILITIES: You may also use 'Audio-Reactive' elements (using p5.FFT for real-time sound analysis) or 'Neural Stylization' (using ml5.js for real-time webcam tracking/object detection). 
          - IMPORTANT: If using audio or camera, remind the user to 'Click the screen to activate sensor' in the 'explanation' text, as browsers require a user gesture. Initialize AudioIn or Capture inside setup().
-         - It should be visually impressive and immersive. Dark background preferred.
+         - It should be visually impressive and immersive.
       
       Return JSON.
     `;
