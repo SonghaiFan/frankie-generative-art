@@ -183,27 +183,31 @@ const App: React.FC = () => {
                 </div>
 
                 {/* React-side Buttons Layer (Overlaying iframe) */}
-                <div className="absolute bottom-10 right-10 z-20 pointer-events-auto flex items-center gap-10 mix-blend-difference">
-                  <motion.button
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 0.4 }}
-                    whileHover={{ opacity: 1 }}
-                    onClick={handleDownload}
-                    className="flex items-center gap-2 group"
-                  >
-                    <Download size={12} className="text-white" />
-                    <span className="text-[9px] text-white font-serif uppercase tracking-[0.4em]">Export</span>
-                  </motion.button>
+                <div className="absolute bottom-10 left-0 right-0 z-20 pointer-events-none flex justify-center">
+                  <div className="flex items-center gap-4 pointer-events-auto bg-black/40 backdrop-blur-sm p-1.5 rounded-full border border-white/10">
+                    <motion.button
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={handleDownload}
+                      className="flex items-center gap-2 group px-6 py-2 bg-white text-black rounded-full"
+                    >
+                      <Download size={12} />
+                      <span className="text-[10px] font-ui font-bold uppercase tracking-[0.2em]">Export Archive</span>
+                    </motion.button>
 
-                  <motion.button
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 0.4 }}
-                    whileHover={{ opacity: 1 }}
-                    onClick={resetGame}
-                    className="text-[9px] text-white font-serif uppercase tracking-[0.4em]"
-                  >
-                    Reset
-                  </motion.button>
+                    <motion.button
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      whileHover={{ scale: 1.05, border: "1px solid rgba(255,255,255,0.4)" }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={resetGame}
+                      className="px-6 py-2 text-[10px] text-white font-ui font-medium uppercase tracking-[0.2em] border border-white/10 rounded-full transition-colors"
+                    >
+                      Initialize New
+                    </motion.button>
+                  </div>
                 </div>
               </>
             ) : (
