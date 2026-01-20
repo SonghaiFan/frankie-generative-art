@@ -218,13 +218,6 @@ const App: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* 
-         Global Spotlight:
-         Provides the "Stage Light" / "Flashlight" effect. 
-         Rendered at the bottom with high z-index to act on both UI and Background.
-      */}
-      <Spotlight isActive={true} />
-
     </main>
   );
 };
