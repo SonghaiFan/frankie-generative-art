@@ -178,7 +178,7 @@ export const popStyles: ArtStyle[] = [
           p.line(el.x1, el.y1, el.x2, el.y2);
           el.life -= 1;
         });
-        elements = elements.filter(el => el.life > 0);
+        elements = elements.filter((el) => el.life > 0);
 
         // Occasional "Anti-Art" mark
         if (p.random() > 0.99) {

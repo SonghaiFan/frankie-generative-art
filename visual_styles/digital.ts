@@ -176,7 +176,7 @@ export const digitalStyles: ArtStyle[] = [
 
       p.draw = () => {
         p.background(0);
-        
+
         A += 0.02;
         B += 0.01;
 
@@ -221,9 +221,9 @@ export const digitalStyles: ArtStyle[] = [
                 (Math.cos(A) * sintheta - costheta * Math.sin(A) * sinphi);
 
             if (L > 0) {
-                p.noStroke();
-                p.fill(160, 80, 100 * L, 100); // Pulse of light
-                p.rect(xp, yp, 2, 2);
+              p.noStroke();
+              p.fill(160, 80, 100 * L, 100); // Pulse of light
+              p.rect(xp, yp, 2, 2);
             }
           }
         }

@@ -83,9 +83,19 @@ export const minimalismStyles: ArtStyle[] = [
         // Abstract Information Blocks (Simulating Typography)
         p.fill(0, 0, 10);
         // "Title" block
-        p.rect(margin + cellW * 0.2, margin + cellH * 0.5, cellW * 4, cellH * 0.4);
+        p.rect(
+          margin + cellW * 0.2,
+          margin + cellH * 0.5,
+          cellW * 4,
+          cellH * 0.4,
+        );
         // "Date" block
-        p.rect(margin + cellW * 0.2, margin + cellH * 1.5, cellW * 1.5, cellH * 0.2);
+        p.rect(
+          margin + cellW * 0.2,
+          margin + cellH * 1.5,
+          cellW * 1.5,
+          cellH * 0.2,
+        );
 
         // "Subheader" white block inside black rect
         p.fill(0, 0, 100);
@@ -221,7 +231,8 @@ export const minimalismStyles: ArtStyle[] = [
     name: "Negative Space (负空间)",
     era: "Minimalism",
     driver: "p5",
-    description: "通过‘擦除’来寻找形式。在密集的物质中挖掘出虚空，让视觉在缺席中停留。",
+    description:
+      "通过‘擦除’来寻找形式。在密集的物质中挖掘出虚空，让视觉在缺席中停留。",
     prompt: "如果艺术是减法，你会选择留下哪一部分？",
     styleTags: ["Minimalist", "Space", "Inverse"],
     sketch: (p: p5, seed: string) => {

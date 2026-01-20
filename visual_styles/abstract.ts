@@ -362,7 +362,7 @@ export const abstractStyles: ArtStyle[] = [
         p.line(p.width, 0, p.width * 0.8, p.height * 0.2);
         p.line(0, p.height, p.width * 0.2, p.height * 0.8);
         p.line(p.width, p.height, p.width * 0.8, p.height * 0.8);
-        
+
         // Inner wall rectangle
         p.rectMode(p.CENTER);
         p.rect(cx, cy, p.width * 0.6, p.height * 0.6);
@@ -370,17 +370,24 @@ export const abstractStyles: ArtStyle[] = [
         // 2. The Monolith: A central vertical slice of light
         lightPhase += 0.01;
         const pulse = Math.sin(lightPhase) * 10 + 25; // Subtle breathing
-        const hoverGlow = p.map(p.dist(p.mouseX, p.mouseY, cx, cy), 0, 400, 40, 0, true);
-        
+        const hoverGlow = p.map(
+          p.dist(p.mouseX, p.mouseY, cx, cy),
+          0,
+          400,
+          40,
+          0,
+          true,
+        );
+
         p.noStroke();
         // Inner Glow (Heart of the monolith)
-        p.fill(190, 80, pulse + 60 + hoverGlow, 80); 
+        p.fill(190, 80, pulse + 60 + hoverGlow, 80);
         p.rect(cx, cy, p.width * 0.05, p.height * 0.5);
 
         // Outer blurring glow (Aura)
-        for(let i=1; i<10; i++) {
-           p.fill(190, 80, 50, 5/i);
-           p.rect(cx, cy, p.width * 0.05 + i*15, p.height * 0.5 + i*5);
+        for (let i = 1; i < 10; i++) {
+          p.fill(190, 80, 50, 5 / i);
+          p.rect(cx, cy, p.width * 0.05 + i * 15, p.height * 0.5 + i * 5);
         }
 
         // 3. Laser Intersections: Minimalism cutting the void
@@ -396,20 +403,20 @@ export const abstractStyles: ArtStyle[] = [
 
         // 4. Atmosphere: Subtle "floating dust" in the light beam
         p.randomSeed(42); // Stable dust positions
-        for(let i=0; i<35; i++) {
-            let px = p.random(cx - 150, cx + 150);
-            let py = p.random(cy - 250, cy + 250);
-            
-            // Subtle upward drift
-            let offsetY = (p.frameCount * 0.2 + p.random(1000)) % 500 - 250;
-            let finalPy = cy + offsetY;
+        for (let i = 0; i < 35; i++) {
+          let px = p.random(cx - 150, cx + 150);
+          let py = p.random(cy - 250, cy + 250);
 
-            let distFromCenter = Math.abs(px - cx);
-            let dAlpha = p.map(distFromCenter, 0, 150, 50, 0);
-            
-            p.fill(0, 0, 100, dAlpha);
-            p.noStroke();
-            p.circle(px, finalPy, 1.2);
+          // Subtle upward drift
+          let offsetY = ((p.frameCount * 0.2 + p.random(1000)) % 500) - 250;
+          let finalPy = cy + offsetY;
+
+          let distFromCenter = Math.abs(px - cx);
+          let dAlpha = p.map(distFromCenter, 0, 150, 50, 0);
+
+          p.fill(0, 0, 100, dAlpha);
+          p.noStroke();
+          p.circle(px, finalPy, 1.2);
         }
       };
 
