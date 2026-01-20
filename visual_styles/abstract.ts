@@ -200,4 +200,54 @@ export const abstractStyles: ArtStyle[] = [
       };
     },
   },
+  {
+    id: "suprematism",
+    name: "Suprematism (至上主义)",
+    era: "Russian Avant-Garde",
+    driver: "p5",
+    description: "在这个零度世界里，只有纯粹的感受和漂浮的几何体。",
+    prompt: "如果剥离了所有社会意义，艺术还剩下什么？",
+    styleTags: ["Geometric", "Minimal", "Floating"],
+    sketch: (p: p5, seed: string) => {
+      p.setup = () => {
+        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.colorMode(p.HSB, 360, 100, 100, 100);
+        p.noLoop();
+      };
+      p.draw = () => {
+        p.background(0, 0, 96); // White-ish
+        p.noStroke();
+
+        // The composition usually has a diagonal or floating tension
+        const numShapes = Math.floor(p.random(3, 10)); // Very few shapes
+
+        for (let i = 0; i < numShapes; i++) {
+          p.push();
+          p.translate(p.random(p.width), p.random(p.height));
+          p.rotate(p.random(p.TWO_PI));
+
+          const r = p.random();
+          // Colors: Mostly Black, Red
+          if (r < 0.6)
+            p.fill(0, 0, 10); // Black
+          else if (r < 0.9)
+            p.fill(0, 90, 80); // Red
+          else p.fill(220, 80, 80); // Blue sometimes
+
+          if (p.random() > 0.3) {
+            // Rectangle
+            p.rect(0, 0, p.random(50, 300), p.random(20, 100));
+          } else {
+            // Circle
+            p.circle(0, 0, p.random(50, 200));
+          }
+          p.pop();
+        }
+      };
+      (p as any).customResize = (w: number, h: number) => {
+        p.resizeCanvas(w, h);
+        p.redraw();
+      };
+    },
+  },
 ];

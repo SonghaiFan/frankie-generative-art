@@ -76,54 +76,6 @@ export const minimalismStyles: ArtStyle[] = [
     },
   },
   {
-    id: "negative_space",
-    era: "Visual Composition",
-    name: "Negative Space (负空间)",
-    driver: "p5",
-    description: "环绕在主体周围的空间，它定义了主体，却往往被忽视。",
-    prompt: "你关注的是‘有’，还是定义了‘有’的‘无’？",
-    styleTags: ["Space", "Contrast", "Geometric"],
-    sketch: (p: p5, seed: string) => {
-      let particles: any[] = [];
-      p.setup = () => {
-        p.createCanvas(p.windowWidth, p.windowHeight);
-        p.colorMode(p.HSB, 360, 100, 100, 100);
-        for (let i = 0; i < 150; i++)
-          particles.push({
-            x: p.random(p.width),
-            y: p.random(p.height),
-            vx: p.random(-1, 1),
-            vy: p.random(-1, 1),
-          });
-      };
-      p.draw = () => {
-        p.background(220, 60, 30); // 深蓝背景
-        p.noStroke();
-        p.fill(220, 10, 95); // 亮白粒子
-
-        const cx = p.width / 2;
-        const cy = p.height / 2;
-
-        particles.forEach((pt) => {
-          pt.x += pt.vx;
-          pt.y += pt.vy;
-          if (pt.x < 0 || pt.x > p.width) pt.vx *= -1;
-          if (pt.y < 0 || pt.y > p.height) pt.vy *= -1;
-
-          const d = p.dist(pt.x, pt.y, cx, cy);
-          // 排斥中心
-          if (d < 200) {
-            const a = Math.atan2(pt.y - cy, pt.x - cx);
-            pt.x = cx + Math.cos(a) * 200;
-            pt.y = cy + Math.sin(a) * 200;
-          }
-          p.circle(pt.x, pt.y, 5);
-        });
-      };
-      (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
-    },
-  },
-  {
     era: "1960s California",
     id: "light_and_space",
     name: "Light and Space (光与空间)",

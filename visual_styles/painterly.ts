@@ -53,13 +53,13 @@ export const painterlyStyles: ArtStyle[] = [
     },
   },
   {
-    id: "impasto",
-    name: "Impasto (厚涂法)",
-    era: "Painting Technique",
+    id: "fauvism",
+    name: "Fauvism (野兽派)",
+    era: "Modernism",
     driver: "p5",
-    description: "颜料堆叠在画布上，形成浮雕般的物理质感，笔触即是情感。",
-    prompt: "你希望你的表达是平滑隐形的，还是充满颗粒与痕迹的？",
-    styleTags: ["Rough", "Texture", "Chaos"],
+    description: "通过狂野、随性且高纯度的色彩，表达最直接的情感冲动。",
+    prompt: "如果树是红色的，天空是绿色的，世界会更疯狂还是更快乐？",
+    styleTags: ["Vibrant", "Organic", "Bold"],
     sketch: (p: p5, seed: string) => {
       p.setup = () => {
         p.createCanvas(p.windowWidth, p.windowHeight);
@@ -67,24 +67,30 @@ export const painterlyStyles: ArtStyle[] = [
         p.noLoop();
       };
       p.draw = () => {
-        p.background(30, 10, 90);
-        for (let i = 0; i < 80; i++) {
+        p.background(45, 20, 95); // Warm background
+        p.noStroke();
+
+        // Random organic shapes with wild brush strokes
+        for (let i = 0; i < 150; i++) {
           const x = p.random(p.width);
           const y = p.random(p.height);
-          const w = p.random(50, 200);
+          const w = p.random(20, 100);
           const h = p.random(20, 60);
-          const rot = p.random(p.TWO_PI);
+
+          // Wild colors: High Saturation
+          const hue = p.random([0, 30, 100, 200, 280, 330]);
+          p.fill(hue, p.random(70, 100), p.random(80, 100), 80);
+
           p.push();
           p.translate(x, y);
-          p.rotate(rot);
-          p.noStroke();
-          // Shadow
-          p.fill(0, 0, 0, 30);
-          p.rect(2, 2, w, h);
-          // Paint
-          const hue = p.random(360);
-          p.fill(hue, 60, 80);
-          p.rect(0, 0, w, h);
+          p.rotate(p.random(p.TWO_PI));
+          // Crude brush stroke
+          p.beginShape();
+          p.vertex(-w / 2, -h / 4);
+          p.vertex(w / 2, -h / 2);
+          p.vertex(w / 2 + p.random(-10, 10), h / 2);
+          p.vertex(-w / 2 + p.random(-10, 10), h / 2);
+          p.endShape(p.CLOSE);
           p.pop();
         }
       };

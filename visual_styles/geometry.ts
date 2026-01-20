@@ -215,6 +215,68 @@ export const geometryStyles: ArtStyle[] = [
     },
   },
   {
+    id: "de_stijl",
+    name: "De Stijl (风格派)",
+    era: "Modernism",
+    driver: "p5",
+    description: "剥离一切具象，只保留水平线、垂直线和三原色，追求普遍的和谐。",
+    prompt: "如果世界只剩下最基本的结构和色彩，它会变得枯燥还是纯粹？",
+    styleTags: ["Geometric", "Primary", "Grid"],
+    sketch: (p: p5, seed: string) => {
+      p.setup = () => {
+        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.colorMode(p.HSB, 360, 100, 100, 100);
+        p.noLoop();
+      };
+      p.draw = () => {
+        p.background(0, 0, 100);
+        p.stroke(0, 0, 0);
+        p.strokeWeight(8);
+
+        // Simple recursive division
+        const divide = (
+          x: number,
+          y: number,
+          w: number,
+          h: number,
+          depth: number,
+        ) => {
+          if (depth > 4 || (p.random() > 0.5 && depth > 1)) {
+            // Fill
+            const r = p.random();
+            if (r < 0.15)
+              p.fill(350, 90, 90); // Red
+            else if (r < 0.25)
+              p.fill(220, 80, 90); // Blue
+            else if (r < 0.35)
+              p.fill(50, 90, 100); // Yellow
+            else if (r < 0.4)
+              p.fill(0, 0, 10); // Black? No, usually not black fill, but okay. Let's do grey/black sparingly
+            else p.fill(0, 0, 100); // White
+            p.rect(x, y, w, h);
+            return;
+          }
+
+          if (w > h) {
+            const split = p.random(0.3, 0.7) * w;
+            divide(x, y, split, h, depth + 1);
+            divide(x + split, y, w - split, h, depth + 1);
+          } else {
+            const split = p.random(0.3, 0.7) * h;
+            divide(x, y, w, split, depth + 1);
+            divide(x, y + split, w, h - split, depth + 1);
+          }
+        };
+
+        divide(20, 20, p.width - 40, p.height - 40, 0);
+      };
+      (p as any).customResize = (w: number, h: number) => {
+        p.resizeCanvas(w, h);
+        p.redraw();
+      };
+    },
+  },
+  {
     era: "Early 20th Century",
     id: "cubism",
     name: "Cubism (立体主义)",
@@ -296,10 +358,10 @@ export const geometryStyles: ArtStyle[] = [
       };
       (p as any).customResize = (w: number, h: number) => p.resizeCanvas(w, h);
     },
-    era: "Middle Ages",
   },
   {
     id: "gothic",
+    era: "Middle Ages",
     name: "Gothic (哥特式)",
     driver: "p5",
     description: "尖拱、彩色玻璃和垂直线条，渴望摆脱重力，向上触摸神性。",
