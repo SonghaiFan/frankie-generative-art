@@ -175,45 +175,35 @@ const App: React.FC = () => {
             {creativeResult ? (
               <>
                 <div className="absolute inset-0 z-0">
-                  <P5Renderer code={creativeResult.p5Code} />
+                  <P5Renderer
+                    code={creativeResult.p5Code}
+                    styleName={creativeResult.styleName}
+                    explanation={creativeResult.explanation}
+                  />
                 </div>
 
-                {/* Final Overlay UI */}
-                <div className="relative z-10 w-full h-full pointer-events-none flex flex-col justify-end p-10">
-                  <div className="max-w-[600px] pointer-events-none">
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 1 }}
-                      className="mix-blend-difference text-white"
-                    >
-                      <div className="font-serif text-[0.7rem] font-light text-white/70 uppercase tracking-[0.3em] mb-2">
-                        Aesthetic Signature
-                      </div>
-                      <h1 className="text-[3rem] font-serif leading-none mb-4 -ml-1">
-                        {creativeResult.styleName}
-                      </h1>
-                      <p className="font-serif text-[1rem] leading-[1.6] border-l border-white/50 pl-4 mb-10 opacity-90">
-                        {creativeResult.explanation}
-                      </p>
+                {/* React-side Buttons Layer (Overlaying iframe) */}
+                <div className="absolute bottom-10 right-10 z-20 pointer-events-auto flex items-center gap-10 mix-blend-difference">
+                  <motion.button
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 0.4 }}
+                    whileHover={{ opacity: 1 }}
+                    onClick={handleDownload}
+                    className="flex items-center gap-2 group"
+                  >
+                    <Download size={12} className="text-white" />
+                    <span className="text-[9px] text-white font-serif uppercase tracking-[0.4em]">Export</span>
+                  </motion.button>
 
-                      <div className="flex items-center gap-8 pointer-events-auto">
-                        <button
-                          onClick={handleDownload}
-                          className="flex items-center gap-3 px-8 py-3 bg-white text-black rounded-full hover:scale-105 transition-all group shadow-[0_0_20px_rgba(255,255,255,0.2)]"
-                        >
-                          <Download size={14} />
-                          <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Save Artifact</span>
-                        </button>
-                        <button
-                          onClick={resetGame}
-                          className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 hover:opacity-100 transition-opacity"
-                        >
-                          Restart Sequence
-                        </button>
-                      </div>
-                    </motion.div>
-                  </div>
+                  <motion.button
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 0.4 }}
+                    whileHover={{ opacity: 1 }}
+                    onClick={resetGame}
+                    className="text-[9px] text-white font-serif uppercase tracking-[0.4em]"
+                  >
+                    Reset
+                  </motion.button>
                 </div>
               </>
             ) : (
