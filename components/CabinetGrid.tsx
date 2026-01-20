@@ -38,8 +38,8 @@ const CabinetGrid: React.FC<CabinetGridProps> = ({ cards, onSelectionComplete })
     >
 
       {/* 1. HERO SECTION (Architectural Layout) */}
-      <section className="relative w-full min-h-screen p-4 md:p-8 snap-start flex flex-col">
-        <div className="flex-1 border border-white/20 relative flex flex-col p-6 md:p-20 overflow-hidden">
+      <section className="relative w-full min-h-screen snap-start flex flex-col">
+        <div className="flex-1 border-b border-white/20 relative flex flex-col p-6 md:p-20 overflow-hidden">
           {/* Architectural Grid Background */}
           <div className="absolute inset-0 pointer-events-none opacity-[0.02]"
             style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
@@ -140,8 +140,8 @@ const CabinetGrid: React.FC<CabinetGridProps> = ({ cards, onSelectionComplete })
       </div>
 
       {/* Full Screen Grid - Architectural Cells */}
-      <div id="grid-start" className="w-full z-10 p-4 md:p-8 snap-start bg-black">
-        <div className="border-l border-t border-white/20 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5">
+      <div id="grid-start" className="w-full z-10 snap-start bg-black">
+        <div className="border-t border-l border-white/20 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5">
           {cards.map((card, index) => {
             const isSelected = selectedIds.includes(card.id);
             const isHovered = hoveredId === card.id;
@@ -163,12 +163,8 @@ const CabinetGrid: React.FC<CabinetGridProps> = ({ cards, onSelectionComplete })
                 onMouseLeave={() => setHoveredId(null)}
                 onClick={() => handleToggle(card.id)}
               >
-                {/* Tech Corners */}
-                <div className="absolute top-0 left-0 w-1.5 h-1.5 border-l border-t border-white/20 transition-colors group-hover:border-white/50" />
-                <div className="absolute bottom-0 right-0 w-1.5 h-1.5 border-r border-b border-white/20 transition-colors group-hover:border-white/50" />
-
                 {/* Index Number */}
-                <div className="absolute top-2 left-2 font-ui text-[7px] text-white/20 group-hover:text-white/40">
+                <div className="absolute top-2 left-3 font-ui text-[7px] text-white/20 group-hover:text-white/40">
                   {index < 10 ? `0${index}` : index}
                 </div>
 
@@ -194,17 +190,17 @@ const CabinetGrid: React.FC<CabinetGridProps> = ({ cards, onSelectionComplete })
                   )}
                 </AnimatePresence>
 
-                {/* Text Label */}
-                <div className="absolute inset-x-0 bottom-0 z-20 flex flex-col items-center justify-center py-3 px-4 text-center bg-black/80 backdrop-blur-md border-t border-white/10 group-hover:bg-black transition-colors">
+                {/* Text Label - Centered */}
+                <div className="absolute inset-0 z-20 flex flex-col items-center justify-center p-6 text-center">
                   <div className={`
-                        font-ui text-[10px] md:text-[11px] tracking-[0.4em] uppercase transition-all duration-300 font-medium
-                        ${isActive ? 'text-white' : 'text-white/40 group-hover:text-white/80'}
+                        font-ui text-[10px] md:text-[11px] tracking-[0.6em] uppercase transition-all duration-300 font-medium
+                        ${isActive ? 'text-white translate-y-0' : 'text-white/30 group-hover:text-white/80'}
                     `}>
                     {card.term}
                   </div>
                   <div className={`
-                        mt-1 font-ui text-[7px] tracking-[0.1em] text-white/30 uppercase transition-all duration-500
-                        ${isActive ? 'opacity-100 max-h-4' : 'opacity-0 max-h-0'} overflow-hidden
+                        mt-2 font-ui text-[7px] tracking-[0.2em] text-white/40 uppercase transition-all duration-500
+                        ${isActive ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}
                     `}>
                     {card.era}
                   </div>

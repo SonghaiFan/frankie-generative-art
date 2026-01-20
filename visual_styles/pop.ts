@@ -736,10 +736,6 @@ export const popStyles: ArtStyle[] = [
         p.rectMode(p.CENTER);
         p.rect(0, 0, p.width * 0.9, 80);
         p.fill(255);
-        p.textSize(45);
-        p.textStyle(p.BOLD);
-        p.textAlign(p.CENTER, p.CENTER);
-        p.text("ABSTRACT_UGLY", 0, 0);
         p.pop();
 
         // 4. Subtle Post-Digital Noise
