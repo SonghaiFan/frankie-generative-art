@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence, useMotionValue } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Download } from 'lucide-react';
 
 import CabinetGrid from './components/CabinetGrid';
@@ -77,19 +77,6 @@ const App: React.FC = () => {
     setCreativeResult(null);
   };
 
-  // --- Custom Cursor Logic ---
-  const cursorX = useMotionValue(-100);
-  const cursorY = useMotionValue(-100);
-
-  useEffect(() => {
-    const moveCursor = (e: MouseEvent) => {
-      cursorX.set(e.clientX - 6);
-      cursorY.set(e.clientY - 6);
-    };
-    window.addEventListener('mousemove', moveCursor);
-    return () => window.removeEventListener('mousemove', moveCursor);
-  }, []);
-
   const handleDownload = () => {
     if (!creativeResult) return;
 
@@ -142,12 +129,6 @@ const App: React.FC = () => {
 
   return (
     <main className="fixed inset-0 w-full h-full bg-black overflow-hidden text-[#d4d4d4] font-serif cursor-none">
-
-      {/* Custom Cursor Dot */}
-      <motion.div
-        className="fixed top-0 left-0 w-3 h-3 bg-white rounded-full pointer-events-none z-[9999] mix-blend-difference"
-        style={{ x: cursorX, y: cursorY }}
-      />
 
       {/* 
          Global Spotlight:
