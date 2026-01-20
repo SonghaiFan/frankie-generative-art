@@ -2,20 +2,24 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { UserInteraction, AnalysisResult, CreativeArtResult } from "../types";
 import { FALLBACK_CREATIVE_RESULT } from "../constants";
 
-const apiKey = process.env.API_KEY || "";
+const apiKey = (process.env.API_KEY && process.env.API_KEY !== "undefined") ? process.env.API_KEY : "";
 const ai = new GoogleGenAI({ apiKey });
 
 // Analyze user preferences
 export const analyzeUserStyle = async (
   history: UserInteraction[],
 ): Promise<AnalysisResult> => {
+  console.log("Analyzing style with architecture history...");
+  
   // If no API key, return a poetic fallback
-  if (!apiKey)
+  if (!apiKey || apiKey === "undefined") {
+    console.warn("API Key is missing or undefined string. Using fallback.");
     return {
       archetype: "神秘主义漫游者",
       philosophy: "你似乎在寻找一种超越形式的秩序，在混乱与结构之间游走。",
       followUpQuestion: "当混乱降临时，你会试图整理它，还是加入它？",
     };
+  }
 
   const interactionsText = history
     .map((h) => `User ${h.action} the concept "${h.term}".`)
@@ -33,9 +37,11 @@ export const analyzeUserStyle = async (
     Return JSON.
   `;
 
+  console.log("Starting style analysis...");
+
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+      model: "gemini-1.5-flash",
       contents: prompt,
       config: {
         responseMimeType: "application/json",
@@ -66,7 +72,8 @@ export const generateCreativeArt = async (
   analysisText: string,
   finalChoice: string,
 ): Promise<CreativeArtResult> => {
-  if (!apiKey)
+  if (!apiKey || apiKey === "undefined") {
+    console.warn("API Key is missing or undefined string in creative generation. Using fallback.");
     return {
       styleName: "Simulated Dream",
       explanation: "API Key missing. Visualizing fallback dream state.",
@@ -104,9 +111,11 @@ export const generateCreativeArt = async (
       Return JSON.
     `;
 
+  console.log("Generating creative art...");
+
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+      model: "gemini-1.5-flash",
       contents: prompt,
       config: {
         responseMimeType: "application/json",
