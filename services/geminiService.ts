@@ -84,6 +84,7 @@ export const generateCreativeArt = async (
       3. Write a complete, functional p5.js sketch that visually represents this style.
          - The sketch MUST be in GLOBAL mode (define function setup() and function draw() at top level).
          - Use 'windowWidth' and 'windowHeight' for full screen.
+         - RENDER MODE: You may use default 2D or WEBGL. If using 3D primitives or texture(), MUST use createCanvas(windowWidth, windowHeight, WEBGL).
          - Handle window resizing in 'windowResized()' if possible.
          - Do NOT use external images or fonts, only p5 drawing primitives.
          - Make it animated or interactive or both.

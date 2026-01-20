@@ -6,6 +6,7 @@ import CabinetGrid from './components/CabinetGrid';
 import AnalysisView from './components/AnalysisView';
 import P5Renderer from './components/P5Renderer';
 import Spotlight from './components/Spotlight';
+import LoadingTerminal from './components/LoadingTerminal';
 
 import { GameState, UserInteraction, AnalysisResult, CreativeArtResult } from './types';
 import { analyzeUserStyle, generateCreativeArt } from './services/geminiService';
@@ -215,9 +216,7 @@ const App: React.FC = () => {
                 </div>
               </>
             ) : (
-              <div className="flex items-center justify-center w-full h-full text-white/30 animate-pulse font-serif text-2xl">
-                Synthesizing Final Form...
-              </div>
+              <LoadingTerminal />
             )}
           </motion.div>
         )}
