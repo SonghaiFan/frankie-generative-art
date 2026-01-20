@@ -180,32 +180,32 @@ const ArtArchive: React.FC<ArtArchiveProps> = ({ cards, onSelectionComplete }) =
             exit={{ opacity: 0, y: 20 }}
             className="fixed bottom-12 left-0 right-0 flex justify-center z-[60] pointer-events-none"
           >
-            <div className="flex items-stretch pointer-events-auto bg-black border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+            <div className="flex items-stretch pointer-events-auto bg-black border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.5)] max-w-[95vw] sm:max-w-none">
 
               {/* Manifest Slots (Architectural) */}
-              <div className="flex items-center gap-6 px-6 border-r border-white/10">
-                <div className="flex items-center gap-5">
+              <div className="flex items-center gap-2 md:gap-6 px-3 md:px-6 border-r border-white/10 overflow-hidden min-w-0">
+                <div className="flex items-center gap-2 md:gap-5 min-w-0">
                   {[0, 1, 2].map((i) => {
                     const id = selectedIds[i];
                     const card = id ? cards.find(c => c.id === id) : null;
                     return (
-                      <div key={i} className="flex items-center gap-2 group/item">
+                      <div key={i} className="flex items-center gap-1 md:gap-2 group/item shrink-0">
                         <div
-                          className={`w-2 h-2 border transition-all duration-500 ${card ? 'bg-white border-white rotate-45' : 'border-white/20'}`}
+                          className={`w-1.5 h-1.5 md:w-2 md:h-2 border transition-all duration-500 ${card ? 'bg-white border-white rotate-45' : 'border-white/20'}`}
                         />
-                        <AnimatePresence>
+                        <AnimatePresence mode="wait">
                           {card && (
                             <motion.button
-                              initial={{ opacity: 0, width: 0 }}
-                              animate={{ opacity: 1, width: 'auto' }}
-                              exit={{ opacity: 0, width: 0 }}
+                              initial={{ opacity: 0, x: -5 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              exit={{ opacity: 0, x: -5 }}
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleToggle(card.id);
                               }}
-                              className="overflow-hidden whitespace-nowrap"
+                              className="flex items-center min-w-0"
                             >
-                              <span className="font-ui text-[9px] tracking-[0.2em] uppercase text-white/60 group-hover/item:text-white transition-colors">
+                              <span className="font-ui text-[8px] md:text-[9px] tracking-[0.1em] md:tracking-[0.2em] uppercase text-white/60 group-hover/item:text-white transition-colors truncate max-w-[50px] sm:max-w-[100px] md:max-w-none">
                                 {card.term}
                               </span>
                             </motion.button>
@@ -215,8 +215,8 @@ const ArtArchive: React.FC<ArtArchiveProps> = ({ cards, onSelectionComplete }) =
                     );
                   })}
                 </div>
-                <div className="h-4 w-px bg-white/10" />
-                <span className="font-ui text-[9px] tracking-[0.4em] uppercase text-white/20">
+                <div className="h-4 w-px bg-white/10 shrink-0" />
+                <span className="font-ui text-[8px] md:text-[9px] tracking-[0.2em] md:tracking-[0.4em] uppercase text-white/20 shrink-0">
                   {selectedIds.length}/3
                 </span>
               </div>
@@ -230,7 +230,7 @@ const ArtArchive: React.FC<ArtArchiveProps> = ({ cards, onSelectionComplete }) =
                     document.getElementById('grid-start')?.scrollIntoView({ behavior: 'smooth' });
                   }
                 }}
-                className={`group relative flex items-center justify-center w-20 h-14 transition-all duration-500 ${isComplete ? 'bg-white text-black' : 'bg-transparent text-white/40'}`}
+                className={`group relative flex items-center justify-center w-14 md:w-20 h-12 md:h-14 transition-all duration-500 shrink-0 ${isComplete ? 'bg-white text-black' : 'bg-transparent text-white/40'}`}
                 title={isComplete ? t('cabinet.synthesizeOracle') : t('cabinet.exploreArchive')}
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-black/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
