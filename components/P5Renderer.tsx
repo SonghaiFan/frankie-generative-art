@@ -19,6 +19,14 @@ const P5Renderer: React.FC<P5RendererProps> = ({ code, styleName, explanation })
       <!DOCTYPE html>
       <html>
         <head>
+          <script>
+            // CRITICAL: Patch to prevent 'unload' violation BEFORE any libraries load
+            const originalAddEventListener = window.addEventListener;
+            window.addEventListener = function(type, listener, options) {
+              if (type === 'unload' || type === 'beforeunload') return;
+              return originalAddEventListener.call(this, type, listener, options);
+            };
+          </script>
           <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
           <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/addons/p5.sound.min.js"></script>
           <script src="https://unpkg.com/ml5@1/dist/ml5.min.js"></script>
@@ -61,13 +69,6 @@ const P5Renderer: React.FC<P5RendererProps> = ({ code, styleName, explanation })
           </div>
           ` : ""}
           <script>
-            // Patch to prevent 'unload' event listener which causes Permissions Policy violation
-            const originalAddEventListener = window.addEventListener;
-            window.addEventListener = function(type, listener, options) {
-              if (type === 'unload') return;
-              return originalAddEventListener.call(this, type, listener, options);
-            };
-
             // Patch getContext to set willReadFrequently and fix the warning
             const oldGetContext = HTMLCanvasElement.prototype.getContext;
             HTMLCanvasElement.prototype.getContext = function(type, attributes) {

@@ -119,11 +119,13 @@ export const generateCreativeArt = async (
       3. Write a COMPLETE, FUNCTIONAL p5.js sketch representing this style.
 
       TECHNICAL CONSTRAINTS:
-      - Global mode p5.js. Fullscreen with windowResized.
-      - No external assets. HSB color. Dark background.
-      - ml5.js v1: Use "ml5.handPose()", "ml5.bodyPose()", or "ml5.faceMesh()" with ".detectStart()".
-      - No 'unload' events (Permissions Policy violation).
-      - No code comments. Prioritize visual impact.
+      - Global mode p5.js. Fullscreen (windowResized).
+      - HSB color. Dark background. No assets.
+      - ml5.js v1: Use ml5.handPose(), ml5.bodyPose(), or ml5.faceMesh(). 
+      - CRITICAL: Call .detectStart() ONLY inside the model's load callback.
+      - VISION UI: For grid-based video, use center-cropping (do not compress/stretch).
+      - ANNOTATIONS: Use black-background tags (e.g., "@ID") anchored to face parts (like mouth/nose) for a biometric aesthetic.
+      - PERFORMANCE: Use loadPixels() for raw image processing. No 'unload' events.
       
       Return JSON.
     `;
