@@ -116,17 +116,15 @@ export const generateCreativeArt = async (
       TASK:
       1. Invent a specific, unique art movement name.
       2. Explain the visual language (forms, colors, motion) in Chinese.
-      3. Write a COMPLETE, FUNCTIONAL p5.js sketch representing this style.
+      3. Write a COMPLETE, FUNCTIONAL p5.js (v2) sketch representing this style.
 
       TECHNICAL CONSTRAINTS:
-      - Global mode p5.js. Fullscreen (windowResized).
+      - Global mode. Fullscreen (windowResized).
+      - Various inputs: mouse/touch, audio (userStartAudio), webcam (ml5.js).
       - HSB color. Dark background. No assets.
-      - ml5.js v1: Use ml5.handPose(), ml5.bodyPose(), or ml5.faceMesh(). 
-      - CRITICAL: Call .detectStart() ONLY inside the model's load callback.
-      - VISION UI: For grid-based video, use center-cropping (do not compress/stretch).
-      - ANNOTATIONS: Use black-background tags (e.g., "@ID") anchored to face parts (like mouth/nose) for a biometric aesthetic.
-      - PERFORMANCE: Use loadPixels() for raw image processing. No 'unload' events.
-      
+      - ml5.js v1: Use ml5.handPose(), ml5.bodyPose(), or ml5.faceMesh().
+      - For video, use center-cropping (do not compress/stretch).
+      - Use loadPixels() for raw image processing. No 'unload' events.
       Return JSON.
     `;
 

@@ -27,8 +27,8 @@ const P5Renderer: React.FC<P5RendererProps> = ({ code, styleName, explanation })
               return originalAddEventListener.call(this, type, listener, options);
             };
           </script>
-          <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
-          <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/addons/p5.sound.min.js"></script>
+          <script src="https://cdn.jsdelivr.net/npm/p5@1.11.2/lib/p5.min.js"></script>
+          <script src="https://cdn.jsdelivr.net/npm/p5@1.11.2/lib/addons/p5.sound.min.js"></script>
           <script src="https://unpkg.com/ml5@1/dist/ml5.min.js"></script>
           <style>
             @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;400;700&display=swap');

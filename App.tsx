@@ -100,7 +100,7 @@ const App: React.FC = () => {
 <head>
   <meta charset="UTF-8">
   <title>${currentResult.styleName} - Art Archive Oracle</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/p5@2.2.0/lib/p5.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/addons/p5.sound.min.js"></script>
   <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
   <style>
