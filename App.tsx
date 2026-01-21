@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Download, RotateCcw } from 'lucide-react';
+import { Download, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import ArtArchive from './components/ArtArchive';
@@ -22,7 +22,8 @@ const App: React.FC = () => {
 
   const [userHistory, setUserHistory] = useState<UserInteraction[]>([]);
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
-  const [creativeResult, setCreativeResult] = useState<CreativeArtResult | null>(null);
+  const [creativeResults, setCreativeResults] = useState<CreativeArtResult[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   // --- Handlers ---
 
@@ -67,10 +68,17 @@ const App: React.FC = () => {
     const analysisPhilosophy = analysis?.philosophy || "Unknown";
 
     try {
-      const result = await generateCreativeArt(userHistory, analysisPhilosophy, response);
-      setCreativeResult(result);
+      // Generate 3 artworks in parallel
+      const results = await Promise.all([
+        generateCreativeArt(userHistory, analysisPhilosophy, response),
+        generateCreativeArt(userHistory, analysisPhilosophy, response),
+        generateCreativeArt(userHistory, analysisPhilosophy, response)
+      ]);
+      setCreativeResults(results);
+      setCurrentIndex(0);
     } catch (e) {
       console.error(e);
+      setCreativeResults([FALLBACK_CREATIVE_RESULT]);
     }
   };
 
@@ -78,18 +86,20 @@ const App: React.FC = () => {
     setGameState(GameState.IDLE);
     setUserHistory([]);
     setAnalysis(null);
-    setCreativeResult(null);
+    setCreativeResults([]);
+    setCurrentIndex(0);
   };
 
   const handleDownload = () => {
-    if (!creativeResult) return;
+    const currentResult = creativeResults[currentIndex];
+    if (!currentResult) return;
 
     const htmlContent = `
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <title>${creativeResult.styleName} - Art Archive Oracle</title>
+  <title>${currentResult.styleName} - Art Archive Oracle</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/addons/p5.sound.min.js"></script>
   <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
@@ -125,8 +135,8 @@ const App: React.FC = () => {
   <div class="gradient-drop"></div>
   <div id="overlay">
     <div class="meta">${t('result.aestheticSignature')}</div>
-    <h1>${creativeResult.styleName}</h1>
-    <p>${creativeResult.explanation}</p>
+    <h1>${currentResult.styleName}</h1>
+    <p>${currentResult.explanation}</p>
   </div>
   <script>
     // Ensure p5.js sound works with user gesture
@@ -139,7 +149,7 @@ const App: React.FC = () => {
       };
     }
     
-    ${creativeResult.p5Code}
+    ${currentResult.p5Code}
   </script>
 </body>
 </html>`;
@@ -187,52 +197,99 @@ const App: React.FC = () => {
       )}
 
       {/* LAYER 3: Creative Result */}
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {gameState === GameState.CREATIVE_PATH && (
           <motion.div
+            key="creative-path"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             className="fixed inset-0 z-[80] bg-black flex flex-col cursor-auto"
           >
-            {creativeResult ? (
-              <>
-                <div className="absolute inset-0 z-0">
-                  <P5Renderer
-                    code={creativeResult.p5Code}
-                    styleName={creativeResult.styleName}
-                    explanation={creativeResult.explanation}
-                  />
-                </div>
+            {creativeResults.length > 0 ? (
+              <div className="relative w-full h-full overflow-hidden">
+                <AnimatePresence initial={false} custom={currentIndex}>
+                  <motion.div
+                    key={currentIndex}
+                    custom={currentIndex}
+                    initial={{ opacity: 0, x: 300 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -300 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    className="absolute inset-0"
+                  >
+                    <div className="absolute inset-0 z-0">
+                      <P5Renderer
+                        code={creativeResults[currentIndex].p5Code}
+                        styleName={creativeResults[currentIndex].styleName}
+                        explanation={creativeResults[currentIndex].explanation}
+                      />
+                    </div>
+                  </motion.div>
+                </AnimatePresence>
 
-                {/* React-side Buttons Layer (Overlaying iframe) */}
-                <div className="absolute bottom-10 left-0 right-0 z-20 pointer-events-none flex justify-center">
-                  <div className="flex items-center gap-4 pointer-events-auto bg-black/40 backdrop-blur-sm p-1.5 border border-white/10">
-                    <motion.button
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      onClick={handleDownload}
-                      className="flex items-center justify-center w-10 h-10 bg-white text-black shadow-lg transition-transform"
-                      title={t('result.exportArchive')}
-                    >
-                      <Download size={18} />
-                    </motion.button>
+                {/* Consistently Minimalist Control Panel */}
+                <div className="absolute bottom-12 left-0 right-0 z-40 pointer-events-none flex justify-center px-6">
+                  <div className="flex items-center pointer-events-auto bg-black/80 backdrop-blur-xl border border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.8)] px-2">
 
-                    <motion.button
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      whileHover={{ scale: 1.1, backgroundColor: "rgba(255,255,255,0.1)" }}
-                      whileTap={{ scale: 0.9 }}
-                      onClick={resetGame}
-                      className="flex items-center justify-center w-10 h-10 text-white border border-white/20 transition-all"
-                      title={t('result.initializeNew')}
-                    >
-                      <RotateCcw size={18} />
-                    </motion.button>
+                    {/* Navigation Cluster */}
+                    <div className="flex items-center h-12 md:h-14">
+                      <button
+                        onClick={() => setCurrentIndex(prev => (prev - 1 + creativeResults.length) % creativeResults.length)}
+                        className="w-10 h-10 flex items-center justify-center text-white/30 hover:text-white transition-all hover:scale-110"
+                      >
+                        <ChevronLeft size={16} strokeWidth={1.5} />
+                      </button>
+
+                      <div className="px-4 flex flex-col items-center gap-1">
+                        <span className="font-ui text-[9px] tracking-[0.3em] text-white/40">
+                          {currentIndex + 1}&thinsp;/&thinsp;{creativeResults.length}
+                        </span>
+                        <div className="flex gap-1.5">
+                          {creativeResults.map((_, i) => (
+                            <div
+                              key={i}
+                              className={`h-[1px] transition-all duration-700 ${i === currentIndex ? 'bg-white w-4' : 'bg-white/10 w-2'}`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={() => setCurrentIndex(prev => (prev + 1) % creativeResults.length)}
+                        className="w-10 h-10 flex items-center justify-center text-white/30 hover:text-white transition-all hover:scale-110"
+                      >
+                        <ChevronRight size={16} strokeWidth={1.5} />
+                      </button>
+                    </div>
+
+                    <div className="w-px h-6 bg-white/10 mx-2" />
+
+                    {/* Actions Cluster */}
+                    <div className="flex items-center h-12 md:h-14 gap-1">
+                      <motion.button
+                        whileHover={{ scale: 1.1, color: "#fff" }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={handleDownload}
+                        className="w-12 h-12 flex items-center justify-center text-white/40 transition-colors"
+                        title={t('result.exportArchive')}
+                      >
+                        <Download size={18} strokeWidth={1.5} />
+                      </motion.button>
+
+                      <motion.button
+                        whileHover={{ scale: 1.1, color: "#fff" }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={resetGame}
+                        className="w-12 h-12 flex items-center justify-center text-white/40 transition-colors"
+                        title={t('result.initializeNew')}
+                      >
+                        <RotateCcw size={18} strokeWidth={1.5} />
+                      </motion.button>
+                    </div>
                   </div>
                 </div>
-              </>
+              </div>
             ) : (
               <LoadingTerminal />
             )}

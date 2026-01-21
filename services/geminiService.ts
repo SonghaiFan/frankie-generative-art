@@ -148,6 +148,7 @@ export const generateCreativeArt = async (
       - **Efficiency**: Use HSB color mode for fluid changes. If using 3D, use 'WEBGL'.
       - **Dark Mode Friendly**: Prefer darker backgrounds with vibrant elements.
       - **No Comments**: Do NOT include any comments in the code.
+      - **Creativity Over Complexity**: Prioritize artistic expression over technical complexity.
 
       OUTPUT FORMAT:
       JSON with keys: styleName, explanation, p5Code.
@@ -161,7 +162,7 @@ export const generateCreativeArt = async (
       model: "gemini-3-flash-preview",
       contents: prompt,
       config: {
-        temperature: 0.8,
+        temperature: 1,
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.OBJECT,
