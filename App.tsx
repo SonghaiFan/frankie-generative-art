@@ -103,7 +103,6 @@ const App: React.FC = () => {
         left: 40px;
         max-width: 600px;
         color: white;
-        mix-blend-mode: difference;
         pointer-events: none;
         z-index: 100;
     }

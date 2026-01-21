@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -11,15 +10,13 @@ interface ArtArchiveProps {
   onSelectionComplete: (selectedIds: string[]) => void;
 }
 
-// Available art oracle HTML files
-// Available art HTML files
-const artModules = import.meta.glob('../public/art_*.html', {
-  eager: true,
-  query: '?url',
-  import: 'default'
-});
-const artFiles = Object.values(artModules)
-  .filter((url): url is string => typeof url === 'string');
+// Available art HTML files in /public (served from the site root)
+const artModules = (import.meta as any).glob('/public/*.html');
+
+// Convert the matched module keys (e.g. "/public/art_123.html") into runtime URLs (e.g. "/art_123.html")
+const artFiles = Object.keys(artModules)
+  .filter((p) => p.endsWith('.html'))
+  .map((p) => p.replace(/^\/public/, ''));
 
 const ArtArchive: React.FC<ArtArchiveProps> = ({ cards, onSelectionComplete }) => {
   const { t } = useTranslation();

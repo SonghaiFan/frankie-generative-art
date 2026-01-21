@@ -99,21 +99,19 @@ export const analyzeUserStyle = async (
 export const generateCreativeArt = async (
   history: UserInteraction[],
   analysisText: string,
-  finalChoice: string,
+  finalComment: string,
 ): Promise<CreativeArtResult> => {
   const visualTags = Array.from(
     new Set(history.flatMap((h) => h.visualElements || [])),
   );
   const historySummary = history.map((h) => h.term).join(", ");
   const visualSummary = visualTags.join(", ");
-
-  // We explicitly tell the AI it has access to the p5.sound and ml5 libraries
   const prompt = `
       CONTEXT:
-      User History: ${historySummary}
+      User Preference: ${historySummary}
       Associated Visual Elements: ${visualSummary}
       Psychological Profile: "${analysisText}"
-      Final Answer: "${finalChoice}"
+      User Comment: "${finalComment}"
 
       TASK:
       1. Invent a specific, unique art movement name (e.g., "Resonant Dataism", "Echoic Void").
@@ -146,15 +144,17 @@ export const generateCreativeArt = async (
          - Pose/Object/Face detection via webcam.
 
       CRITICAL RULES:
-      - **Interaction Activation**: Browsers block audio/mic/cam by default. You MUST include a mechanism to start the context in 'mousePressed()' or 'touchStarted()' using 'userStartAudio()'. Draw clear instructions on screen like "Click to Start" until the user interacts.
-      - **Robustness**: Always check if classes exist before instantiation (e.g., 'if (typeof p5.AudioIn !== "undefined")').
+      - **Robustness**: Always check if classes exist before instantiation
       - **Efficiency**: Use HSB color mode for fluid changes. If using 3D, use 'WEBGL'.
+      - **Dark Mode Friendly**: Prefer darker backgrounds with vibrant elements.
+      - **No Comments**: Do NOT include any comments in the code.
 
       OUTPUT FORMAT:
       JSON with keys: styleName, explanation, p5Code.
     `;
 
   console.log("Generating creative art...");
+  console.log("Prompt:", prompt);
 
   try {
     const response = await ai.models.generateContent({
