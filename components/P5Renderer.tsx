@@ -21,7 +21,7 @@ const P5Renderer: React.FC<P5RendererProps> = ({ code, styleName, explanation })
         <head>
           <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
           <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/addons/p5.sound.min.js"></script>
-          <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
+          <script src="https://unpkg.com/ml5@1/dist/ml5.min.js"></script>
           <style>
             @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;400;700&display=swap');
             body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Noto Serif SC', serif; }
@@ -61,6 +61,13 @@ const P5Renderer: React.FC<P5RendererProps> = ({ code, styleName, explanation })
           </div>
           ` : ""}
           <script>
+            // Patch to prevent 'unload' event listener which causes Permissions Policy violation
+            const originalAddEventListener = window.addEventListener;
+            window.addEventListener = function(type, listener, options) {
+              if (type === 'unload') return;
+              return originalAddEventListener.call(this, type, listener, options);
+            };
+
             // Patch getContext to set willReadFrequently and fix the warning
             const oldGetContext = HTMLCanvasElement.prototype.getContext;
             HTMLCanvasElement.prototype.getContext = function(type, attributes) {

@@ -1,37 +1,73 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
   <meta charset="UTF-8">
   <title>隐匿孟菲斯幻影 (Phantom Memphis Flux) - Art Archive Oracle</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;400;700&display=swap');
-    body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Noto Serif SC', serif; }
-    canvas { display: block; }
-    #overlay {
-        position: absolute;
-        bottom: 40px;
-        left: 40px;
-        max-width: 600px;
-        color: white;
-        mix-blend-mode: difference;
-        pointer-events: none;
-        z-index: 100;
+
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #000;
+      font-family: 'Noto Serif SC', serif;
     }
-    h1 { font-size: 3rem; margin: 0 0 1rem 0; font-weight: 200; letter-spacing: 0.05em; }
-    p { font-size: 1rem; line-height: 1.6; opacity: 0.9; margin: 0; padding-left: 1rem; border-left: 1px solid rgba(255,255,255,0.5); }
-    .meta { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.3em; margin-bottom: 0.5rem; opacity: 0.7; }
+
+    canvas {
+      display: block;
+    }
+
+    #overlay {
+      position: absolute;
+      bottom: 40px;
+      left: 40px;
+      max-width: 600px;
+      color: white;
+      mix-blend-mode: difference;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin: 0 0 1rem 0;
+      font-weight: 200;
+      letter-spacing: 0.05em;
+    }
+
+    p {
+      font-size: 1rem;
+      line-height: 1.6;
+      opacity: 0.9;
+      margin: 0;
+      padding-left: 1rem;
+      border-left: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .meta {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      margin-bottom: 0.5rem;
+      opacity: 0.7;
+    }
   </style>
 </head>
+
 <body>
   <div id="overlay">
     <div class="meta">美学签名</div>
     <h1>隐匿孟菲斯幻影 (Phantom Memphis Flux)</h1>
-    <p>这种视觉风格被称为‘隐匿孟菲斯幻影’。它在孟菲斯运动的叛逆美学基础上，引入了‘掩盖与揭示’的动态张力。画面充满了高饱和度的几何构件、波浪线条和碎屑纹理，但这些鲜艳的元素被一层深邃的、由噪声驱动的‘遮罩层’所部分掩盖。只有当形状穿过视窗的特定区域时，其原本的狂热色彩才会迸发。这象征着在社会秩序的‘掩盖’下，一个个体灵魂通过戏谑和混乱来重构自我意义的过程。请点击屏幕以重置随机色彩种子，并移动鼠标来引导这股‘叛逆的力量’。</p>
+    <p>
+      这种视觉风格被称为‘隐匿孟菲斯幻影’。它在孟菲斯运动的叛逆美学基础上，引入了‘掩盖与揭示’的动态张力。画面充满了高饱和度的几何构件、波浪线条和碎屑纹理，但这些鲜艳的元素被一层深邃的、由噪声驱动的‘遮罩层’所部分掩盖。只有当形状穿过视窗的特定区域时，其原本的狂热色彩才会迸发。这象征着在社会秩序的‘掩盖’下，一个个体灵魂通过戏谑和混乱来重构自我意义的过程。请点击屏幕以重置随机色彩种子，并移动鼠标来引导这股‘叛逆的力量’。
+    </p>
   </div>
   <script>
-    let shapes = [];let gridStep = 50;let noiseOffset = 0;function setup() {createCanvas(windowWidth, windowHeight);colorMode(HSB, 360, 100, 100, 1);for (let i = 0; i < 40; i++) {shapes.push(new MemphisShape());}}function draw() {background(240, 20, 5, 1);noiseOffset += 0.005;drawMemphisGrid();for (let s of shapes) {s.update();s.display();}drawMaskLayer();}function drawMemphisGrid() {stroke(200, 30, 20, 0.3);strokeWeight(1);for (let x = 0; x < width; x += gridStep) {line(x, 0, x, height);}for (let y = 0; y < height; y += gridStep) {line(0, y, width, y);}}function drawMaskLayer() {noStroke();fill(0, 0, 0, 0.85);beginShape();vertex(0, 0);vertex(width, 0);vertex(width, height);vertex(0, height);let holeSize = 300;for (let i = 0; i < 3; i++) {let nx = noise(noiseOffset + i * 10) * width;let ny = noise(noiseOffset + i * 20) * height;beginContour();for (let a = 0; a < TWO_PI; a += 0.1) {let r = holeSize * (0.8 + 0.2 * sin(a * 3 + frameCount * 0.05));let ox = nx + cos(a) * r;let oy = ny + sin(a) * r;vertex(ox, oy);}endContour();}beginContour();for (let a = 0; a < TWO_PI; a += 0.1) {let r = 150;let ox = mouseX + cos(a) * r;let oy = mouseY + sin(a) * r;vertex(ox, oy);}endContour();endShape(CLOSE);}class MemphisShape {constructor() {this.reset();}reset() {this.x = random(width);this.y = random(height);this.size = random(40, 120);this.type = floor(random(4));this.c = color(random([330, 190, 50, 280, 15]), 70, 95);this.rot = random(TWO_PI);this.v = createVector(random(-1, 1), random(-1, 1));this.rotV = random(-0.02, 0.02);}update() {this.x += this.v.x;this.y += this.v.y;this.rot += this.rotV;if (this.x < -100) this.x = width + 100;if (this.x > width + 100) this.x = -100;if (this.y < -100) this.y = height + 100;if (this.y > height + 100) this.y = -100;}display() {push();translate(this.x, this.y);rotate(this.rot);fill(this.c);noStroke();if (this.type === 0) {rectMode(CENTER);rect(0, 0, this.size, this.size);fill(0);for (let i = -this.size / 2; i < this.size / 2; i += 15) {ellipse(i + 7, 0, 5, 5);}} else if (this.type === 1) {ellipse(0, 0, this.size, this.size);stroke(0);strokeWeight(4);noFill();arc(0, 0, this.size + 10, this.size + 10, 0, PI);} else if (this.type === 2) {triangle(-this.size / 2, this.size / 2, this.size / 2, this.size / 2, 0, -this.size / 2);for (let j = 0; j < 5; j++) {stroke(0);line(-this.size / 2, -this.size / 2 + j * 10, this.size / 2, -this.size / 2 + j * 10);}} else {noFill();stroke(this.c);strokeWeight(8);beginShape();for (let t = -this.size / 2; t < this.size / 2; t += 5) {vertex(t, sin(t * 0.1) * 20);}endShape();pop();return;}pop();}}function mousePressed() {for (let s of shapes) {s.c = color(random(360), 80, 90);}}function windowResized() {resizeCanvas(windowWidth, windowHeight);}
+    let shapes = []; let gridStep = 50; let noiseOffset = 0; function setup() { createCanvas(windowWidth, windowHeight); colorMode(HSB, 360, 100, 100, 1); for (let i = 0; i < 40; i++) { shapes.push(new MemphisShape()); } } function draw() { background(240, 20, 5, 1); noiseOffset += 0.005; drawMemphisGrid(); for (let s of shapes) { s.update(); s.display(); } drawMaskLayer(); } function drawMemphisGrid() { stroke(200, 30, 20, 0.3); strokeWeight(1); for (let x = 0; x < width; x += gridStep) { line(x, 0, x, height); } for (let y = 0; y < height; y += gridStep) { line(0, y, width, y); } } function drawMaskLayer() { noStroke(); fill(0, 0, 0, 0.85); beginShape(); vertex(0, 0); vertex(width, 0); vertex(width, height); vertex(0, height); let holeSize = 300; for (let i = 0; i < 3; i++) { let nx = noise(noiseOffset + i * 10) * width; let ny = noise(noiseOffset + i * 20) * height; beginContour(); for (let a = 0; a < TWO_PI; a += 0.1) { let r = holeSize * (0.8 + 0.2 * sin(a * 3 + frameCount * 0.05)); let ox = nx + cos(a) * r; let oy = ny + sin(a) * r; vertex(ox, oy); } endContour(); } beginContour(); for (let a = 0; a < TWO_PI; a += 0.1) { let r = 150; let ox = mouseX + cos(a) * r; let oy = mouseY + sin(a) * r; vertex(ox, oy); } endContour(); endShape(CLOSE); } class MemphisShape { constructor() { this.reset(); } reset() { this.x = random(width); this.y = random(height); this.size = random(40, 120); this.type = floor(random(4)); this.c = color(random([330, 190, 50, 280, 15]), 70, 95); this.rot = random(TWO_PI); this.v = createVector(random(-1, 1), random(-1, 1)); this.rotV = random(-0.02, 0.02); } update() { this.x += this.v.x; this.y += this.v.y; this.rot += this.rotV; if (this.x < -100) this.x = width + 100; if (this.x > width + 100) this.x = -100; if (this.y < -100) this.y = height + 100; if (this.y > height + 100) this.y = -100; } display() { push(); translate(this.x, this.y); rotate(this.rot); fill(this.c); noStroke(); if (this.type === 0) { rectMode(CENTER); rect(0, 0, this.size, this.size); fill(0); for (let i = -this.size / 2; i < this.size / 2; i += 15) { ellipse(i + 7, 0, 5, 5); } } else if (this.type === 1) { ellipse(0, 0, this.size, this.size); stroke(0); strokeWeight(4); noFill(); arc(0, 0, this.size + 10, this.size + 10, 0, PI); } else if (this.type === 2) { triangle(-this.size / 2, this.size / 2, this.size / 2, this.size / 2, 0, -this.size / 2); for (let j = 0; j < 5; j++) { stroke(0); line(-this.size / 2, -this.size / 2 + j * 10, this.size / 2, -this.size / 2 + j * 10); } } else { noFill(); stroke(this.c); strokeWeight(8); beginShape(); for (let t = -this.size / 2; t < this.size / 2; t += 5) { vertex(t, sin(t * 0.1) * 20); } endShape(); pop(); return; } pop(); } } function mousePressed() { for (let s of shapes) { s.c = color(random(360), 80, 90); } } function windowResized() { resizeCanvas(windowWidth, windowHeight); }
   </script>
 </body>
+
 </html>

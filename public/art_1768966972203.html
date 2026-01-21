@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <title>律动轴间 (Rhhythmic Iso-Ma) - Art Archive Oracle</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/addons/p5.sound.min.js"></script>
+  <script src="https://unpkg.com/ml5@1/dist/ml5.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;400;700&display=swap');
+
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #000;
+      font-family: 'Noto Serif SC', serif;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    #overlay {
+      position: absolute;
+      bottom: 40px;
+      left: 40px;
+      max-width: 600px;
+      color: white;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin: 0 0 1rem 0;
+      font-weight: 200;
+      letter-spacing: 0.05em;
+    }
+
+    p {
+      font-size: 1rem;
+      line-height: 1.6;
+      opacity: 0.9;
+      margin: 0;
+      padding-left: 1rem;
+      border-left: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .meta {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      margin-bottom: 0.5rem;
+      opacity: 0.7;
+    }
+
+    .gradient-drop {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 60%;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.5) 40%, rgba(0, 0, 0, 0) 100%);
+      pointer-events: none;
+      z-index: 90;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="gradient-drop"></div>
+  <div id="overlay">
+    <div class="meta">美学签名</div>
+    <h1>律动轴间 (Rhhythmic Iso-Ma)</h1>
+    <p>
+      律动轴间融合了等轴测（Isometric）投影的严谨逻辑与东方美学中的‘间’（Ma）之概念。视觉上通过深邃的HSB色调构建出一个无限延伸的等距网格，每一个立方体代表一个秩序单元。通过捕捉手部（或鼠标）的动态位移，网格会产生如呼吸般的扩张与收缩，在理性克制的结构中创造出动态的留白。这种形式反映了在高度数字化的秩序中，通过人的介入（用手）找回灵动与超脱的审美追求。
+    </p>
+  </div>
+  <script>
+    // Patch to prevent 'unload' event listener which causes Permissions Policy violation
+    const originalAddEventListener = window.addEventListener;
+    window.addEventListener = function (type, listener, options) {
+      if (type === 'unload') return;
+      return originalAddEventListener.call(this, type, listener, options);
+    };
+
+    // Ensure p5.js sound works with user gesture
+    if (typeof window.userStartAudio === 'undefined') {
+      window.userStartAudio = function () {
+        if (window.getAudioContext && window.getAudioContext().resume) {
+          return window.getAudioContext().resume();
+        }
+        return Promise.resolve();
+      };
+    }
+
+    let video; let handPose; let predictions = []; let gridStep = 40;
+    function setup() {
+      createCanvas(windowWidth, windowHeight, WEBGL);
+      colorMode(HSB, 360, 100, 100, 1);
+      video = createCapture(VIDEO);
+      video.size(640, 480);
+      video.hide();
+      if (typeof ml5 !== 'undefined') {
+        handPose = ml5.handPose(video, () => {
+          handPose.detectStart(video, results => { predictions = results; });
+        });
+      }
+    }
+    function draw() {
+      background(230, 80, 5, 1);
+      orbitControl();
+      ortho(-width / 2, width / 2, -height / 2, height / 2, 0, 2000);
+      rotateX(-PI / 6);
+      rotateY(PI / 4);
+      let targetX = mouseX - width / 2;
+      let targetY = mouseY - height / 2;
+      if (predictions.length > 0) {
+        let indexFinger = predictions[0].index_finger_tip;
+        targetX = map(indexFinger.x, 0, 640, width / 2, -width / 2);
+        targetY = map(indexFinger.y, 0, 480, -height / 2, height / 2);
+      }
+      let pulse = sin(frameCount * 0.05) * 10;
+      for (let x = -width / 2; x < width / 2; x += gridStep) {
+        for (let z = -height / 2; z < height / 2; z += gridStep) {
+          let d = dist(targetX, targetY, x, z);
+          let h = map(d, 0, 500, 150, 10);
+          h = max(h, 5);
+          let hColor = map(d, 0, 800, 200, 300);
+          let alpha = map(d, 0, 800, 1, 0.2);
+          push();
+          translate(x, -h / 2, z);
+          fill(hColor, 70, 90, alpha);
+          stroke(hColor, 80, 40, alpha * 0.5);
+          strokeWeight(1);
+          box(gridStep * 0.6 + pulse * 0.2, h, gridStep * 0.6 + pulse * 0.2);
+          pop();
+        }
+      }
+    }
+    function windowResized() { resizeCanvas(windowWidth, windowHeight); }
+  </script>
+</body>
+
+</html>

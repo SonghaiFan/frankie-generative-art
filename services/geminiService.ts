@@ -114,44 +114,18 @@ export const generateCreativeArt = async (
       User Comment: "${finalComment}"
 
       TASK:
-      1. Invent a specific, unique art movement name (e.g., "Resonant Dataism", "Echoic Void").
+      1. Invent a specific, unique art movement name.
       2. Explain the visual language (forms, colors, motion) in Chinese.
       3. Write a COMPLETE, FUNCTIONAL p5.js sketch representing this style.
 
-      TECHNICAL CONSTRAINTS & LIBRARIES:
-      - **Global Mode**: Define 'setup()' and 'draw()' at the top level.
-      - **Responsiveness**: Use 'createCanvas(windowWidth, windowHeight)'. MUST include 'windowResized()'.
-      - **No External Assets**: DO NOT use 'loadImage', 'loadFont', or 'p5.SoundFile'. You CANNOT load external files.
+      TECHNICAL CONSTRAINTS:
+      - Global mode p5.js. Fullscreen with windowResized.
+      - No external assets. HSB color. Dark background.
+      - ml5.js v1: Use "ml5.handPose()", "ml5.bodyPose()", or "ml5.faceMesh()" with ".detectStart()".
+      - No 'unload' events (Permissions Policy violation).
+      - No code comments. Prioritize visual impact.
       
-      AVAILABLE CAPABILITIES:
-      Decide which of the following tools best represent the chosen style. You should integrate the ones that heighten the artistic expression:
-
-      1. **Audio (p5.sound)**:
-         - Audio-Reactive: 'p5.AudioIn' (Mic), 'p5.FFT' (Spectrum/Waveform).
-         - Generative Audio/Synthesis: 'p5.Oscillator', 'p5.MonoSynth', 'p5.PolySynth', 'p5.Noise', 'p5.Envelope'.
-         - Effects: 'p5.Reverb', 'p5.Delay', 'p5.Filter'.
-      
-      2. **Images & Pixels**:
-         - Real-time Video: 'createCapture(VIDEO)' for webcam input.
-         - Pixel Manipulation: 'loadPixels()', 'pixels[]', 'updatePixels()', 'get()', 'set()'.
-         - Off-screen Buffers: 'createGraphics()'.
-
-      3. **Interaction**:
-         - Mouse/Touch: 'mouseX', 'mouseY', 'pmouseX', 'mousePressed()', 'touchStarted()'.
-         - Motion: Device orientation/acceleration if applicable.
-
-      4. **Machine Learning (ml5.js)**:
-         - Pose/Object/Face detection via webcam.
-
-      CRITICAL RULES:
-      - **Robustness**: Always check if classes exist before instantiation
-      - **Efficiency**: Use HSB color mode for fluid changes. If using 3D, use 'WEBGL'.
-      - **Dark Mode Friendly**: Prefer darker backgrounds with vibrant elements.
-      - **No Comments**: Do NOT include any comments in the code.
-      - **Creativity Over Complexity**: Prioritize artistic expression over technical complexity.
-
-      OUTPUT FORMAT:
-      JSON with keys: styleName, explanation, p5Code.
+      Return JSON.
     `;
 
   console.log("Generating creative art...");
@@ -169,7 +143,11 @@ export const generateCreativeArt = async (
           properties: {
             styleName: { type: Type.STRING },
             explanation: { type: Type.STRING },
-            p5Code: { type: Type.STRING },
+            p5Code: {
+              type: Type.STRING,
+              description:
+                "The full p5.js code string including setup and draw functions.",
+            },
           },
           required: ["styleName", "explanation", "p5Code"],
         },
