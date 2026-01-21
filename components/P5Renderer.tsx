@@ -71,8 +71,26 @@ const P5Renderer: React.FC<P5RendererProps> = ({ code, styleName, explanation })
               return oldGetContext.call(this, type, attributes);
             };
 
+            // Polyfill for userStartAudio if p5.sound fails to load or for basic support
+            if (typeof userStartAudio === 'undefined') {
+              window.userStartAudio = function() {
+                if (window.getAudioContext && window.getAudioContext().resume) {
+                   return window.getAudioContext().resume();
+                }
+                return Promise.resolve();
+              };
+            }
+
             // Suppress ml5 logo if possible
             if (window.ml5) ml5.config = { noLogo: true };
+
+            // Wait for libraries to be ready
+            function checkLibraries() {
+              if (typeof p5 === 'undefined') return false;
+              // If there are audio references in the code, we might want to check p5.sound
+              // but since P5 code is a string, we just hope it's ready or p5 will handle it.
+              return true;
+            }
 
             // Ensure p5.js sound works with user gesture inside iframe
             const resumeAudio = function() {

@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 import ArtArchive from './components/ArtArchive';
 import AnalysisView from './components/AnalysisView';
 import P5Renderer from './components/P5Renderer';
-import Spotlight from './components/Spotlight';
 import LoadingTerminal from './components/LoadingTerminal';
 import LanguageSwitcher from './components/LanguageSwitcher';
 
@@ -34,6 +33,7 @@ const App: React.FC = () => {
     const mockHistory: UserInteraction[] = selectedCards.map(c => ({
       cardId: c.id,
       term: c.term,
+      visualElements: c.visualElements,
       action: 'kept',
       timestamp: Date.now()
     }));
@@ -91,6 +91,8 @@ const App: React.FC = () => {
   <meta charset="UTF-8">
   <title>${creativeResult.styleName} - Art Archive Oracle</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/addons/p5.sound.min.js"></script>
+  <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;400;700&display=swap');
     body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Noto Serif SC', serif; }
@@ -128,6 +130,16 @@ const App: React.FC = () => {
     <p>${creativeResult.explanation}</p>
   </div>
   <script>
+    // Ensure p5.js sound works with user gesture
+    if (typeof window.userStartAudio === 'undefined') {
+      window.userStartAudio = function() {
+        if (window.getAudioContext && window.getAudioContext().resume) {
+          return window.getAudioContext().resume();
+        }
+        return Promise.resolve();
+      };
+    }
+    
     ${creativeResult.p5Code}
   </script>
 </body>

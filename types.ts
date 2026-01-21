@@ -19,6 +19,7 @@ export interface ArtCardData {
 export interface UserInteraction {
   cardId: string;
   term: string;
+  visualElements?: string[];
   action: "kept" | "discarded";
   timestamp: number;
 }

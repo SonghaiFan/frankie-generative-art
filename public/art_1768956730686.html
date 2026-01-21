@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <title>构造动能主义 (Constructive Kineticism) - Art Archive Oracle</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/addons/p5.sound.min.js"></script>
+  <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;400;700&display=swap');
+
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #000;
+      font-family: 'Noto Serif SC', serif;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    #overlay {
+      position: absolute;
+      bottom: 40px;
+      left: 40px;
+      max-width: 600px;
+      color: white;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin: 0 0 1rem 0;
+      font-weight: 200;
+      letter-spacing: 0.05em;
+    }
+
+    p {
+      font-size: 1rem;
+      line-height: 1.6;
+      opacity: 0.9;
+      margin: 0;
+      padding-left: 1rem;
+      border-left: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .meta {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      margin-bottom: 0.5rem;
+      opacity: 0.7;
+    }
+
+    .gradient-drop {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 60%;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.5) 40%, rgba(0, 0, 0, 0) 100%);
+      pointer-events: none;
+      z-index: 90;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="gradient-drop"></div>
+  <div id="overlay">
+    <div class="meta">美学签名</div>
+    <h1>构造动能主义 (Constructive Kineticism)</h1>
+    <p>
+      这种风格将包豪斯的严谨几何与现代生成艺术的动态逻辑相结合。它利用声音频率驱动几何体的物理尺度与旋转速度，使原本静止的理性结构在实时反馈中产生“动”的张力。红色、黄色、蓝色与黑色的网格线构成了秩序的边界，而音频输入的随机性则赋予了作品不可预测的生命感，实现了功能逻辑与感官律动的统一。
+    </p>
+  </div>
+  <script>
+    // Ensure p5.js sound works with user gesture
+    if (typeof window.userStartAudio === 'undefined') {
+      window.userStartAudio = function () {
+        if (window.getAudioContext && window.getAudioContext().resume) {
+          return window.getAudioContext().resume();
+        }
+        return Promise.resolve();
+      };
+    }
+
+    let mic, fft, started = false, shapes = []; function setup() { createCanvas(windowWidth, windowHeight); colorMode(HSB, 360, 100, 100, 1); if (typeof p5.AudioIn !== 'undefined') { mic = new p5.AudioIn(); fft = new p5.FFT(); fft.setInput(mic); } initShapes(); } function initShapes() { shapes = []; let cols = 6, rows = 6, w = width / cols, h = height / rows; for (let i = 0; i < cols; i++) { for (let j = 0; j < rows; j++) { shapes.push({ x: i * w + w / 2, y: j * h + h / 2, type: floor(random(3)), size: min(w, h) * 0.4, baseHue: random([0, 50, 220]) }); } } } function draw() { background(0, 0, 95); if (!started) { drawStartScreen(); return; } let energy = 1; if (fft) { fft.analyze(); energy = map(fft.getEnergy('bass'), 0, 255, 0.8, 3.0); } drawGrid(); for (let s of shapes) { push(); translate(s.x, s.y); rotate(frameCount * 0.02 + (energy * 0.1)); stroke(0, 0, 10); strokeWeight(2); fill(s.baseHue, 80, 80, 0.8); let dSize = s.size * energy; if (s.type === 0) { rectMode(CENTER); rect(0, 0, dSize, dSize); } else if (s.type === 1) { ellipse(0, 0, dSize, dSize); } else { triangle(-dSize / 2, dSize / 2, 0, -dSize / 2, dSize / 2, dSize / 2); } pop(); } } function drawGrid() { stroke(0, 0, 85); strokeWeight(1); for (let i = 0; i <= width; i += width / 12) line(i, 0, i, height); for (let j = 0; j <= height; j += height / 12) line(0, j, width, j); } function drawStartScreen() { fill(0, 0, 20); textAlign(CENTER, CENTER); textSize(24); text('CONSTRUCTIVE KINETICISM', width / 2, height / 2); textSize(14); text('CLICK TO START AUDIO-REACTIVE EXPERIENCE', width / 2, height / 2 + 40); } function mousePressed() { if (!started) { userStartAudio(); if (mic) mic.start(); started = true; } } function windowResized() { resizeCanvas(windowWidth, windowHeight); initShapes(); }
+  </script>
+</body>
+
+</html>

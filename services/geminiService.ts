@@ -9,6 +9,17 @@ const apiKey =
 const ai = new GoogleGenAI({ apiKey });
 
 /**
+ * Helper to clean and parse JSON from AI response
+ */
+function cleanAndParseJSON<T>(text: string): T {
+  const jsonString = text
+    .replace(/```json/g, "")
+    .replace(/```/g, "")
+    .trim();
+  return JSON.parse(jsonString) as T;
+}
+
+/**
  * Analyze user preferences
  */
 export const analyzeUserStyle = async (
@@ -25,7 +36,10 @@ export const analyzeUserStyle = async (
   const interactionsText =
     history.length > 0
       ? history
-          .map((h) => `User ${h.action} the concept "${h.term}".`)
+          .map(
+            (h) =>
+              `User ${h.action} the concept "${h.term}"${h.visualElements ? ` (Visual Elements: ${h.visualElements.join(", ")})` : ""}.`,
+          )
           .join("\n")
       : "The user has just started browsing.";
 
@@ -87,62 +101,86 @@ export const generateCreativeArt = async (
   analysisText: string,
   finalChoice: string,
 ): Promise<CreativeArtResult> => {
-  const prompt = `
-      Based on the user's interaction history: ${history.map((h) => h.term).join(", ")}
-      Their psychological profile: "${analysisText}"
-      And their answer to the final cultural question: "${finalChoice}"
+  const visualTags = Array.from(
+    new Set(history.flatMap((h) => h.visualElements || [])),
+  );
+  const historySummary = history.map((h) => h.term).join(", ");
+  const visualSummary = visualTags.join(", ");
 
-      1. Invent a specific, unique art movement name for them (e.g. "Neo-Digital Decay", "Algorithm Ancestry").
-      2. Explain the visual language of this style (forms, colors, motion) in Chinese.
-      3. Write a complete, functional p5.js sketch that visually represents this style.
-         - The sketch MUST be in GLOBAL mode (define function setup() and function draw() at top level).
-         - Use 'windowWidth' and 'windowHeight' for full screen.
-         - Handle window resizing in 'windowResized()' if possible.
-         - Do NOT use external images or fonts, only p5 drawing primitives.
-         - Make it animated or interactive or both.
-         - It should be visually impressive and immersive. Dark background preferred.
-      4. P5.js GUIDELINES(v1.9.0):
-         - If using default 2D or WEBGL: Heavily utilize techniques like Perlin Noise (noise()), coordinate transformations (push/pop/translate/rotate), trigonometry (sin/cos) for periodic motion/polar coordinates, particle systems, recursive fractals, vertex shapes (beginShape/curveVertex), and Blend Modes (ADD, MULTIPLY, DIFFERENCE, etc.). 
-         - If using 3D primitives or texture(), MUST use createCanvas(windowWidth, windowHeight, WEBGL)
-         - COLOR: Prefer HSB colorMode for more natural color transitions and harmonic palettes.
-         - MODERN CAPABILITIES: You may also use 'Audio-Reactive' elements (using p5.FFT for real-time sound analysis) or 'Neural Stylization' (using ml5.js for real-time webcam tracking/object detection). 
-         - SENSORS: If using audio or camera, remind the user to 'Click the screen to activate sensor' in the 'explanation' text, as browsers require a user gesture. Initialize AudioIn or Capture inside setup().
-      Return JSON.
+  // We explicitly tell the AI it has access to the p5.sound and ml5 libraries
+  const prompt = `
+      CONTEXT:
+      User History: ${historySummary}
+      Associated Visual Elements: ${visualSummary}
+      Psychological Profile: "${analysisText}"
+      Final Answer: "${finalChoice}"
+
+      TASK:
+      1. Invent a specific, unique art movement name (e.g., "Resonant Dataism", "Echoic Void").
+      2. Explain the visual language (forms, colors, motion) in Chinese.
+      3. Write a COMPLETE, FUNCTIONAL p5.js sketch representing this style.
+
+      TECHNICAL CONSTRAINTS & LIBRARIES:
+      - **Global Mode**: Define 'setup()' and 'draw()' at the top level.
+      - **Responsiveness**: Use 'createCanvas(windowWidth, windowHeight)'. MUST include 'windowResized()'.
+      - **No External Assets**: DO NOT use 'loadImage', 'loadFont', or 'p5.SoundFile'. You CANNOT load external files.
+      
+      AVAILABLE CAPABILITIES:
+      Decide which of the following tools best represent the chosen style. You should integrate the ones that heighten the artistic expression:
+
+      1. **Audio (p5.sound)**:
+         - Audio-Reactive: 'p5.AudioIn' (Mic), 'p5.FFT' (Spectrum/Waveform).
+         - Generative Audio/Synthesis: 'p5.Oscillator', 'p5.MonoSynth', 'p5.PolySynth', 'p5.Noise', 'p5.Envelope'.
+         - Effects: 'p5.Reverb', 'p5.Delay', 'p5.Filter'.
+      
+      2. **Images & Pixels**:
+         - Real-time Video: 'createCapture(VIDEO)' for webcam input.
+         - Pixel Manipulation: 'loadPixels()', 'pixels[]', 'updatePixels()', 'get()', 'set()'.
+         - Off-screen Buffers: 'createGraphics()'.
+
+      3. **Interaction**:
+         - Mouse/Touch: 'mouseX', 'mouseY', 'pmouseX', 'mousePressed()', 'touchStarted()'.
+         - Motion: Device orientation/acceleration if applicable.
+
+      4. **Machine Learning (ml5.js)**:
+         - Pose/Object/Face detection via webcam.
+
+      CRITICAL RULES:
+      - **Interaction Activation**: Browsers block audio/mic/cam by default. You MUST include a mechanism to start the context in 'mousePressed()' or 'touchStarted()' using 'userStartAudio()'. Draw clear instructions on screen like "Click to Start" until the user interacts.
+      - **Robustness**: Always check if classes exist before instantiation (e.g., 'if (typeof p5.AudioIn !== "undefined")').
+      - **Efficiency**: Use HSB color mode for fluid changes. If using 3D, use 'WEBGL'.
+
+      OUTPUT FORMAT:
+      JSON with keys: styleName, explanation, p5Code.
     `;
 
   console.log("Generating creative art...");
-  console.log(prompt);
 
   try {
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: prompt,
       config: {
-        temperature: 0.9,
+        temperature: 0.8,
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.OBJECT,
           properties: {
             styleName: { type: Type.STRING },
             explanation: { type: Type.STRING },
-            p5Code: {
-              type: Type.STRING,
-              description:
-                "The full p5.js code string including setup and draw functions.",
-            },
+            p5Code: { type: Type.STRING },
           },
           required: ["styleName", "explanation", "p5Code"],
         },
       },
     });
+
     const text = response.text || "{}";
-    const jsonString = text
-      .replace(/```json/g, "")
-      .replace(/```/g, "")
-      .trim();
-    return JSON.parse(jsonString) as CreativeArtResult;
+    if (!text) throw new Error("Empty response");
+
+    return cleanAndParseJSON<CreativeArtResult>(text);
   } catch (e) {
-    console.error(e);
+    console.error("Creative Gen Error:", e);
     return FALLBACK_CREATIVE_RESULT;
   }
 };

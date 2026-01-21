@@ -69,6 +69,8 @@ const ArtArchive: React.FC<ArtArchiveProps> = ({ cards, onSelectionComplete }) =
                 className="w-full h-full"
                 style={{ border: 'none' }}
                 title="Background Artwork"
+                sandbox="allow-scripts allow-same-origin"
+                allow="camera *; microphone *; autoplay *; display-capture *"
               />
             </div>
           )}
