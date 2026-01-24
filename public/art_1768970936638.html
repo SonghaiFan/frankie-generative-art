@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <title>裂隙感知主义 (Fissure Sensibility) - Art Archive Oracle</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/addons/p5.sound.min.js"></script>
+  <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;400;700&display=swap');
+
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #000;
+      font-family: 'Noto Serif SC', serif;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    #overlay {
+      position: absolute;
+      bottom: 40px;
+      left: 40px;
+      max-width: 600px;
+      color: white;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin: 0 0 1rem 0;
+      font-weight: 200;
+      letter-spacing: 0.05em;
+    }
+
+    p {
+      font-size: 1rem;
+      line-height: 1.6;
+      opacity: 0.9;
+      margin: 0;
+      padding-left: 1rem;
+      border-left: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .meta {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      margin-bottom: 0.5rem;
+      opacity: 0.7;
+    }
+
+    .gradient-drop {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 60%;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.5) 40%, rgba(0, 0, 0, 0) 100%);
+      pointer-events: none;
+      z-index: 90;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="gradient-drop"></div>
+  <div id="overlay">
+    <div class="meta">美学签名</div>
+    <h1>裂隙感知主义 (Fissure Sensibility)</h1>
+    <p>
+      该风格通过动态的几何错位和像素撕裂来响应指尖的动作。色调以高饱和度的霓虹色系为主，通过对视频流的原始像素进行逻辑位移，模拟出一种在交互中产生‘数字创伤’的视觉体验。视觉语言强调‘触碰即破碎’：手部的每一次轻微晃动都会引发画面的水平位移和色散（Chromatic
+      Aberration），将原本平滑的现实影像转化为由噪声、硬边几何块和闪烁色彩构成的混沌矩阵。这种破碎不仅是对完美的拒绝，更是对数字灵魂深处生命力的捕捉。</p>
+  </div>
+  <script>
+    // Ensure p5.js sound works with user gesture
+    if (typeof window.userStartAudio === 'undefined') {
+      window.userStartAudio = function () {
+        if (window.getAudioContext && window.getAudioContext().resume) {
+          return window.getAudioContext().resume();
+        }
+        return Promise.resolve();
+      };
+    }
+
+    let video; let handPose; let hands = []; let glitchFactor = 0; function preload() { } function setup() { createCanvas(windowWidth, windowHeight); video = createCapture(VIDEO); video.size(640, 480); video.hide(); handPose = ml5.handPose(video, () => { handPose.detectStart(video, gotHands); }); colorMode(HSB, 360, 100, 100, 1); pixelDensity(1); userStartAudio(); } function gotHands(results) { hands = results; } function windowResized() { resizeCanvas(windowWidth, windowHeight); } function draw() { background(0); push(); let vw = video.width; let vh = video.height; let cw = width; let ch = height; let vScale = max(cw / vw, ch / vh); let sw = vw * vScale; let sh = vh * vScale; let dx = (cw - sw) / 2; let dy = (ch - sh) / 2; translate(width, 0); scale(-1, 1); image(video, dx, dy, sw, sh); pop(); if (hands.length > 0) { glitchFactor = lerp(glitchFactor, 100, 0.1); drawGlitchOverlays(hands); } else { glitchFactor = lerp(glitchFactor, 0, 0.05); } applyPixelGlitch(); } function drawGlitchOverlays(hands) { noStroke(); for (let i = 0; i < hands.length; i++) { let hand = hands[i]; for (let j = 0; j < hand.keypoints.length; j++) { let kp = hand.keypoints[j]; let x = map(kp.x, 0, 640, width, 0); let y = map(kp.y, 0, 480, 0, height); if (j === 8 || j === 4 || j === 12) { fill(random(360), 80, 100, 0.5); rect(x - 20, y - 2, 40, 4); rect(x - 2, y - 20, 4, 40); if (random() > 0.8) { fill(200, 100, 100, 0.8); rect(0, y, width, random(1, 5)); } } } } } function applyPixelGlitch() { loadPixels(); let intensity = map(glitchFactor, 0, 100, 0, 30); if (intensity > 1) { for (let y = 0; y < height; y += floor(random(5, 20))) { if (random() > 0.7) { let offset = floor(random(-intensity * 2, intensity * 2)) * 4; let rowStart = y * width * 4; let rowEnd = (y + floor(random(1, 10))) * width * 4; for (let i = rowStart; i < rowEnd; i += 4) { if (i + offset < pixels.length && i + offset > 0) { pixels[i] = pixels[i + offset]; pixels[i + 1] = pixels[i + offset + 1]; pixels[i + 2] = pixels[i + offset + 2]; } } } } } for (let i = 0; i < pixels.length; i += 16) { if (random() < glitchFactor / 1000) { pixels[i] = 255; pixels[i + 1] = 0; pixels[i + 2] = 255; } } updatePixels(); if (glitchFactor > 50) { for (let i = 0; i < 5; i++) { noStroke(); fill(random(360), 100, 100, 0.2); rect(random(width), random(height), random(100, 300), random(2, 10)); } } }
+  </script>
+</body>
+
+</html>

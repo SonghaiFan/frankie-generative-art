@@ -116,7 +116,7 @@ export const generateCreativeArt = async (
       TASK:
       1. Invent a specific, unique art movement name.
       2. Explain the visual language (forms, colors, motion) in Chinese.
-      3. Write a COMPLETE, FUNCTIONAL p5.js (v2) sketch representing this style.
+      3. Write a COMPLETE, FUNCTIONAL p5.js (v1.9.0) sketch representing this style.
 
       TECHNICAL CONSTRAINTS:
       - Global mode. Fullscreen (windowResized).

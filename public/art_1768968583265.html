@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <title>符号拟象主义 (Iconic Simulacraism) - Art Archive Oracle</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/addons/p5.sound.min.js"></script>
+  <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;400;700&display=swap');
+
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #000;
+      font-family: 'Noto Serif SC', serif;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    #overlay {
+      position: absolute;
+      bottom: 40px;
+      left: 40px;
+      max-width: 600px;
+      color: white;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin: 0 0 1rem 0;
+      font-weight: 200;
+      letter-spacing: 0.05em;
+    }
+
+    p {
+      font-size: 1rem;
+      line-height: 1.6;
+      opacity: 0.9;
+      margin: 0;
+      padding-left: 1rem;
+      border-left: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .meta {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      margin-bottom: 0.5rem;
+      opacity: 0.7;
+    }
+
+    .gradient-drop {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 60%;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.5) 40%, rgba(0, 0, 0, 0) 100%);
+      pointer-events: none;
+      z-index: 90;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="gradient-drop"></div>
+  <div id="overlay">
+    <div class="meta">美学签名</div>
+    <h1>符号拟象主义 (Iconic Simulacraism)</h1>
+    <p>
+      这种视觉语言融合了波普艺术的机械复制性与挪用艺术的去中心化叙事。它将“自我”通过实时捕捉转化为抽象的几何符号与断裂的排版设计。通过ml5.js追踪手部动态，程序在画布上不断留下色彩鲜艳、高对比度的残影，模拟安迪·沃霍尔式的丝网印刷效果。这种重复与拼贴模糊了原创与复制的界限，反映了在消费主义符号洪流中对个体唯一性的重新解构与历史化重塑。
+    </p>
+  </div>
+  <script>
+    // Ensure p5.js sound works with user gesture
+    if (typeof window.userStartAudio === 'undefined') {
+      window.userStartAudio = function () {
+        if (window.getAudioContext && window.getAudioContext().resume) {
+          return window.getAudioContext().resume();
+        }
+        return Promise.resolve();
+      };
+    }
+
+    let handPose; let video; let hands = []; let snapshots = []; let words = ['ME', 'SELF', 'ICON', 'COPY']; function preload() { } function setup() { createCanvas(windowWidth, windowHeight); video = createCapture(VIDEO); video.size(640, 480); video.hide(); handPose = ml5.handPose(video, () => { handPose.detectStart(video, results => { hands = results }) }); colorMode(HSB, 360, 100, 100, 1); textAlign(CENTER, CENTER); textFont('sans-serif'); background(0) } function draw() { background(0, 0, 5, 0.1); if (hands.length > 0) { let h = hands[0]; let index = h.index_finger_tip; let thumb = h.thumb_tip; if (frameCount % 5 === 0) { snapshots.push({ x: index.x, y: index.y, hue: random(360), txt: random(words) }); if (snapshots.length > 40) snapshots.shift() } for (let i = 0; i < hands[0].keypoints.length; i++) { let kp = hands[0].keypoints[i]; let mappedX = map(kp.x, 0, 640, 0, width); let mappedY = map(kp.y, 0, 480, 0, height); fill((frameCount + i * 10) % 360, 80, 100); noStroke(); ellipse(mappedX, mappedY, 10, 10) } } drawCollage() } function drawCollage() { let cellW = width / 4; let cellH = height / 3; for (let i = 0; i < snapshots.length; i++) { let s = snapshots[i]; let gridX = (i % 4) * cellW; let gridY = (floor(i / 4) % 3) * cellH; push(); translate(gridX + cellW / 2, gridY + cellH / 2); let localX = map(s.x, 0, 640, -cellW / 2, cellW / 2); let localY = map(s.y, 0, 480, -cellH / 2, cellH / 2); stroke(s.hue, 80, 100); strokeWeight(2); noFill(); rect(-cellW / 2 + 5, -cellH / 2 + 5, cellW - 10, cellH - 10); fill(s.hue, 80, 100); textSize(cellH / 4); text(s.txt, localX, localY); noStroke(); fill((s.hue + 180) % 360, 70, 100, 0.5); ellipse(localX, localY, cellW / 3, cellW / 3); pop() } push(); fill(0, 0, 100); textSize(60); textStyle(BOLD); text('REPETITION IS AUTHENTICITY', width / 2, height - 50); pop() } function windowResized() { resizeCanvas(windowWidth, windowHeight) }
+  </script>
+</body>
+
+</html>
