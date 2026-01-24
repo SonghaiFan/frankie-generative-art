@@ -68,11 +68,11 @@ const App: React.FC = () => {
     const analysisPhilosophy = analysis?.philosophy || "Unknown";
 
     try {
-      // Generate 3 artworks in parallel
+      // Generate 3 specialized artworks in parallel: Static, Camera-reactive, and Audio-reactive
       const results = await Promise.all([
-        generateCreativeArt(userHistory, analysisPhilosophy, response),
-        generateCreativeArt(userHistory, analysisPhilosophy, response),
-        generateCreativeArt(userHistory, analysisPhilosophy, response)
+        generateCreativeArt(userHistory, analysisPhilosophy, response, 'static'),
+        generateCreativeArt(userHistory, analysisPhilosophy, response, 'camera'),
+        generateCreativeArt(userHistory, analysisPhilosophy, response, 'audio')
       ]);
       setCreativeResults(results);
       setCurrentIndex(0);
@@ -139,6 +139,18 @@ const App: React.FC = () => {
     <p>${currentResult.explanation}</p>
   </div>
   <script>
+    // Fix for "willReadFrequently" warning
+    (function() {
+      const oldGetContext = HTMLCanvasElement.prototype.getContext;
+      HTMLCanvasElement.prototype.getContext = function(type, attributes) {
+        if (type === '2d') {
+          attributes = attributes || {};
+          attributes.willReadFrequently = true;
+        }
+        return oldGetContext.call(this, type, attributes);
+      };
+    })();
+
     // Ensure p5.js sound works with user gesture
     if (typeof window.userStartAudio === 'undefined') {
       window.userStartAudio = function() {

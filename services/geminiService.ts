@@ -100,12 +100,33 @@ export const generateCreativeArt = async (
   history: UserInteraction[],
   analysisText: string,
   finalComment: string,
+  mode: "static" | "camera" | "audio" = "static",
 ): Promise<CreativeArtResult> => {
   const visualTags = Array.from(
     new Set(history.flatMap((h) => h.visualElements || [])),
   );
   const historySummary = history.map((h) => h.term).join(", ");
   const visualSummary = visualTags.join(", ");
+
+  const modeInstructions = {
+    static: `PURE STATIC/GENERATIVE: 
+      - Focus: High-detail algorithmic geometry, noise-based patterns (Perlin/Simplex), and recursive structures. 
+      - Interaction: Interaction limited to mouseX/mouseY or touch. MUST NOT use webcam or microphone.
+      - Style: HSB color mode, dark background, no external assets, fullscreen (windowResized).`,
+    camera: `VISION-BASED: 
+      - Focus: Computer vision and motion tracking.
+      - Input: Webcam via 'createCapture(VIDEO)'. Use center-cropping.
+      - Library: ml5.js v1. Use 'handPose = ml5.handPose({flipped:true}, callback)' and 'handPose.detectStart(video, callback)'. NEVER pass video as the first argument to constructors.
+      - Mirroring: Mirror the video display for intuitive "mirror-like" interaction: 'push(); translate(width, 0); scale(-1, 1); image(video, 0, 0); pop();'.
+      - Optimization: If using loadPixels() for video analysis, you MUST use a p5.Graphics bridge with context attribute 'willReadFrequently: true' to avoid performance warnings.
+      - Style: HSB color mode, dark background, no external assets, fullscreen (windowResized).`,
+    audio: `SONIC-REACTIVE: 
+      - Focus: Frequency and amplitude analysis. 
+      - Input: Microphone via p5.sound. Use 'mic = new p5.AudioIn(); mic.start(); fft = new p5.FFT(); fft.setInput(mic);'. 
+      - Browser Policy: You MUST implement 'function mousePressed() { userStartAudio(); }'.
+      - Style: HSB color mode, dark background, no external assets, fullscreen (windowResized).`,
+  };
+
   const prompt = `
       CONTEXT:
       User Preference: ${historySummary}
@@ -118,13 +139,9 @@ export const generateCreativeArt = async (
       2. Explain the visual language (forms, colors, motion) in Chinese.
       3. Write a COMPLETE, FUNCTIONAL p5.js (v1.9.0) sketch representing this style.
 
-      TECHNICAL CONSTRAINTS:
-      - Global mode. Fullscreen (windowResized).
-      - Various inputs: mouse/touch, audio (userStartAudio), webcam (ml5.js).
-      - HSB color. Dark background. No assets.
-      - ml5.js v1: Use ml5.handPose(), ml5.bodyPose(), or ml5.faceMesh(). IMPORTANT: Use the v1 signature (options, callback) and call detectStart(video, callback) inside the model loaded callback. Do NOT pass video as the first argument to the constructor.
-      - For video, use center-cropping (do not compress/stretch).
-      - Use loadPixels() for raw image processing. IMPORTANT: To avoid browser performance warnings, if calling loadPixels() frequently, use a p5.Graphics bridge: create a graphics object in setup, set its context willReadFrequently attribute to true, and in draw, draw the video to it then call loadPixels() on the graphics.
+      MODE-SPECIFIC CONSTRAINTS:
+      ${modeInstructions[mode] || modeInstructions.static}
+
       Return JSON.
     `;
 
