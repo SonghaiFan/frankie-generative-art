@@ -26,6 +26,16 @@ const P5Renderer: React.FC<P5RendererProps> = ({ code, styleName, explanation })
               if (type === 'unload' || type === 'beforeunload') return;
               return originalAddEventListener.call(this, type, listener, options);
             };
+
+            // Patch getContext to set willReadFrequently and fix the warning
+            const oldGetContext = HTMLCanvasElement.prototype.getContext;
+            HTMLCanvasElement.prototype.getContext = function(type, attributes) {
+              if (type === '2d') {
+                attributes = attributes || {};
+                attributes.willReadFrequently = true;
+              }
+              return oldGetContext.call(this, type, attributes);
+            };
           </script>
           <script src="https://cdn.jsdelivr.net/npm/p5@1.11.2/lib/p5.min.js"></script>
           <script src="https://cdn.jsdelivr.net/npm/p5@1.11.2/lib/addons/p5.sound.min.js"></script>
@@ -69,16 +79,6 @@ const P5Renderer: React.FC<P5RendererProps> = ({ code, styleName, explanation })
           </div>
           ` : ""}
           <script>
-            // Patch getContext to set willReadFrequently and fix the warning
-            const oldGetContext = HTMLCanvasElement.prototype.getContext;
-            HTMLCanvasElement.prototype.getContext = function(type, attributes) {
-              if (type === '2d') {
-                attributes = attributes || {};
-                attributes.willReadFrequently = true;
-              }
-              return oldGetContext.call(this, type, attributes);
-            };
-
             // Polyfill for userStartAudio if p5.sound fails to load or for basic support
             if (typeof userStartAudio === 'undefined') {
               window.userStartAudio = function() {

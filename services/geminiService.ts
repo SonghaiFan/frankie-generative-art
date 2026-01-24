@@ -122,9 +122,9 @@ export const generateCreativeArt = async (
       - Global mode. Fullscreen (windowResized).
       - Various inputs: mouse/touch, audio (userStartAudio), webcam (ml5.js).
       - HSB color. Dark background. No assets.
-      - ml5.js v1: Use ml5.handPose(), ml5.bodyPose(), or ml5.faceMesh().
+      - ml5.js v1: Use ml5.handPose(), ml5.bodyPose(), or ml5.faceMesh(). IMPORTANT: Use the v1 signature (options, callback) and call detectStart(video, callback) inside the model loaded callback. Do NOT pass video as the first argument to the constructor.
       - For video, use center-cropping (do not compress/stretch).
-      - Use loadPixels() for raw image processing. No 'unload' events.
+      - Use loadPixels() for raw image processing. IMPORTANT: To avoid browser performance warnings, if calling loadPixels() frequently, use a p5.Graphics bridge: create a graphics object in setup, set its context willReadFrequently attribute to true, and in draw, draw the video to it then call loadPixels() on the graphics.
       Return JSON.
     `;
 

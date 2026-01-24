@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Industrial Maelstromism (工业涡旋主义) - Art Archive Oracle</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/addons/p5.sound.min.js"></script>
+  <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;400;700&display=swap');
+
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #000;
+      font-family: 'Noto Serif SC', serif;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    #overlay {
+      position: absolute;
+      bottom: 40px;
+      left: 40px;
+      max-width: 600px;
+      color: white;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin: 0 0 1rem 0;
+      font-weight: 200;
+      letter-spacing: 0.05em;
+    }
+
+    p {
+      font-size: 1rem;
+      line-height: 1.6;
+      opacity: 0.9;
+      margin: 0;
+      padding-left: 1rem;
+      border-left: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .meta {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      margin-bottom: 0.5rem;
+      opacity: 0.7;
+    }
+
+    .gradient-drop {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 60%;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.5) 40%, rgba(0, 0, 0, 0) 100%);
+      pointer-events: none;
+      z-index: 90;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="gradient-drop"></div>
+  <div id="overlay">
+    <div class="meta">美学签名</div>
+    <h1>Industrial Maelstromism (工业涡旋主义)</h1>
+    <p>
+      此艺术风格是机械理性的终极扩张与崇高自然的吞噬力的交汇。视觉语言由深邃的墨黑色背景（象征不可知的虚无）与鲜艳夺目的‘构造红’（代表人类意志与工业核心）组成。通过ml5.js手势捕捉，用户的肢体动态被转化为扰动结构流场的引力源。画面中，严谨的直线几何框架在流体动力学算法下不断崩解重组，形成一种在秩序边缘徘徊的视觉奇观，展现出用户内心对‘终极形态’——即理性的毁灭与重生的渴望。
+    </p>
+  </div>
+  <script>
+    // Fix for "willReadFrequently" warning
+    (function () {
+      const oldGetContext = HTMLCanvasElement.prototype.getContext;
+      HTMLCanvasElement.prototype.getContext = function (type, attributes) {
+        if (type === '2d') {
+          attributes = attributes || {};
+          attributes.willReadFrequently = true;
+        }
+        return oldGetContext.call(this, type, attributes);
+      };
+    })();
+
+    // Ensure p5.js sound works with user gesture
+    if (typeof window.userStartAudio === 'undefined') {
+      window.userStartAudio = function () {
+        if (window.getAudioContext && window.getAudioContext().resume) {
+          return window.getAudioContext().resume();
+        }
+        return Promise.resolve();
+      };
+    }
+
+    let video;
+    let handPose;
+    let hands = [];
+    let particles = [];
+    let industrialBeams = [];
+    let captureGraphics;
+
+    function setup() {
+      createCanvas(windowWidth, windowHeight);
+      colorMode(HSB, 360, 100, 100, 1);
+      video = createCapture(VIDEO);
+      video.size(640, 480);
+      video.hide();
+
+      // Fix ml5.handPose warning by passing options correctly
+      handPose = ml5.handPose({ flipped: true }, () => {
+        handPose.detectStart(video, (results) => {
+          hands = results;
+        });
+      });
+
+      // Fix willReadFrequently warning by using a graphics object with the attribute set
+      captureGraphics = createGraphics(640, 480);
+      captureGraphics.elt.getContext('2d', { willReadFrequently: true });
+
+      for (let i = 0; i < 150; i++) {
+        particles.push(new Particle());
+      }
+      for (let i = 0; i < 12; i++) {
+        industrialBeams.push(new Beam());
+      }
+      background(0);
+    }
+
+    function draw() {
+      background(0, 0, 0, 0.15);
+      drawVideoOverlay();
+      if (hands.length > 0) {
+        let index = hands[0].index_finger_tip;
+        let tx = map(index.x, 0, 640, 0, width);
+        let ty = map(index.y, 0, 480, 0, height);
+        fill(0, 100, 100, 0.5);
+        noStroke();
+        ellipse(tx, ty, 40, 40);
+        particles.forEach(p => {
+          p.attract(tx, ty);
+          p.update();
+          p.show();
+        });
+      } else {
+        particles.forEach(p => {
+          p.update();
+          p.show();
+        });
+      }
+      industrialBeams.forEach(b => {
+        b.update();
+        b.show();
+      });
+    }
+
+    function drawVideoOverlay() {
+      // Use the graphics bridge to avoid the warning
+      captureGraphics.image(video, 0, 0);
+      captureGraphics.loadPixels();
+      if (captureGraphics.pixels.length > 0) {
+        let step = 40;
+        for (let y = 0; y < captureGraphics.height; y += step) {
+          for (let x = 0; x < captureGraphics.width; x += step) {
+            let i = (y * captureGraphics.width + x) * 4;
+            let br = (captureGraphics.pixels[i] + captureGraphics.pixels[i + 1] + captureGraphics.pixels[i + 2]) / 3;
+            if (br < 50) {
+              stroke(0, 100, 50, 0.2);
+              noFill();
+              rect(map(x, 0, 640, 0, width), map(y, 0, 480, 0, height), step, step);
+            }
+          }
+        }
+      }
+    }
+
+    class Particle {
+      constructor() {
+        this.pos = createVector(random(width), random(height));
+        this.vel = p5.Vector.random2D().mult(random(2, 5));
+        this.acc = createVector(0, 0);
+        this.maxSpeed = 6;
+      }
+      attract(tx, ty) {
+        let force = createVector(tx, ty).sub(this.pos);
+        force.setMag(0.5);
+        this.acc.add(force);
+      }
+      update() {
+        this.vel.add(this.acc);
+        this.vel.limit(this.maxSpeed);
+        this.pos.add(this.vel);
+        this.acc.mult(0);
+        if (this.pos.x < 0 || this.pos.x > width) this.vel.x *= -1;
+        if (this.pos.y < 0 || this.pos.y > height) this.vel.y *= -1;
+      }
+      show() {
+        stroke(0, 100, 100, 0.6);
+        strokeWeight(2);
+        line(this.pos.x, this.pos.y, this.pos.x - this.vel.x * 2, this.pos.y - this.vel.y * 2);
+      }
+    }
+
+    class Beam {
+      constructor() {
+        this.x = random(width);
+        this.y = random(height);
+        this.w = random(100, 400);
+        this.h = random(2, 8);
+        this.rot = random(TWO_PI);
+        this.speed = random(0.01, 0.03);
+      }
+      update() {
+        this.rot += this.speed;
+        this.x += sin(this.rot) * 2;
+      }
+      show() {
+        push();
+        translate(this.x, this.y);
+        rotate(this.rot);
+        noFill();
+        stroke(0, 0, 100, 0.3);
+        strokeWeight(1);
+        rect(-this.w / 2, -this.h / 2, this.w, this.h);
+        fill(0, 100, 80, 0.1);
+        rect(-this.w / 2, -this.h / 2, this.w * 0.4, this.h);
+        pop();
+      }
+    }
+
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight);
+    }
+
+    function mousePressed() {
+      userStartAudio();
+    }
+  </script>
+</body>
+
+</html>
