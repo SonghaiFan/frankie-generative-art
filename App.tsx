@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Download, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { Analytics } from '@vercel/analytics/react';
 
 import ArtArchive from './components/ArtArchive';
 import AnalysisView from './components/AnalysisView';
@@ -308,6 +309,9 @@ const App: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Vercel Analytics */}
+      <Analytics />
 
     </main>
   );
