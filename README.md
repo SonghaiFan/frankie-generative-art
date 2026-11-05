@@ -2,6 +2,8 @@
 
 # Frankie Generative Art
 
+[English](README.md) · [简体中文](README.zh-CN.md)
+
 Explore visual styles, choose what resonates, and turn those choices into interactive P5.js artwork.
 
 [Guide](docs/guide.md) · [Run locally](#run-locally)
