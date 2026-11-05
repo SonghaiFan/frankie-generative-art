@@ -1,0 +1,44 @@
+{
+  "title": "Generative Art",
+  "tagline": "Explore your visual language.",
+  "category": "Art / Creative coding",
+  "layout": "gallery",
+  "assets": [
+    {
+      "src": "assets/constructivism.png",
+      "fit": "contain"
+    },
+    {
+      "src": "assets/color-field.png",
+      "fit": "contain"
+    },
+    {
+      "src": "assets/sublime.png",
+      "fit": "contain"
+    }
+  ],
+  "signature": "assets/frankie.svg",
+  "provenance": [
+    {
+      "file": "assets/constructivism.png",
+      "kind": "live app canvas export",
+      "path": "components/GenerativeArt.tsx + visual_styles/",
+      "note": "Actual Constructivism preview rendered in the current archive; no new AI generation.",
+      "captured_on": "2026-11-05"
+    },
+    {
+      "file": "assets/color-field.png",
+      "kind": "live app canvas export",
+      "path": "components/GenerativeArt.tsx + visual_styles/",
+      "note": "Actual Color Field preview rendered in the current archive; no new AI generation.",
+      "captured_on": "2026-11-05"
+    },
+    {
+      "file": "assets/sublime.png",
+      "kind": "live app canvas export",
+      "path": "components/GenerativeArt.tsx + visual_styles/",
+      "note": "Actual Sublime preview rendered in the current archive; no new AI generation.",
+      "captured_on": "2026-11-05"
+    }
+  ]
+}

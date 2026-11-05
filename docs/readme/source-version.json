@@ -1,0 +1,29 @@
+{
+  "repository": "frankie-generative-art",
+  "source_commit": "d741bbef4820449001eaa6cd337c508a5ac0635d",
+  "captured_on": "2026-11-05",
+  "source_state": "Current local working tree; existing uncommitted app edits were included where present.",
+  "materials": [
+    {
+      "file": "assets/constructivism.png",
+      "kind": "live app canvas export",
+      "path": "components/GenerativeArt.tsx + visual_styles/",
+      "note": "Actual Constructivism preview rendered in the current archive; no new AI generation.",
+      "captured_on": "2026-11-05"
+    },
+    {
+      "file": "assets/color-field.png",
+      "kind": "live app canvas export",
+      "path": "components/GenerativeArt.tsx + visual_styles/",
+      "note": "Actual Color Field preview rendered in the current archive; no new AI generation.",
+      "captured_on": "2026-11-05"
+    },
+    {
+      "file": "assets/sublime.png",
+      "kind": "live app canvas export",
+      "path": "components/GenerativeArt.tsx + visual_styles/",
+      "note": "Actual Sublime preview rendered in the current archive; no new AI generation.",
+      "captured_on": "2026-11-05"
+    }
+  ]
+}
