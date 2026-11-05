@@ -1,4 +1,4 @@
-# P5 Generative Digital Art Archive | P5 生成式艺术档案
+# Frankie Generative Art | Frankie 生成式艺术
 
 [English](#english) | [中文](#chinese)
 
