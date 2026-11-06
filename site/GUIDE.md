@@ -1,50 +1,50 @@
-# Introduction page maintenance / 介绍页维护
+# Generative Art introduction maintenance / 介绍页维护
 
-[English README](../README.md) · [中文 README](../README.zh-CN.md)
+The introduction is independent from the React app and builds using Python's standard library. It never reads `.env` files, invokes OpenAI, requests devices, or runs saved artwork HTML. / 介绍页独立于 React 应用，使用 Python 标准库构建，不读取环境变量文件、不请求 AI、设备或运行历史 HTML 作品。
 
-## Two destinations / 两个入口
+- Intro: https://songhaifan.github.io/frankie-generative-art/
+- Chinese: https://songhaifan.github.io/frankie-generative-art/zh/
+- App: https://p5-generative-art-archive.vercel.app
 
-- Introduction / 介绍页: https://songhaifan.github.io/frankie-generative-art/
-- App / 应用: https://p5-generative-art-archive.vercel.app
-- The introduction is a standalone static site. It never builds the app or reads environment files. / 介绍页独立构建，不构建应用，也不读取环境变量文件。
-- English is the default; `zh/` is the Chinese version. / 英文默认，中文位于 `zh/`。
+## Update content and behavior / 更新内容与行为
 
-## Files to update / 更新哪些文件
+`site/content.json` owns English and Chinese product explanations. Update both languages when these source files change:
 
-| Source / 来源 | What it shows / 内容 |
+| Owning code | Intro content to review |
 | --- | --- |
-| `docs/readme/assets/constructivism.png` | Current product interface and original assets. |
-| `docs/readme/assets/color-field.png` | Current product interface and original assets. |
-| `docs/readme/assets/sublime.png` | Current product interface and original assets. |
-| `site/assets/archive.png` | The live style archive and interactive previews. |
-| `site/assets/selection.png` | Aesthetic anchors selected in the actual archive. |
+| `components/ArtArchive.tsx` | Selection limit, hover/touch behavior, built-in previews, initial random saved-artwork background |
+| `constants.ts`, `visual_styles/*.ts` | Style names, metadata, tags and original sketches |
+| `App.tsx`, `components/AnalysisView.tsx` | Analysis → follow-up → three variants → current-result export; memory-only session; fallback examples |
+| `services/openaiService.ts`, `api/art.js`, `server/art-prompts.js` | Sent data, OpenAI provider, current Chinese output, static/camera/audio modes |
+| `components/P5Renderer.tsx`, `App.tsx` → `handleDownload` | Preview/export library URLs, browser/device behavior and online dependencies |
+| `index.html`, app component classes | Dark shell, serif display/sans labels, fine borders and square controls |
 
-- `../README.md` and `../README.zh-CN.md`: product introduction, features, setup, limitations and developer commands. Update both languages together. / 同步维护双语介绍、功能、运行步骤与限制。
-- `project.json`: app URL, repository, category, colors, three user steps and the ordered media list. / 应用链接、仓库、分类、颜色、使用步骤与有序素材列表。
-- `style.css`: this app's visual treatment within the shared layout. / 统一结构下的项目视觉风格。
-- `build.py`: portable standard-library renderer. / 可独立使用的 Python 标准库构建器。
+同步维护以上源代码对应的双语说明；不要把创意原型称为心理诊断，不要把需要 CDN 的导出描述为完整离线包。
 
-## Replacing screenshots and GIFs / 替换截图和动图
+## Assets and provenance / 素材与来源
 
-1. Run the current app and capture real, settled UI. Use synthetic or guest data; hide credentials and private content. For GIFs, record a real interaction from start to finish, rather than animating a static screenshot. / 运行当前版本，使用访客或示例数据采集稳定画面；GIF 应录制真实操作，不把静态图伪装成操作录像。
-2. Replace the corresponding source file above when its screen changes. These banner assets are shared with the README; replacing them may update both the banner and this page. Keep `docs/readme/source-version.json` and banner provenance accurate. / 界面变化后替换对应文件；共享素材会同时影响 banner，需同步更新来源记录。
-3. For a new screen or GIF, add it under `site/assets/` and add an entry to `project.json` → `media` with `src`, bilingual `caption`, and optionally `captured_on` / `source_revision`. The first item is the hero; the full list is the gallery. Use a GIF's first frame as an informative resting frame, keep files small, and provide a still alternative. / 新素材放到 `site/assets/`，登记双语说明、采集时间和版本；第一项为主图，其余进入画廊。GIF 应有可读首帧并保留静态替代图。
-4. If app behavior changes, update both READMEs and both `steps` arrays. Native screenshots and shared family artwork must be labelled honestly. / 行为变化时同步更新双语 README 和使用步骤；区分原生截图与系列共享素材。
-5. Build and inspect desktop and mobile, in both languages. Check the app link and every image. / 构建后检查桌面、手机和两种语言，验证链接与所有图片。
+| Asset | Capture or refresh procedure |
+| --- | --- |
+| `site/assets/archive-current.png` | Open the current app before selecting styles. Capture the settled opening screen. Background is random and may differ. / 采集当前版本开场界面，背景随机。 |
+| `site/assets/selection-current.png` | Switch to English, scroll to the grid and select Constructivism, Color Field and Sublime. Capture their rendered previews and selection bar. **Do not click Generate Art merely to update this screenshot.** / 切换英文，选择这三个真实风格后采集，不必调用 AI。 |
+| `docs/readme/assets/constructivism.png`, `color-field.png`, `sublime.png` | Existing actual sketch stills, shared with the approved banner. Recapture from `visual_styles/abstract.ts` / `atmosphere.ts` when the sketch changes. Keep banner provenance accurate if replacing these shared assets. / 真实绘图静态画面，与 banner 共用；绘图变化后重采并同步来源。 |
+| `docs/readme/banner.png` | Approved sharing artwork, copied to `media/banner.png`. Update through the existing banner template. / 通过原有模板维护分享图。 |
+| `docs/readme/assets/frankie.svg` | Approved signature. / 已确认的签名。 |
+
+The anchor demo reads the three current style names and tag arrays directly from `visual_styles/*.ts` at build time. `source_samples()` in `site/build.py` names the three IDs and their matching stills. If IDs or source syntax change, update that small extractor and its assets together; it fails clearly rather than publishing missing metadata. It is a labelled still-based selection example, not an embedded full p5 engine. / 锚点演示构建时提取真实名称与标签；修改 ID 或元数据格式时同步更新提取器与静态素材。演示不是完整绘图引擎。
+
+For additional screenshots/GIFs, use only real settled app states and nonpersonal demo data. Label existing generated examples as examples, not new AI output. Camera/audio are unnecessary for intro captures. A true GIF should record actual transitions and have a still/reduced-motion alternative. Never capture keys or private comments. / 新截图和动图须来自真实界面，使用非私人示例；不要把已有作品当作新生成结果。
+
+## Build and check / 构建与检查
 
 ```sh
-python3 site/build.py
+python3 site/build.py --out _site
+node --check site/demo.js
 python3 -m http.server 8080 --directory _site --bind 127.0.0.1
 ```
 
-Open http://127.0.0.1:8080/ and http://127.0.0.1:8080/zh/.
+Open both `/` and `/zh/`, desktop and phone width. Choose all three examples, remove one, clear selection, and confirm source labels/tags. Check every image, anchor and application link. `site/demo.js` has no network or persistence. Review any art-history claim against primary references; current code explanation cites the official [p5 draw reference](https://p5js.org/reference/p5/draw/). / 检查双语、手机与桌面、选择/移除/清空、素材和链接。
 
-## Publishing / 发布
+## Publish / 发布
 
-Push the reviewed page changes to `simple`. `.github/workflows/pages.yml` publishes only `_site/` to GitHub Pages. App deployment remains separate on Vercel for browser apps; API services and native/local apps retain their own runtime. Never include `.env` files or unrelated work in a page commit. / 推送审核后的页面改动到 `simple`，工作流只发布 `_site/`；应用与 API 的部署分别管理，勿提交环境变量文件或其他未完成代码。
-
-If the branch or repository owner changes, update `project.json`, the workflow branch and README introduction links. / 分支或仓库所有者变化时，同步修改配置、工作流与介绍页链接。
-
-## App signature / 应用签名
-
-The app signature uses `public/frankie-signature.svg`, copied from the approved `docs/readme/assets/frankie.svg`. It links to this introduction page. / 应用签名使用已确认的系列 SVG，并链接到介绍页。
+Push reviewed intro files to branch `simple`. `.github/workflows/pages.yml` builds only `_site` and publishes GitHub Pages. Its path filter includes `site/**`, `visual_styles/**`, banner and shared assets, so source metadata edits rebuild the small example. Vercel remains the app destination. Do not include unrelated app work, lockfiles or environment files. / 审核后推送到 `simple`，Pages 工作流只构建介绍页；不要包含其他修改。

@@ -1,0 +1,164 @@
+{
+  "en": {
+    "headline": "Explore a style.\nMake a new one.",
+    "intro": "Choose visual anchors, reflect on their connections, and turn your response into a living p5.js artwork.",
+    "open": "Open the archive",
+    "nav": [
+      "The process",
+      "Try the anchors",
+      "Inside the app"
+    ],
+    "hero_caption": "The current archive, with three real style previews selected.",
+    "concept_title": "An archive you can interact with.",
+    "concept": "The archive is a collection of small programmed sketches, not a gallery of fixed images. Hover over a style to reveal its moving preview. Select one, two or three that catch your attention.",
+    "features": [
+      [
+        "Choose what you respond to",
+        "Each entry pairs a style name with visual tags. Your selected names and tags become the starting material for the next stage."
+      ],
+      [
+        "Follow a creative interpretation",
+        "OpenAI returns a poetic aesthetic archetype, a short interpretation and a follow-up question. This is a creative prompt, not a psychological assessment."
+      ],
+      [
+        "Answer, then generate",
+        "Your response and selected styles are used to request three p5.js works: a pure generative sketch, a camera-reactive work and an audio-reactive work."
+      ]
+    ],
+    "demo_title": "What is an aesthetic anchor?",
+    "demo_intro": "An anchor is simply a style you select. Try the three examples below to see the actual labels and visual tags the app uses.",
+    "demo_note": "This small selection demo reuses real archive metadata and stills of the app’s sketches. It makes no AI request and does not generate artwork. The full archive has more choices.",
+    "demo_empty": "Choose an example to inspect its visual tags.",
+    "demo_selected": "Selected anchors",
+    "demo_clear": "Clear selection",
+    "code_title": "A sketch is a set of drawing rules.",
+    "code_text": "p5.js draws into a canvas. A setup function prepares the scene; a draw loop can redraw it over time or respond to input. That is why a preview can move, change with your pointer, or react to a camera or microphone.",
+    "code_note": "The archive previews are written in the project. The final synthesis requests new code from OpenAI. Names in the archive are creative starting points, not a substitute for an art-history course.",
+    "workflow_title": "From browsing to an HTML artwork.",
+    "steps": [
+      [
+        "Explore and select",
+        "Scroll into the grid. Hover on desktop or select on touch. Choose one to three anchors; tap a selected entry again to remove it."
+      ],
+      [
+        "Request an interpretation",
+        "Use Generate Art to submit the selected styles. Read the interpretation and answer the follow-up question. The server’s current prompts request Chinese analysis and artwork descriptions, even with the English interface."
+      ],
+      [
+        "Review the three variants",
+        "Use the arrows to move between the generated works. Camera and audio variants may ask for device access. The pure generative mode does not require either device."
+      ],
+      [
+        "Export the current work",
+        "Download saves the currently displayed artwork as an HTML file, including its code, title and description. Open it in a browser to run it again."
+      ]
+    ],
+    "gallery_title": "Inside the current archive.",
+    "captions": [
+      "The live archive’s opening screen. The background is chosen from saved HTML artworks.",
+      "Three selected anchors and their real p5 previews."
+    ],
+    "start_title": "Browse locally. Generate online.",
+    "runtime": "Exploring and choosing built-in styles runs in your browser. Analysis and synthesis use the app’s server-side OpenAI service; visitors do not need to enter an API key. Selected style metadata and your written response are sent for those requests.",
+    "limits": [
+      [
+        "Keep an export you like",
+        "This flow keeps selections and generated results in memory. Reloading or initializing a new session clears them. Export before leaving."
+      ],
+      [
+        "An HTML file still needs its libraries",
+        "The export includes the sketch but loads p5.js, p5.sound and ml5 from external CDNs. It is a portable HTML artwork, not a fully offline package. Browser device permissions still apply."
+      ],
+      [
+        "Generated code can vary",
+        "A model may produce code that fails or behaves differently across browsers. On an AI service failure the app labels an offline example; that example is not a successful personalized generation."
+      ]
+    ],
+    "local": "Run the app locally",
+    "local_note": "For local AI, configure the server-only OPENAI_API_KEY in .env.local. Never put the key in a VITE_ variable or the introduction.",
+    "guide": "Screenshot and content update guide",
+    "source": "Source code",
+    "footer": "A Frankie project by Songhai Fan"
+  },
+  "zh": {
+    "headline": "探索一种风格。\n创造一种新的。",
+    "intro": "选择视觉锚点，思考它们的联系，再把你的回应变成一幅运行中的 p5.js 作品。",
+    "open": "打开艺术档案",
+    "nav": [
+      "创作流程",
+      "试选锚点",
+      "真实界面"
+    ],
+    "hero_caption": "当前档案界面，已选中三个真实风格预览。",
+    "concept_title": "可以交互的风格档案。",
+    "concept": "档案中的每种风格都是一段绘图程序，而不是固定图片。鼠标悬停时会出现动态预览。选择一至三个吸引你的风格，开始下一步。",
+    "features": [
+      [
+        "选择你有感受的风格",
+        "每个条目都包含风格名称和视觉标签。所选名称与标签会成为下一阶段的创作素材。"
+      ],
+      [
+        "阅读一种创意解读",
+        "OpenAI 返回诗意的审美原型、简短解读和一个追问。这是创作提示，不是心理测评或诊断。"
+      ],
+      [
+        "回应，再生成",
+        "你的回答与所选风格用于请求三个 p5.js 作品：纯生成作品、摄像头响应作品，以及音频响应作品。"
+      ]
+    ],
+    "demo_title": "什么是审美锚点？",
+    "demo_intro": "锚点就是你选中的风格。试选下面三个例子，查看应用实际使用的名称和视觉标签。",
+    "demo_note": "这个小演示复用真实档案元数据与应用绘图程序的静态画面，不请求 AI，也不生成作品。完整档案提供更多选择。",
+    "demo_empty": "选择一个例子，查看它的视觉标签。",
+    "demo_selected": "已选锚点",
+    "demo_clear": "清空选择",
+    "code_title": "作品是一组绘图规则。",
+    "code_text": "p5.js 在画布上绘图。setup 准备场景，draw 循环随时间重绘，也可以响应输入。因此预览可以移动、跟随指针，或者响应摄像头与麦克风。",
+    "code_note": "档案预览由项目中的程序绘制；最后的创作阶段则向 OpenAI 请求新代码。档案名称是创意起点，不等同于完整的艺术史课程。",
+    "workflow_title": "从浏览到导出 HTML 作品。",
+    "steps": [
+      [
+        "浏览并选择",
+        "向下进入风格网格。桌面端悬停预览，触屏直接选择。选一至三个锚点，再次点击已选条目即可移除。"
+      ],
+      [
+        "请求创意解读",
+        "点击 Generate Art 提交所选风格。阅读解读并回答追问。当前服务端提示要求中文解读和作品说明，即使界面切换为英文也一样。"
+      ],
+      [
+        "查看三个版本",
+        "用箭头切换生成作品。摄像头和音频响应版本可能请求设备权限；纯生成模式不需要这两种设备。"
+      ],
+      [
+        "导出当前作品",
+        "下载按钮把当前展示作品的代码、标题和说明保存为 HTML 文件，可用浏览器再次运行。"
+      ]
+    ],
+    "gallery_title": "当前档案里的真实界面。",
+    "captions": [
+      "实时档案的开场。背景从已保存的 HTML 作品中随机选择。",
+      "三个已选锚点及其真实 p5 预览。"
+    ],
+    "start_title": "本地浏览，在线生成。",
+    "runtime": "内置风格的浏览和选择在浏览器运行。解读与生成使用服务端的 OpenAI，访客无需输入 API key。请求时会发送所选风格的元数据，以及你输入的回应。",
+    "limits": [
+      [
+        "及时导出喜欢的作品",
+        "选择与生成结果保存在当前页面的内存中。刷新或开始新一轮会清空它们，离开前请先导出。"
+      ],
+      [
+        "HTML 仍需加载绘图库",
+        "导出包含作品代码，但 p5.js、p5.sound 与 ml5 仍从外部 CDN 加载。它是便携的 HTML 作品，不是完整离线包；设备访问仍受浏览器权限控制。"
+      ],
+      [
+        "生成代码可能存在差异",
+        "模型生成的代码可能失败，或在不同浏览器中表现不同。AI 服务失败时，应用会标明正在展示离线示例；示例不代表个性化生成成功。"
+      ]
+    ],
+    "local": "本地运行应用",
+    "local_note": "本地 AI 需在 .env.local 配置仅供服务端使用的 OPENAI_API_KEY。不要使用 VITE_ 前缀，也不要把 key 放进介绍页。",
+    "guide": "截图与内容更新指南",
+    "source": "源代码",
+    "footer": "Songhai Fan 的 Frankie 系列项目"
+  }
+}
