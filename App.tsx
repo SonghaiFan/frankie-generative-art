@@ -309,6 +309,7 @@ const App: React.FC = () => {
         )}
       </AnimatePresence>
 
+      <div style={{ position: "absolute", bottom: 12, right: 20, zIndex: 30, color: "#b0b0b0" }}><a href="https://songhaifan.github.io/frankie-generative-art/" aria-label="About Frankie generative art" style={{ display: "inline-flex", alignItems: "center", padding: "6px", color: "inherit",  }}><span aria-hidden="true" style={{ display: "block", width: 76, height: 26, backgroundColor: "currentColor", mask: "url(/frankie-signature.svg) center / contain no-repeat", WebkitMask: "url(/frankie-signature.svg) center / contain no-repeat" }} /></a></div>
     </main>
   );
 };
