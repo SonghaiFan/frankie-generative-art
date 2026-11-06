@@ -1,0 +1,77 @@
+{
+  "repository": "SonghaiFan/frankie-generative-art",
+  "branch": "simple",
+  "pages_url": "https://songhaifan.github.io/frankie-generative-art/",
+  "kind": "online",
+  "app_url": "https://p5-generative-art-archive.vercel.app",
+  "vercel_project": "p5-generative-art-archive",
+  "accent": "#b63e2d",
+  "tint": "#fbf5ec",
+  "category": {
+    "en": "Art / Explore",
+    "zh": "艺术 / 探索"
+  },
+  "steps": {
+    "en": [
+      "Browse the archive and interact with a style.",
+      "Choose aesthetic anchors to compare.",
+      "Use locally configured AI tools for analysis and export generated work."
+    ],
+    "zh": [
+      "浏览档案，与视觉风格互动。",
+      "选择审美锚点进行比较。",
+      "使用本地配置的 AI 工具分析，并导出生成作品。"
+    ]
+  },
+  "media": [
+    {
+      "src": "docs/readme/assets/constructivism.png",
+      "caption": {
+        "en": "Current product interface and original assets.",
+        "zh": "项目真实界面或原始素材。"
+      },
+      "crop": null,
+      "source_size": null
+    },
+    {
+      "src": "docs/readme/assets/color-field.png",
+      "caption": {
+        "en": "Current product interface and original assets.",
+        "zh": "项目真实界面或原始素材。"
+      },
+      "crop": null,
+      "source_size": null
+    },
+    {
+      "src": "docs/readme/assets/sublime.png",
+      "caption": {
+        "en": "Current product interface and original assets.",
+        "zh": "项目真实界面或原始素材。"
+      },
+      "crop": null,
+      "source_size": null
+    },
+    {
+      "src": "site/assets/archive.png",
+      "caption": {
+        "en": "The live style archive and interactive previews.",
+        "zh": "实时风格档案与交互预览。"
+      },
+      "captured_on": "2026-11-05",
+      "source_revision": "See docs/readme/source-version.json"
+    },
+    {
+      "src": "site/assets/selection.png",
+      "caption": {
+        "en": "Aesthetic anchors selected in the actual archive.",
+        "zh": "在真实档案中选择审美锚点。"
+      },
+      "captured_on": "2026-11-05",
+      "source_revision": "See docs/readme/source-version.json"
+    }
+  ],
+  "art_note": {
+    "en": "Current product interface and original assets.",
+    "zh": "素材来自项目当前界面与原始资源。"
+  }
+}

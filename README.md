@@ -6,7 +6,7 @@
 
 Explore visual styles, choose what resonates, and turn those choices into interactive P5.js artwork.
 
-[Guide](docs/guide.md) · [Run locally](#run-locally)
+[Introduction](https://songhaifan.github.io/frankie-generative-art/) · [Guide](docs/guide.md) · [Run locally](#run-locally)
 
 ## What it does
 
@@ -25,7 +25,7 @@ Open the URL printed by Vite. AI analysis and generation use `GEMINI_API_KEY`, c
 
 ## Before you start
 
-The archive includes existing interactive examples. AI analysis and new artwork generation depend on Gemini. The detailed guide retains the English and Chinese descriptions and setup notes.
+The archive includes existing interactive examples. AI analysis and new artwork generation depend on Gemini and currently require local development with your own key; public builds exclude that key. The detailed guide retains the English and Chinese descriptions and setup notes.
 
 ## For developers
 
