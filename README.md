@@ -21,11 +21,11 @@ npm ci
 npm run dev
 ```
 
-Open the URL printed by Vite. AI analysis and generation use `GEMINI_API_KEY`, configured in a local `.env.local`.
+Open the URL printed by Vite. Online AI analysis and generation use the server-side `OPENAI_API_KEY` on Vercel; local development reads it from `.env.local`.
 
 ## Before you start
 
-The archive includes existing interactive examples. AI analysis and new artwork generation depend on Gemini and currently require local development with your own key; public builds exclude that key. The detailed guide retains the English and Chinese descriptions and setup notes.
+The archive includes existing interactive examples. AI analysis and all three artwork modes use OpenAI through the same-origin `/api/art` endpoint. The key remains on the server. The detailed guide retains the English and Chinese descriptions and setup notes.
 
 ## For developers
 
@@ -33,7 +33,7 @@ The archive includes existing interactive examples. AI analysis and new artwork 
 npm run build
 ```
 
-[Project guide](docs/guide.md) · [Artwork](docs/readme/README.md)
+[AI setup](docs/ai-service.md) · [Project guide](docs/guide.md) · [Artwork](docs/readme/README.md)
 
 ---
 

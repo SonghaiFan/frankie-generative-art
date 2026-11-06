@@ -10,11 +10,12 @@ import LoadingTerminal from './components/LoadingTerminal';
 import LanguageSwitcher from './components/LanguageSwitcher';
 
 import { GameState, UserInteraction, AnalysisResult, CreativeArtResult } from './types';
-import { analyzeUserStyle, generateCreativeArt } from './services/geminiService';
+import { analyzeUserStyle, generateCreativeArt } from './services/openaiService';
 import { PREDEFINED_CARDS } from './constants';
 
 const App: React.FC = () => {
   const { t } = useTranslation();
+  const [aiError, setAiError] = useState('');
   const [gameState, setGameState] = useState<GameState>(GameState.IDLE);
 
   // In the Cabinet grid flow, we select from predefined cards directly
@@ -49,10 +50,12 @@ const App: React.FC = () => {
   };
 
   const performAnalysis = async (history: UserInteraction[]) => {
+    setAiError('');
     try {
       const result = await analyzeUserStyle(history);
       setAnalysis(result);
     } catch (e) {
+      setAiError('AI service unavailable. Showing an offline example; please try again.');
       setAnalysis({
         archetype: t('analysis.fallbackArchetype'),
         philosophy: t('analysis.fallbackPhilosophy'),
@@ -62,6 +65,7 @@ const App: React.FC = () => {
   };
 
   const handleFinalResponse = async (response: string) => {
+    setAiError('');
     setAnalysis(null);
     setGameState(GameState.CREATIVE_PATH);
 
@@ -77,12 +81,13 @@ const App: React.FC = () => {
       setCreativeResults(results);
       setCurrentIndex(0);
     } catch (e) {
-      console.error(e);
+      setAiError('AI generation failed. Showing an offline example; please try again.');
       setCreativeResults([FALLBACK_CREATIVE_RESULT]);
     }
   };
 
   const resetGame = () => {
+    setAiError('');
     setGameState(GameState.IDLE);
     setUserHistory([]);
     setAnalysis(null);
@@ -177,6 +182,7 @@ const App: React.FC = () => {
 
   return (
     <main className="fixed inset-0 w-full h-full bg-black overflow-hidden text-[#d4d4d4] font-serif">
+      {aiError ? <div role="alert" className="fixed top-4 left-4 right-4 z-50 bg-black/90 p-3 text-sm text-amber-200">{aiError} <button className="underline ml-3" onClick={resetGame}>Back to archive</button></div> : null}
 
       {/* Language Switcher */}
       <LanguageSwitcher />

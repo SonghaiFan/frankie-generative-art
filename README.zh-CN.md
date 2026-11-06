@@ -21,11 +21,11 @@ npm ci
 npm run dev
 ```
 
-打开 Vite 输出的地址。AI 分析与生成使用 `GEMINI_API_KEY`，在本地 `.env.local` 中配置。
+打开 Vite 输出的地址。线上 AI 分析与生成使用 Vercel 服务端的 `OPENAI_API_KEY`；本地开发时在 `.env.local` 中配置。
 
 ## 开始之前
 
-档案中包含现成的交互示例。AI 分析与新作品生成依赖 Gemini，目前需要在本地开发环境配置自己的 key；公开构建不包含该 key。详细指南保留了中英文介绍和配置说明。
+档案中包含现成的交互示例。AI 分析与三种作品生成模式通过同源 `/api/art` 接口调用 OpenAI，key 仅保存在服务端。详细指南保留了中英文介绍和配置说明。
 
 ## 开发说明
 
@@ -33,7 +33,7 @@ npm run dev
 npm run build
 ```
 
-[项目指南](docs/guide.md) · [Banner 维护](docs/readme/README.md)
+[AI 配置](docs/ai-service.md) · [项目指南](docs/guide.md) · [Banner 维护](docs/readme/README.md)
 
 ---
 
