@@ -75,6 +75,7 @@ const ArtArchive: React.FC<ArtArchiveProps> = ({ cards, onSelectionComplete }) =
           {/* Main Title Block */}
           <div className="relative z-10">
             <div className="flex flex-col border-l-2 border-white pl-8 md:pl-12 pointer-events-auto">
+              <img src="/frankie-generative-art-symbol-white.svg" alt="" aria-hidden="true" className="w-8 h-8 mb-5" />
               <span className="font-ui text-[10px] tracking-[0.8em] uppercase text-white/30 mb-4">{t('hero.systemReady')}</span>
               <h1 className="text-[12vw] md:text-[7.5vw] font-serif leading-[0.85] text-white tracking-widest uppercase mb-12" style={{ whiteSpace: 'pre-line' }}>
                 {t('hero.title')}

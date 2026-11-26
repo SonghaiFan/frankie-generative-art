@@ -39,6 +39,13 @@
       "path": "components/GenerativeArt.tsx + visual_styles/",
       "note": "Actual Sublime preview rendered in the current archive; no new AI generation.",
       "captured_on": "2026-11-05"
+    },
+    {
+      "file": "assets/icon.svg",
+      "kind": "user-approved brand icon",
+      "selected_on": "2026-11-26",
+      "geometry_source": "e40991d784b7e4f1e4746506f90c5036c3c8d23079ecd69e2c43f3fb00fca1e3"
     }
-  ]
+  ],
+  "icon": "assets/icon.svg"
 }
